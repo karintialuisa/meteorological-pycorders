@@ -1,0 +1,4 @@
+python-dotenv>=1.0,<2.0
+pytest>=9.0,<10.0
+requests>=2.31,<3.0
+pyodbc>=5.0,<6.0

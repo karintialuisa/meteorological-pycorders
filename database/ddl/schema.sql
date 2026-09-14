@@ -1,0 +1,1 @@
+-- Estruturas DDL iniciais do projeto PyCordersMeteorological.
