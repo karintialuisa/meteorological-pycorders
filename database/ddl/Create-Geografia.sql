@@ -37,3 +37,4 @@ GO
 CREATE INDEX idx_cidade_codigo_ibge
     ON cidade (codigo_ibge);
 GO
+
