@@ -1,0 +1,3679 @@
+{
+  "date": "2026-09-15",
+  "estacoes": [
+    {
+      "id": "EST-001-capital",
+      "nome": "Estação São Paulo Centro",
+      "tipo": "monitoramento_ambiental",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "SP",
+        "city_name": "São Paulo",
+        "woeid": 455827,
+        "latitude": -23.5505,
+        "longitude": -46.6333,
+        "timezone": "-03:00"
+      },
+      "descricao": "Estação destinada ao monitoramento da qualidade da água e das condições meteorológicas em São Paulo.",
+      "data_instalacao": "2026-01-15"
+    },
+    {
+      "id": "EST-002-capital",
+      "nome": "Estação Rio de Janeiro Centro",
+      "tipo": "monitoramento_ambiental",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "RJ",
+        "city_name": "Rio de Janeiro",
+        "woeid": 455820,
+        "latitude": -22.9068,
+        "longitude": -43.1729,
+        "timezone": "-03:00"
+      },
+      "descricao": "Estação destinada ao monitoramento da qualidade da água e das condições meteorológicas no Rio de Janeiro.",
+      "data_instalacao": "2026-01-15"
+    },
+    {
+      "id": "EST-003-capital",
+      "nome": "Estação Belo Horizonte Centro",
+      "tipo": "monitoramento_ambiental",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "MG",
+        "city_name": "Belo Horizonte",
+        "woeid": 455821,
+        "latitude": -19.9167,
+        "longitude": -43.9345,
+        "timezone": "-03:00"
+      },
+      "descricao": "Estação destinada ao monitoramento da qualidade da água e das condições meteorológicas em Belo Horizonte.",
+      "data_instalacao": "2026-01-15"
+    },
+    {
+      "id": "EST-004-capital",
+      "nome": "Estação Curitiba Centro",
+      "tipo": "monitoramento_ambiental",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "PR",
+        "city_name": "Curitiba",
+        "woeid": 455822,
+        "latitude": -25.4284,
+        "longitude": -49.2733,
+        "timezone": "-03:00"
+      },
+      "descricao": "Estação destinada ao monitoramento da qualidade da água e das condições meteorológicas em Curitiba.",
+      "data_instalacao": "2026-01-15"
+    },
+    {
+      "id": "EST-005-capital",
+      "nome": "Estação Salvador Centro",
+      "tipo": "monitoramento_ambiental",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "BA",
+        "city_name": "Salvador",
+        "woeid": 455824,
+        "latitude": -12.9714,
+        "longitude": -38.5014,
+        "timezone": "-03:00"
+      },
+      "descricao": "Estação destinada ao monitoramento da qualidade da água e das condições meteorológicas em Salvador.",
+      "data_instalacao": "2026-01-15"
+    },
+    {
+      "id": "EST-006-zona-sul",
+      "nome": "Estação São Paulo Sul",
+      "tipo": "monitoramento_ambiental",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "SP",
+        "city_name": "São Paulo",
+        "woeid": 455827,
+        "latitude": -23.6305,
+        "longitude": -46.6033,
+        "timezone": "-03:00"
+      },
+      "descricao": "Estação adicional destinada ao monitoramento da qualidade da água e das condições meteorológicas em São Paulo.",
+      "data_instalacao": "2026-03-10"
+    },
+    {
+      "id": "EST-007-barra",
+      "nome": "Estação Rio de Janeiro Barra",
+      "tipo": "monitoramento_ambiental",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "RJ",
+        "city_name": "Rio de Janeiro",
+        "woeid": 455820,
+        "latitude": -22.9968,
+        "longitude": -43.3529,
+        "timezone": "-03:00"
+      },
+      "descricao": "Estação adicional destinada ao monitoramento da qualidade da água e das condições meteorológicas em Rio de Janeiro.",
+      "data_instalacao": "2026-03-10"
+    },
+    {
+      "id": "EST-008-pampulha",
+      "nome": "Estação Belo Horizonte Pampulha",
+      "tipo": "monitoramento_ambiental",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "MG",
+        "city_name": "Belo Horizonte",
+        "woeid": 455821,
+        "latitude": -19.8467,
+        "longitude": -43.9145,
+        "timezone": "-03:00"
+      },
+      "descricao": "Estação adicional destinada ao monitoramento da qualidade da água e das condições meteorológicas em Belo Horizonte.",
+      "data_instalacao": "2026-03-10"
+    },
+    {
+      "id": "EST-009-batel",
+      "nome": "Estação Curitiba Batel",
+      "tipo": "monitoramento_ambiental",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "PR",
+        "city_name": "Curitiba",
+        "woeid": 455822,
+        "latitude": -25.4384,
+        "longitude": -49.2933,
+        "timezone": "-03:00"
+      },
+      "descricao": "Estação adicional destinada ao monitoramento da qualidade da água e das condições meteorológicas em Curitiba.",
+      "data_instalacao": "2026-03-10"
+    },
+    {
+      "id": "EST-010-itapua",
+      "nome": "Estação Salvador Itapuã",
+      "tipo": "monitoramento_ambiental",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "BA",
+        "city_name": "Salvador",
+        "woeid": 455824,
+        "latitude": -12.9514,
+        "longitude": -38.3714,
+        "timezone": "-03:00"
+      },
+      "descricao": "Estação adicional destinada ao monitoramento da qualidade da água e das condições meteorológicas em Salvador.",
+      "data_instalacao": "2026-03-10"
+    }
+  ],
+  "leituras": [
+    {
+      "id": "LEIT-000001",
+      "estacao_id": "EST-001-capital",
+      "timestamp": "2026-09-15T08:24:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 21.3,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.2,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 6.8,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 145.2,
+          "unidade": "µS/cm"
+        }
+      },
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 22,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 78,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 45,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 8.5,
+          "unidade": "km/h",
+          "direcao": 120,
+          "direcao_cardinal": "SE"
+        }
+      }
+    },
+    {
+      "id": "LEIT-000002",
+      "estacao_id": "EST-001-capital",
+      "timestamp": "2026-09-16T08:15:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 20.8,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.1,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 7.0,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 150.0,
+          "unidade": "µS/cm"
+        }
+      },
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 19,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Chuvas esparsas",
+          "condition_code": "40",
+          "condition_slug": "rain"
+        },
+        "umidade": {
+          "valor": 88,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 80,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 4.2,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 11.2,
+          "unidade": "km/h",
+          "direcao": 180,
+          "direcao_cardinal": "S"
+        }
+      }
+    },
+    {
+      "id": "LEIT-000003",
+      "estacao_id": "EST-001-capital",
+      "timestamp": "2026-09-17T08:30:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 22.1,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.3,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 6.5,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 142.0,
+          "unidade": "µS/cm"
+        }
+      },
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 24,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 65,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 20,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 6.0,
+          "unidade": "km/h",
+          "direcao": 90,
+          "direcao_cardinal": "E"
+        }
+      }
+    },
+    {
+      "id": "LEIT-000004",
+      "estacao_id": "EST-002-capital",
+      "timestamp": "2026-09-15T08:10:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 24.5,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.6,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 6.2,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 180.5,
+          "unidade": "µS/cm"
+        }
+      },
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 27,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 70,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 15,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 9.0,
+          "unidade": "km/h",
+          "direcao": 45,
+          "direcao_cardinal": "NE"
+        }
+      }
+    },
+    {
+      "id": "LEIT-000005",
+      "estacao_id": "EST-002-capital",
+      "timestamp": "2026-09-16T08:40:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 24.8,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.5,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 6.1,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 182.0,
+          "unidade": "µS/cm"
+        }
+      },
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 28,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 72,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 40,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 10.5,
+          "unidade": "km/h",
+          "direcao": 60,
+          "direcao_cardinal": "NE"
+        }
+      }
+    },
+    {
+      "id": "LEIT-000006",
+      "estacao_id": "EST-002-capital",
+      "timestamp": "2026-09-17T08:20:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 23.9,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.4,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 6.4,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 178.0,
+          "unidade": "µS/cm"
+        }
+      },
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 25,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Tempestade",
+          "condition_code": "04",
+          "condition_slug": "storm"
+        },
+        "umidade": {
+          "valor": 92,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 95,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 18.5,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 22.0,
+          "unidade": "km/h",
+          "direcao": 210,
+          "direcao_cardinal": "SW"
+        }
+      }
+    },
+    {
+      "id": "LEIT-000007",
+      "estacao_id": "EST-003-capital",
+      "timestamp": "2026-09-15T08:50:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 19.5,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.0,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 7.4,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 130.0,
+          "unidade": "µS/cm"
+        }
+      },
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 20,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Nublado",
+          "condition_code": "26",
+          "condition_slug": "cloud"
+        },
+        "umidade": {
+          "valor": 80,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 75,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.5,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 5.2,
+          "unidade": "km/h",
+          "direcao": 135,
+          "direcao_cardinal": "SE"
+        }
+      }
+    },
+    {
+      "id": "LEIT-000008",
+      "estacao_id": "EST-003-capital",
+      "timestamp": "2026-09-16T08:12:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 20.1,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.2,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 7.2,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 128.0,
+          "unidade": "µS/cm"
+        }
+      },
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 23,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 62,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 20,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 7.1,
+          "unidade": "km/h",
+          "direcao": 90,
+          "direcao_cardinal": "E"
+        }
+      }
+    },
+    {
+      "id": "LEIT-000009",
+      "estacao_id": "EST-003-capital",
+      "timestamp": "2026-09-17T08:45:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 20.5,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.1,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 7.1,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 132.0,
+          "unidade": "µS/cm"
+        }
+      },
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 25,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 68,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 50,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 6.8,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      }
+    },
+    {
+      "id": "LEIT-000010",
+      "estacao_id": "EST-004-capital",
+      "timestamp": "2026-09-15T08:05:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 16.2,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 6.9,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 7.8,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 110.0,
+          "unidade": "µS/cm"
+        }
+      },
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 16,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Nublado",
+          "condition_code": "26",
+          "condition_slug": "cloud"
+        },
+        "umidade": {
+          "valor": 85,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 85,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 1.2,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 12.0,
+          "unidade": "km/h",
+          "direcao": 190,
+          "direcao_cardinal": "S"
+        }
+      }
+    },
+    {
+      "id": "LEIT-000011",
+      "estacao_id": "EST-004-capital",
+      "timestamp": "2026-09-16T08:35:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 15.8,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 6.8,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 8.0,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 108.0,
+          "unidade": "µS/cm"
+        }
+      },
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 14,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Chuvas esparsas",
+          "condition_code": "40",
+          "condition_slug": "rain"
+        },
+        "umidade": {
+          "valor": 90,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 90,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 6.5,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 14.5,
+          "unidade": "km/h",
+          "direcao": 200,
+          "direcao_cardinal": "S"
+        }
+      }
+    },
+    {
+      "id": "LEIT-000012",
+      "estacao_id": "EST-004-capital",
+      "timestamp": "2026-09-17T08:18:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 17.0,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.0,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 7.6,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 112.0,
+          "unidade": "µS/cm"
+        }
+      },
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 18,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 75,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 55,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 9.2,
+          "unidade": "km/h",
+          "direcao": 160,
+          "direcao_cardinal": "SE"
+        }
+      }
+    },
+    {
+      "id": "LEIT-000013",
+      "estacao_id": "EST-005-capital",
+      "timestamp": "2026-09-15T08:28:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 26.2,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.7,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 6.0,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 195.0,
+          "unidade": "µS/cm"
+        }
+      },
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 28,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 73,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 25,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 13.0,
+          "unidade": "km/h",
+          "direcao": 90,
+          "direcao_cardinal": "E"
+        }
+      }
+    },
+    {
+      "id": "LEIT-000014",
+      "estacao_id": "EST-005-capital",
+      "timestamp": "2026-09-16T08:52:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 26.5,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.8,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 5.9,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 198.0,
+          "unidade": "µS/cm"
+        }
+      },
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 29,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 70,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 35,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 14.2,
+          "unidade": "km/h",
+          "direcao": 100,
+          "direcao_cardinal": "E"
+        }
+      }
+    },
+    {
+      "id": "LEIT-000015",
+      "estacao_id": "EST-005-capital",
+      "timestamp": "2026-09-17T08:08:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 25.9,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.6,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 6.1,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 192.0,
+          "unidade": "µS/cm"
+        }
+      },
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 27,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Chuvas esparsas",
+          "condition_code": "40",
+          "condition_slug": "rain"
+        },
+        "umidade": {
+          "valor": 82,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 65,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 3.8,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 16.0,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      }
+    },
+    {
+      "id": "LEIT-000016",
+      "estacao_id": "EST-006-zona-sul",
+      "timestamp": "2026-09-15T08:24:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 21.5,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.3,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 7.1,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 149.6,
+          "unidade": "µS/cm"
+        }
+      },
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 21,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 80,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 40,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.6,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 8.8,
+          "unidade": "km/h",
+          "direcao": 120,
+          "direcao_cardinal": "SE"
+        }
+      }
+    },
+    {
+      "id": "LEIT-000017",
+      "estacao_id": "EST-006-zona-sul",
+      "timestamp": "2026-09-16T08:15:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 21.0,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.1,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 7.1,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 151.4,
+          "unidade": "µS/cm"
+        }
+      },
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 18,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Chuvas esparsas",
+          "condition_code": "40",
+          "condition_slug": "rain"
+        },
+        "umidade": {
+          "valor": 86,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 75,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 4.1,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 11.3,
+          "unidade": "km/h",
+          "direcao": 180,
+          "direcao_cardinal": "S"
+        }
+      }
+    },
+    {
+      "id": "LEIT-000018",
+      "estacao_id": "EST-006-zona-sul",
+      "timestamp": "2026-09-17T08:30:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 22.0,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.3,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 6.5,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 145.8,
+          "unidade": "µS/cm"
+        }
+      },
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 23,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 68,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 15,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.5,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 5.0,
+          "unidade": "km/h",
+          "direcao": 90,
+          "direcao_cardinal": "E"
+        }
+      }
+    },
+    {
+      "id": "LEIT-000019",
+      "estacao_id": "EST-007-barra",
+      "timestamp": "2026-09-15T08:10:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 24.5,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.6,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 6.3,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 185.3,
+          "unidade": "µS/cm"
+        }
+      },
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 27,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 68,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 10,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.6,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 10.3,
+          "unidade": "km/h",
+          "direcao": 45,
+          "direcao_cardinal": "NE"
+        }
+      }
+    },
+    {
+      "id": "LEIT-000020",
+      "estacao_id": "EST-007-barra",
+      "timestamp": "2026-09-16T08:40:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 24.6,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.6,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 6.4,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 181.7,
+          "unidade": "µS/cm"
+        }
+      },
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 28,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 69,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 45,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.1,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 9.9,
+          "unidade": "km/h",
+          "direcao": 60,
+          "direcao_cardinal": "NE"
+        }
+      }
+    },
+    {
+      "id": "LEIT-000021",
+      "estacao_id": "EST-007-barra",
+      "timestamp": "2026-09-17T08:20:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 23.4,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.3,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 6.6,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 179.5,
+          "unidade": "µS/cm"
+        }
+      },
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 25,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Tempestade",
+          "condition_code": "04",
+          "condition_slug": "storm"
+        },
+        "umidade": {
+          "valor": 95,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 90,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 17.7,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 20.8,
+          "unidade": "km/h",
+          "direcao": 210,
+          "direcao_cardinal": "SW"
+        }
+      }
+    },
+    {
+      "id": "LEIT-000022",
+      "estacao_id": "EST-008-pampulha",
+      "timestamp": "2026-09-15T08:50:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 19.3,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 6.9,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 7.2,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 126.0,
+          "unidade": "µS/cm"
+        }
+      },
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 21,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Nublado",
+          "condition_code": "26",
+          "condition_slug": "cloud"
+        },
+        "umidade": {
+          "valor": 78,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 70,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 4.8,
+          "unidade": "km/h",
+          "direcao": 135,
+          "direcao_cardinal": "SE"
+        }
+      }
+    },
+    {
+      "id": "LEIT-000023",
+      "estacao_id": "EST-008-pampulha",
+      "timestamp": "2026-09-16T08:12:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 20.0,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.2,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 7.3,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 127.4,
+          "unidade": "µS/cm"
+        }
+      },
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 22,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 65,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 25,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 7.8,
+          "unidade": "km/h",
+          "direcao": 90,
+          "direcao_cardinal": "E"
+        }
+      }
+    },
+    {
+      "id": "LEIT-000024",
+      "estacao_id": "EST-008-pampulha",
+      "timestamp": "2026-09-17T08:45:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 21.0,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.2,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 7.0,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 129.3,
+          "unidade": "µS/cm"
+        }
+      },
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 24,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 66,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 45,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 6.8,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      }
+    },
+    {
+      "id": "LEIT-000025",
+      "estacao_id": "EST-009-batel",
+      "timestamp": "2026-09-15T08:05:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 16.6,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 6.8,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 8.0,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 107.9,
+          "unidade": "µS/cm"
+        }
+      },
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 17,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Nublado",
+          "condition_code": "26",
+          "condition_slug": "cloud"
+        },
+        "umidade": {
+          "valor": 83,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 80,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.6,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 13.5,
+          "unidade": "km/h",
+          "direcao": 190,
+          "direcao_cardinal": "S"
+        }
+      }
+    },
+    {
+      "id": "LEIT-000026",
+      "estacao_id": "EST-009-batel",
+      "timestamp": "2026-09-16T08:35:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 15.9,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 6.7,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 8.0,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 108.2,
+          "unidade": "µS/cm"
+        }
+      },
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 14,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Chuvas esparsas",
+          "condition_code": "40",
+          "condition_slug": "rain"
+        },
+        "umidade": {
+          "valor": 93,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 95,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 7.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 14.4,
+          "unidade": "km/h",
+          "direcao": 200,
+          "direcao_cardinal": "S"
+        }
+      }
+    },
+    {
+      "id": "LEIT-000027",
+      "estacao_id": "EST-009-batel",
+      "timestamp": "2026-09-17T08:18:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 16.9,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.1,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 7.7,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 116.5,
+          "unidade": "µS/cm"
+        }
+      },
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 19,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 72,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 50,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 9.9,
+          "unidade": "km/h",
+          "direcao": 160,
+          "direcao_cardinal": "SE"
+        }
+      }
+    },
+    {
+      "id": "LEIT-000028",
+      "estacao_id": "EST-010-itapua",
+      "timestamp": "2026-09-15T08:28:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 26.0,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.7,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 5.8,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 191.9,
+          "unidade": "µS/cm"
+        }
+      },
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 29,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 70,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 20,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.3,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 12.2,
+          "unidade": "km/h",
+          "direcao": 90,
+          "direcao_cardinal": "E"
+        }
+      }
+    },
+    {
+      "id": "LEIT-000029",
+      "estacao_id": "EST-010-itapua",
+      "timestamp": "2026-09-16T08:52:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 26.0,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.7,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 5.9,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 196.9,
+          "unidade": "µS/cm"
+        }
+      },
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 30,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 67,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 40,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.5,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 15.0,
+          "unidade": "km/h",
+          "direcao": 100,
+          "direcao_cardinal": "E"
+        }
+      }
+    },
+    {
+      "id": "LEIT-000030",
+      "estacao_id": "EST-010-itapua",
+      "timestamp": "2026-09-17T08:08:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 26.1,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.7,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 6.3,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 186.1,
+          "unidade": "µS/cm"
+        }
+      },
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 26,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Chuvas esparsas",
+          "condition_code": "40",
+          "condition_slug": "rain"
+        },
+        "umidade": {
+          "valor": 85,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 70,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 3.8,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 16.4,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      }
+    }
+  ],
+  "previsao_meteorologica": [
+    {
+      "estacao_id": "EST-001-capital",
+      "data": "18/09/2026",
+      "dia_semana": "Sex",
+      "temperatura": {
+        "minima": 16,
+        "maxima": 25,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 70,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 40,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 0.0,
+        "unidade": "mm",
+        "probabilidade": 20
+      },
+      "vento": {
+        "velocidade": 9.5,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Parcialmente nublado",
+        "condition": "cloudly_day"
+      },
+      "sol": {
+        "nascer": "06:05",
+        "por": "17:54"
+      },
+      "lua": {
+        "fase": "first_quarter",
+        "descricao": "Quarto crescente"
+      }
+    },
+    {
+      "estacao_id": "EST-001-capital",
+      "data": "19/09/2026",
+      "dia_semana": "Sáb",
+      "temperatura": {
+        "minima": 17,
+        "maxima": 26,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 65,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 20,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 0.0,
+        "unidade": "mm",
+        "probabilidade": 0
+      },
+      "vento": {
+        "velocidade": 8.0,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Ensolarado",
+        "condition": "clear_day"
+      },
+      "sol": {
+        "nascer": "06:04",
+        "por": "17:55"
+      },
+      "lua": {
+        "fase": "waxing_gibbous",
+        "descricao": "Lua crescente convexa"
+      }
+    },
+    {
+      "estacao_id": "EST-001-capital",
+      "data": "20/09/2026",
+      "dia_semana": "Dom",
+      "temperatura": {
+        "minima": 18,
+        "maxima": 24,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 80,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 75,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 5.4,
+        "unidade": "mm",
+        "probabilidade": 60
+      },
+      "vento": {
+        "velocidade": 12.0,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Chuvas esparsas",
+        "condition": "rain"
+      },
+      "sol": {
+        "nascer": "06:03",
+        "por": "17:55"
+      },
+      "lua": {
+        "fase": "full",
+        "descricao": "Lua cheia"
+      }
+    },
+    {
+      "estacao_id": "EST-001-capital",
+      "data": "21/09/2026",
+      "dia_semana": "Seg",
+      "temperatura": {
+        "minima": 15,
+        "maxima": 22,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 85,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 80,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 12.0,
+        "unidade": "mm",
+        "probabilidade": 80
+      },
+      "vento": {
+        "velocidade": 14.0,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Chuvas esparsas",
+        "condition": "rain"
+      },
+      "sol": {
+        "nascer": "06:02",
+        "por": "17:56"
+      },
+      "lua": {
+        "fase": "waning_gibbous",
+        "descricao": "Lua minguante convexa"
+      }
+    },
+    {
+      "estacao_id": "EST-001-capital",
+      "data": "22/09/2026",
+      "dia_semana": "Ter",
+      "temperatura": {
+        "minima": 16,
+        "maxima": 23,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 72,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 50,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 1.2,
+        "unidade": "mm",
+        "probabilidade": 40
+      },
+      "vento": {
+        "velocidade": 10.0,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Parcialmente nublado",
+        "condition": "cloudly_day"
+      },
+      "sol": {
+        "nascer": "06:01",
+        "por": "17:56"
+      },
+      "lua": {
+        "fase": "waning_gibbous",
+        "descricao": "Lua minguante convexa"
+      }
+    },
+    {
+      "estacao_id": "EST-002-capital",
+      "data": "18/09/2026",
+      "dia_semana": "Sex",
+      "temperatura": {
+        "minima": 20,
+        "maxima": 29,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 68,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 25,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 0.0,
+        "unidade": "mm",
+        "probabilidade": 0
+      },
+      "vento": {
+        "velocidade": 11.0,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Ensolarado",
+        "condition": "clear_day"
+      },
+      "sol": {
+        "nascer": "05:58",
+        "por": "17:48"
+      },
+      "lua": {
+        "fase": "first_quarter",
+        "descricao": "Quarto crescente"
+      }
+    },
+    {
+      "estacao_id": "EST-002-capital",
+      "data": "19/09/2026",
+      "dia_semana": "Sáb",
+      "temperatura": {
+        "minima": 21,
+        "maxima": 30,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 65,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 30,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 0.0,
+        "unidade": "mm",
+        "probabilidade": 10
+      },
+      "vento": {
+        "velocidade": 12.5,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Ensolarado",
+        "condition": "clear_day"
+      },
+      "sol": {
+        "nascer": "05:57",
+        "por": "17:48"
+      },
+      "lua": {
+        "fase": "waxing_gibbous",
+        "descricao": "Lua crescente convexa"
+      }
+    },
+    {
+      "estacao_id": "EST-002-capital",
+      "data": "20/09/2026",
+      "dia_semana": "Dom",
+      "temperatura": {
+        "minima": 22,
+        "maxima": 28,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 78,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 60,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 3.5,
+        "unidade": "mm",
+        "probabilidade": 40
+      },
+      "vento": {
+        "velocidade": 15.0,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Parcialmente nublado",
+        "condition": "cloudly_day"
+      },
+      "sol": {
+        "nascer": "05:56",
+        "por": "17:49"
+      },
+      "lua": {
+        "fase": "full",
+        "descricao": "Lua cheia"
+      }
+    },
+    {
+      "estacao_id": "EST-002-capital",
+      "data": "21/09/2026",
+      "dia_semana": "Seg",
+      "temperatura": {
+        "minima": 20,
+        "maxima": 26,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 85,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 90,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 15.2,
+        "unidade": "mm",
+        "probabilidade": 80
+      },
+      "vento": {
+        "velocidade": 18.0,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Tempestade",
+        "condition": "storm"
+      },
+      "sol": {
+        "nascer": "05:55",
+        "por": "17:49"
+      },
+      "lua": {
+        "fase": "waning_gibbous",
+        "descricao": "Lua minguante convexa"
+      }
+    },
+    {
+      "estacao_id": "EST-002-capital",
+      "data": "22/09/2026",
+      "dia_semana": "Ter",
+      "temperatura": {
+        "minima": 21,
+        "maxima": 27,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 75,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 45,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 2.0,
+        "unidade": "mm",
+        "probabilidade": 30
+      },
+      "vento": {
+        "velocidade": 13.0,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Parcialmente nublado",
+        "condition": "cloudly_day"
+      },
+      "sol": {
+        "nascer": "05:54",
+        "por": "17:50"
+      },
+      "lua": {
+        "fase": "waning_gibbous",
+        "descricao": "Lua minguante convexa"
+      }
+    },
+    {
+      "estacao_id": "EST-003-capital",
+      "data": "18/09/2026",
+      "dia_semana": "Sex",
+      "temperatura": {
+        "minima": 15,
+        "maxima": 26,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 60,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 30,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 0.0,
+        "unidade": "mm",
+        "probabilidade": 0
+      },
+      "vento": {
+        "velocidade": 7.5,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Ensolarado",
+        "condition": "clear_day"
+      },
+      "sol": {
+        "nascer": "05:59",
+        "por": "17:52"
+      },
+      "lua": {
+        "fase": "first_quarter",
+        "descricao": "Quarto crescente"
+      }
+    },
+    {
+      "estacao_id": "EST-003-capital",
+      "data": "19/09/2026",
+      "dia_semana": "Sáb",
+      "temperatura": {
+        "minima": 16,
+        "maxima": 27,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 58,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 25,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 0.0,
+        "unidade": "mm",
+        "probabilidade": 0
+      },
+      "vento": {
+        "velocidade": 8.0,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Ensolarado",
+        "condition": "clear_day"
+      },
+      "sol": {
+        "nascer": "05:58",
+        "por": "17:52"
+      },
+      "lua": {
+        "fase": "waxing_gibbous",
+        "descricao": "Lua crescente convexa"
+      }
+    },
+    {
+      "estacao_id": "EST-003-capital",
+      "data": "20/09/2026",
+      "dia_semana": "Dom",
+      "temperatura": {
+        "minima": 17,
+        "maxima": 25,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 70,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 60,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 1.5,
+        "unidade": "mm",
+        "probabilidade": 30
+      },
+      "vento": {
+        "velocidade": 9.0,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Parcialmente nublado",
+        "condition": "cloudly_day"
+      },
+      "sol": {
+        "nascer": "05:57",
+        "por": "17:53"
+      },
+      "lua": {
+        "fase": "full",
+        "descricao": "Lua cheia"
+      }
+    },
+    {
+      "estacao_id": "EST-003-capital",
+      "data": "21/09/2026",
+      "dia_semana": "Seg",
+      "temperatura": {
+        "minima": 16,
+        "maxima": 23,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 80,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 85,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 8.0,
+        "unidade": "mm",
+        "probabilidade": 70
+      },
+      "vento": {
+        "velocidade": 11.0,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Chuvas esparsas",
+        "condition": "rain"
+      },
+      "sol": {
+        "nascer": "05:56",
+        "por": "17:53"
+      },
+      "lua": {
+        "fase": "waning_gibbous",
+        "descricao": "Lua minguante convexa"
+      }
+    },
+    {
+      "estacao_id": "EST-003-capital",
+      "data": "22/09/2026",
+      "dia_semana": "Ter",
+      "temperatura": {
+        "minima": 15,
+        "maxima": 24,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 68,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 40,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 0.0,
+        "unidade": "mm",
+        "probabilidade": 20
+      },
+      "vento": {
+        "velocidade": 8.5,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Parcialmente nublado",
+        "condition": "cloudly_day"
+      },
+      "sol": {
+        "nascer": "05:55",
+        "por": "17:53"
+      },
+      "lua": {
+        "fase": "waning_gibbous",
+        "descricao": "Lua minguante convexa"
+      }
+    },
+    {
+      "estacao_id": "EST-004-capital",
+      "data": "18/09/2026",
+      "dia_semana": "Sex",
+      "temperatura": {
+        "minima": 12,
+        "maxima": 19,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 78,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 65,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 2.0,
+        "unidade": "mm",
+        "probabilidade": 40
+      },
+      "vento": {
+        "velocidade": 11.5,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Nublado",
+        "condition": "cloud"
+      },
+      "sol": {
+        "nascer": "06:12",
+        "por": "18:02"
+      },
+      "lua": {
+        "fase": "first_quarter",
+        "descricao": "Quarto crescente"
+      }
+    },
+    {
+      "estacao_id": "EST-004-capital",
+      "data": "19/09/2026",
+      "dia_semana": "Sáb",
+      "temperatura": {
+        "minima": 11,
+        "maxima": 18,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 85,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 90,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 10.5,
+        "unidade": "mm",
+        "probabilidade": 80
+      },
+      "vento": {
+        "velocidade": 15.0,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Chuvas esparsas",
+        "condition": "rain"
+      },
+      "sol": {
+        "nascer": "06:11",
+        "por": "18:02"
+      },
+      "lua": {
+        "fase": "waxing_gibbous",
+        "descricao": "Lua crescente convexa"
+      }
+    },
+    {
+      "estacao_id": "EST-004-capital",
+      "data": "20/09/2026",
+      "dia_semana": "Dom",
+      "temperatura": {
+        "minima": 10,
+        "maxima": 17,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 88,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 85,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 6.0,
+        "unidade": "mm",
+        "probabilidade": 60
+      },
+      "vento": {
+        "velocidade": 13.0,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Chuvas esparsas",
+        "condition": "rain"
+      },
+      "sol": {
+        "nascer": "06:10",
+        "por": "18:03"
+      },
+      "lua": {
+        "fase": "full",
+        "descricao": "Lua cheia"
+      }
+    },
+    {
+      "estacao_id": "EST-004-capital",
+      "data": "21/09/2026",
+      "dia_semana": "Seg",
+      "temperatura": {
+        "minima": 12,
+        "maxima": 20,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 75,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 50,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 0.5,
+        "unidade": "mm",
+        "probabilidade": 20
+      },
+      "vento": {
+        "velocidade": 10.0,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Parcialmente nublado",
+        "condition": "cloudly_day"
+      },
+      "sol": {
+        "nascer": "06:09",
+        "por": "18:03"
+      },
+      "lua": {
+        "fase": "waning_gibbous",
+        "descricao": "Lua minguante convexa"
+      }
+    },
+    {
+      "estacao_id": "EST-004-capital",
+      "data": "22/09/2026",
+      "dia_semana": "Ter",
+      "temperatura": {
+        "minima": 13,
+        "maxima": 22,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 68,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 30,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 0.0,
+        "unidade": "mm",
+        "probabilidade": 0
+      },
+      "vento": {
+        "velocidade": 8.5,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Ensolarado",
+        "condition": "clear_day"
+      },
+      "sol": {
+        "nascer": "06:08",
+        "por": "18:04"
+      },
+      "lua": {
+        "fase": "waning_gibbous",
+        "descricao": "Lua minguante convexa"
+      }
+    },
+    {
+      "estacao_id": "EST-005-capital",
+      "data": "18/09/2026",
+      "dia_semana": "Sex",
+      "temperatura": {
+        "minima": 23,
+        "maxima": 29,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 72,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 30,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 0.0,
+        "unidade": "mm",
+        "probabilidade": 10
+      },
+      "vento": {
+        "velocidade": 14.0,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Ensolarado",
+        "condition": "clear_day"
+      },
+      "sol": {
+        "nascer": "05:35",
+        "por": "17:32"
+      },
+      "lua": {
+        "fase": "first_quarter",
+        "descricao": "Quarto crescente"
+      }
+    },
+    {
+      "estacao_id": "EST-005-capital",
+      "data": "19/09/2026",
+      "dia_semana": "Sáb",
+      "temperatura": {
+        "minima": 23,
+        "maxima": 30,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 70,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 35,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 0.0,
+        "unidade": "mm",
+        "probabilidade": 10
+      },
+      "vento": {
+        "velocidade": 15.0,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Parcialmente nublado",
+        "condition": "cloudly_day"
+      },
+      "sol": {
+        "nascer": "05:34",
+        "por": "17:32"
+      },
+      "lua": {
+        "fase": "waxing_gibbous",
+        "descricao": "Lua crescente convexa"
+      }
+    },
+    {
+      "estacao_id": "EST-005-capital",
+      "data": "20/09/2026",
+      "dia_semana": "Dom",
+      "temperatura": {
+        "minima": 24,
+        "maxima": 29,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 75,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 50,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 2.5,
+        "unidade": "mm",
+        "probabilidade": 40
+      },
+      "vento": {
+        "velocidade": 16.5,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Chuvas esparsas",
+        "condition": "rain"
+      },
+      "sol": {
+        "nascer": "05:34",
+        "por": "17:32"
+      },
+      "lua": {
+        "fase": "full",
+        "descricao": "Lua cheia"
+      }
+    },
+    {
+      "estacao_id": "EST-005-capital",
+      "data": "21/09/2026",
+      "dia_semana": "Seg",
+      "temperatura": {
+        "minima": 23,
+        "maxima": 28,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 78,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 60,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 4.0,
+        "unidade": "mm",
+        "probabilidade": 50
+      },
+      "vento": {
+        "velocidade": 17.0,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Chuvas esparsas",
+        "condition": "rain"
+      },
+      "sol": {
+        "nascer": "05:33",
+        "por": "17:32"
+      },
+      "lua": {
+        "fase": "waning_gibbous",
+        "descricao": "Lua minguante convexa"
+      }
+    },
+    {
+      "estacao_id": "EST-005-capital",
+      "data": "22/09/2026",
+      "dia_semana": "Ter",
+      "temperatura": {
+        "minima": 24,
+        "maxima": 30,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 71,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 25,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 0.0,
+        "unidade": "mm",
+        "probabilidade": 10
+      },
+      "vento": {
+        "velocidade": 14.5,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Ensolarado",
+        "condition": "clear_day"
+      },
+      "sol": {
+        "nascer": "05:32",
+        "por": "17:32"
+      },
+      "lua": {
+        "fase": "waning_gibbous",
+        "descricao": "Lua minguante convexa"
+      }
+    },
+    {
+      "estacao_id": "EST-006-zona-sul",
+      "data": "18/09/2026",
+      "dia_semana": "Sex",
+      "temperatura": {
+        "minima": 16,
+        "maxima": 24,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 73,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 35,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 0,
+        "unidade": "mm",
+        "probabilidade": 10
+      },
+      "vento": {
+        "velocidade": 9.9,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Parcialmente nublado",
+        "condition": "cloudly_day"
+      },
+      "sol": {
+        "nascer": "06:05",
+        "por": "17:54"
+      },
+      "lua": {
+        "fase": "first_quarter",
+        "descricao": "Quarto crescente"
+      }
+    },
+    {
+      "estacao_id": "EST-006-zona-sul",
+      "data": "19/09/2026",
+      "dia_semana": "Sáb",
+      "temperatura": {
+        "minima": 18,
+        "maxima": 25,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 68,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 25,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 0,
+        "unidade": "mm",
+        "probabilidade": 0
+      },
+      "vento": {
+        "velocidade": 6.7,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Ensolarado",
+        "condition": "clear_day"
+      },
+      "sol": {
+        "nascer": "06:04",
+        "por": "17:55"
+      },
+      "lua": {
+        "fase": "waxing_gibbous",
+        "descricao": "Lua crescente convexa"
+      }
+    },
+    {
+      "estacao_id": "EST-006-zona-sul",
+      "data": "20/09/2026",
+      "dia_semana": "Dom",
+      "temperatura": {
+        "minima": 17,
+        "maxima": 25,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 83,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 80,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 4.6,
+        "unidade": "mm",
+        "probabilidade": 70
+      },
+      "vento": {
+        "velocidade": 11.2,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Chuvas esparsas",
+        "condition": "rain"
+      },
+      "sol": {
+        "nascer": "06:03",
+        "por": "17:55"
+      },
+      "lua": {
+        "fase": "full",
+        "descricao": "Lua cheia"
+      }
+    },
+    {
+      "estacao_id": "EST-006-zona-sul",
+      "data": "21/09/2026",
+      "dia_semana": "Seg",
+      "temperatura": {
+        "minima": 16,
+        "maxima": 21,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 82,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 85,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 12.0,
+        "unidade": "mm",
+        "probabilidade": 90
+      },
+      "vento": {
+        "velocidade": 15.3,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Chuvas esparsas",
+        "condition": "rain"
+      },
+      "sol": {
+        "nascer": "06:02",
+        "por": "17:56"
+      },
+      "lua": {
+        "fase": "waning_gibbous",
+        "descricao": "Lua minguante convexa"
+      }
+    },
+    {
+      "estacao_id": "EST-006-zona-sul",
+      "data": "22/09/2026",
+      "dia_semana": "Ter",
+      "temperatura": {
+        "minima": 16,
+        "maxima": 24,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 69,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 45,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 1.6,
+        "unidade": "mm",
+        "probabilidade": 30
+      },
+      "vento": {
+        "velocidade": 11.4,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Parcialmente nublado",
+        "condition": "cloudly_day"
+      },
+      "sol": {
+        "nascer": "06:01",
+        "por": "17:56"
+      },
+      "lua": {
+        "fase": "waning_gibbous",
+        "descricao": "Lua minguante convexa"
+      }
+    },
+    {
+      "estacao_id": "EST-007-barra",
+      "data": "18/09/2026",
+      "dia_semana": "Sex",
+      "temperatura": {
+        "minima": 19,
+        "maxima": 29,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 65,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 30,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 0.4,
+        "unidade": "mm",
+        "probabilidade": 10
+      },
+      "vento": {
+        "velocidade": 11.5,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Ensolarado",
+        "condition": "clear_day"
+      },
+      "sol": {
+        "nascer": "05:58",
+        "por": "17:48"
+      },
+      "lua": {
+        "fase": "first_quarter",
+        "descricao": "Quarto crescente"
+      }
+    },
+    {
+      "estacao_id": "EST-007-barra",
+      "data": "19/09/2026",
+      "dia_semana": "Sáb",
+      "temperatura": {
+        "minima": 22,
+        "maxima": 30,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 68,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 35,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 0,
+        "unidade": "mm",
+        "probabilidade": 20
+      },
+      "vento": {
+        "velocidade": 11.4,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Ensolarado",
+        "condition": "clear_day"
+      },
+      "sol": {
+        "nascer": "05:57",
+        "por": "17:48"
+      },
+      "lua": {
+        "fase": "waxing_gibbous",
+        "descricao": "Lua crescente convexa"
+      }
+    },
+    {
+      "estacao_id": "EST-007-barra",
+      "data": "20/09/2026",
+      "dia_semana": "Dom",
+      "temperatura": {
+        "minima": 23,
+        "maxima": 28,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 81,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 55,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 3.9,
+        "unidade": "mm",
+        "probabilidade": 40
+      },
+      "vento": {
+        "velocidade": 14.6,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Parcialmente nublado",
+        "condition": "cloudly_day"
+      },
+      "sol": {
+        "nascer": "05:56",
+        "por": "17:49"
+      },
+      "lua": {
+        "fase": "full",
+        "descricao": "Lua cheia"
+      }
+    },
+    {
+      "estacao_id": "EST-007-barra",
+      "data": "21/09/2026",
+      "dia_semana": "Seg",
+      "temperatura": {
+        "minima": 21,
+        "maxima": 26,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 82,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 95,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 14.4,
+        "unidade": "mm",
+        "probabilidade": 70
+      },
+      "vento": {
+        "velocidade": 16.8,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Tempestade",
+        "condition": "storm"
+      },
+      "sol": {
+        "nascer": "05:55",
+        "por": "17:49"
+      },
+      "lua": {
+        "fase": "waning_gibbous",
+        "descricao": "Lua minguante convexa"
+      }
+    },
+    {
+      "estacao_id": "EST-007-barra",
+      "data": "22/09/2026",
+      "dia_semana": "Ter",
+      "temperatura": {
+        "minima": 20,
+        "maxima": 26,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 78,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 50,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 1.8,
+        "unidade": "mm",
+        "probabilidade": 30
+      },
+      "vento": {
+        "velocidade": 14.1,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Parcialmente nublado",
+        "condition": "cloudly_day"
+      },
+      "sol": {
+        "nascer": "05:54",
+        "por": "17:50"
+      },
+      "lua": {
+        "fase": "waning_gibbous",
+        "descricao": "Lua minguante convexa"
+      }
+    },
+    {
+      "estacao_id": "EST-008-pampulha",
+      "data": "18/09/2026",
+      "dia_semana": "Sex",
+      "temperatura": {
+        "minima": 15,
+        "maxima": 25,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 57,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 25,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 0.1,
+        "unidade": "mm",
+        "probabilidade": 10
+      },
+      "vento": {
+        "velocidade": 8.5,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Ensolarado",
+        "condition": "clear_day"
+      },
+      "sol": {
+        "nascer": "05:59",
+        "por": "17:52"
+      },
+      "lua": {
+        "fase": "first_quarter",
+        "descricao": "Quarto crescente"
+      }
+    },
+    {
+      "estacao_id": "EST-008-pampulha",
+      "data": "19/09/2026",
+      "dia_semana": "Sáb",
+      "temperatura": {
+        "minima": 17,
+        "maxima": 27,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 61,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 30,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 0,
+        "unidade": "mm",
+        "probabilidade": 0
+      },
+      "vento": {
+        "velocidade": 9.4,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Ensolarado",
+        "condition": "clear_day"
+      },
+      "sol": {
+        "nascer": "05:58",
+        "por": "17:52"
+      },
+      "lua": {
+        "fase": "waxing_gibbous",
+        "descricao": "Lua crescente convexa"
+      }
+    },
+    {
+      "estacao_id": "EST-008-pampulha",
+      "data": "20/09/2026",
+      "dia_semana": "Dom",
+      "temperatura": {
+        "minima": 18,
+        "maxima": 26,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 73,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 55,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 0.7,
+        "unidade": "mm",
+        "probabilidade": 30
+      },
+      "vento": {
+        "velocidade": 8.9,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Parcialmente nublado",
+        "condition": "cloudly_day"
+      },
+      "sol": {
+        "nascer": "05:57",
+        "por": "17:53"
+      },
+      "lua": {
+        "fase": "full",
+        "descricao": "Lua cheia"
+      }
+    },
+    {
+      "estacao_id": "EST-008-pampulha",
+      "data": "21/09/2026",
+      "dia_semana": "Seg",
+      "temperatura": {
+        "minima": 16,
+        "maxima": 22,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 83,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 80,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 8.9,
+        "unidade": "mm",
+        "probabilidade": 80
+      },
+      "vento": {
+        "velocidade": 10.4,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Chuvas esparsas",
+        "condition": "rain"
+      },
+      "sol": {
+        "nascer": "05:56",
+        "por": "17:53"
+      },
+      "lua": {
+        "fase": "waning_gibbous",
+        "descricao": "Lua minguante convexa"
+      }
+    },
+    {
+      "estacao_id": "EST-008-pampulha",
+      "data": "22/09/2026",
+      "dia_semana": "Ter",
+      "temperatura": {
+        "minima": 15,
+        "maxima": 24,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 65,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 45,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 0,
+        "unidade": "mm",
+        "probabilidade": 10
+      },
+      "vento": {
+        "velocidade": 8.6,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Parcialmente nublado",
+        "condition": "cloudly_day"
+      },
+      "sol": {
+        "nascer": "05:55",
+        "por": "17:53"
+      },
+      "lua": {
+        "fase": "waning_gibbous",
+        "descricao": "Lua minguante convexa"
+      }
+    },
+    {
+      "estacao_id": "EST-009-batel",
+      "data": "18/09/2026",
+      "dia_semana": "Sex",
+      "temperatura": {
+        "minima": 13,
+        "maxima": 18,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 81,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 60,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 2.0,
+        "unidade": "mm",
+        "probabilidade": 30
+      },
+      "vento": {
+        "velocidade": 12.7,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Nublado",
+        "condition": "cloud"
+      },
+      "sol": {
+        "nascer": "06:12",
+        "por": "18:02"
+      },
+      "lua": {
+        "fase": "first_quarter",
+        "descricao": "Quarto crescente"
+      }
+    },
+    {
+      "estacao_id": "EST-009-batel",
+      "data": "19/09/2026",
+      "dia_semana": "Sáb",
+      "temperatura": {
+        "minima": 10,
+        "maxima": 17,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 82,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 85,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 10.1,
+        "unidade": "mm",
+        "probabilidade": 70
+      },
+      "vento": {
+        "velocidade": 16.0,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Chuvas esparsas",
+        "condition": "rain"
+      },
+      "sol": {
+        "nascer": "06:11",
+        "por": "18:02"
+      },
+      "lua": {
+        "fase": "waxing_gibbous",
+        "descricao": "Lua crescente convexa"
+      }
+    },
+    {
+      "estacao_id": "EST-009-batel",
+      "data": "20/09/2026",
+      "dia_semana": "Dom",
+      "temperatura": {
+        "minima": 10,
+        "maxima": 16,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 85,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 80,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 5.7,
+        "unidade": "mm",
+        "probabilidade": 70
+      },
+      "vento": {
+        "velocidade": 13.8,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Chuvas esparsas",
+        "condition": "rain"
+      },
+      "sol": {
+        "nascer": "06:10",
+        "por": "18:03"
+      },
+      "lua": {
+        "fase": "full",
+        "descricao": "Lua cheia"
+      }
+    },
+    {
+      "estacao_id": "EST-009-batel",
+      "data": "21/09/2026",
+      "dia_semana": "Seg",
+      "temperatura": {
+        "minima": 13,
+        "maxima": 21,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 78,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 55,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 0.5,
+        "unidade": "mm",
+        "probabilidade": 20
+      },
+      "vento": {
+        "velocidade": 10.5,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Parcialmente nublado",
+        "condition": "cloudly_day"
+      },
+      "sol": {
+        "nascer": "06:09",
+        "por": "18:03"
+      },
+      "lua": {
+        "fase": "waning_gibbous",
+        "descricao": "Lua minguante convexa"
+      }
+    },
+    {
+      "estacao_id": "EST-009-batel",
+      "data": "22/09/2026",
+      "dia_semana": "Ter",
+      "temperatura": {
+        "minima": 14,
+        "maxima": 22,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 65,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 25,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 0,
+        "unidade": "mm",
+        "probabilidade": 10
+      },
+      "vento": {
+        "velocidade": 7.1,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Ensolarado",
+        "condition": "clear_day"
+      },
+      "sol": {
+        "nascer": "06:08",
+        "por": "18:04"
+      },
+      "lua": {
+        "fase": "waning_gibbous",
+        "descricao": "Lua minguante convexa"
+      }
+    },
+    {
+      "estacao_id": "EST-010-itapua",
+      "data": "18/09/2026",
+      "dia_semana": "Sex",
+      "temperatura": {
+        "minima": 23,
+        "maxima": 28,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 75,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 25,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 0.8,
+        "unidade": "mm",
+        "probabilidade": 0
+      },
+      "vento": {
+        "velocidade": 13.0,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Ensolarado",
+        "condition": "clear_day"
+      },
+      "sol": {
+        "nascer": "05:35",
+        "por": "17:32"
+      },
+      "lua": {
+        "fase": "first_quarter",
+        "descricao": "Quarto crescente"
+      }
+    },
+    {
+      "estacao_id": "EST-010-itapua",
+      "data": "19/09/2026",
+      "dia_semana": "Sáb",
+      "temperatura": {
+        "minima": 23,
+        "maxima": 30,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 73,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 30,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 0.6,
+        "unidade": "mm",
+        "probabilidade": 20
+      },
+      "vento": {
+        "velocidade": 15.5,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Parcialmente nublado",
+        "condition": "cloudly_day"
+      },
+      "sol": {
+        "nascer": "05:34",
+        "por": "17:32"
+      },
+      "lua": {
+        "fase": "waxing_gibbous",
+        "descricao": "Lua crescente convexa"
+      }
+    },
+    {
+      "estacao_id": "EST-010-itapua",
+      "data": "20/09/2026",
+      "dia_semana": "Dom",
+      "temperatura": {
+        "minima": 25,
+        "maxima": 28,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 72,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 55,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 2.9,
+        "unidade": "mm",
+        "probabilidade": 40
+      },
+      "vento": {
+        "velocidade": 17.0,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Chuvas esparsas",
+        "condition": "rain"
+      },
+      "sol": {
+        "nascer": "05:34",
+        "por": "17:32"
+      },
+      "lua": {
+        "fase": "full",
+        "descricao": "Lua cheia"
+      }
+    },
+    {
+      "estacao_id": "EST-010-itapua",
+      "data": "21/09/2026",
+      "dia_semana": "Seg",
+      "temperatura": {
+        "minima": 23,
+        "maxima": 28,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 81,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 55,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 3.5,
+        "unidade": "mm",
+        "probabilidade": 60
+      },
+      "vento": {
+        "velocidade": 16.2,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Chuvas esparsas",
+        "condition": "rain"
+      },
+      "sol": {
+        "nascer": "05:33",
+        "por": "17:32"
+      },
+      "lua": {
+        "fase": "waning_gibbous",
+        "descricao": "Lua minguante convexa"
+      }
+    },
+    {
+      "estacao_id": "EST-010-itapua",
+      "data": "22/09/2026",
+      "dia_semana": "Ter",
+      "temperatura": {
+        "minima": 23,
+        "maxima": 30,
+        "unidade": "°C"
+      },
+      "umidade": {
+        "valor": 74,
+        "unidade": "%"
+      },
+      "nebulosidade": {
+        "valor": 20,
+        "unidade": "%"
+      },
+      "chuva": {
+        "quantidade": 0,
+        "unidade": "mm",
+        "probabilidade": 0
+      },
+      "vento": {
+        "velocidade": 14.6,
+        "unidade": "km/h"
+      },
+      "condicao": {
+        "description": "Ensolarado",
+        "condition": "clear_day"
+      },
+      "sol": {
+        "nascer": "05:32",
+        "por": "17:32"
+      },
+      "lua": {
+        "fase": "waning_gibbous",
+        "descricao": "Lua minguante convexa"
+      }
+    }
+  ]
+}
