@@ -1,3 +1,9 @@
+
+DROP TABLE IF EXISTS estacao;   
+DROP TABLE IF EXISTS cidade;
+DROP TABLE IF EXISTS estado;
+
+
 -- ============================================================
 -- ASSUNTO: GEOGRAFIA / LOCALIZAÇÃO FÍSICA
 -- ============================================================
@@ -36,5 +42,40 @@ GO
 
 CREATE INDEX idx_cidade_codigo_ibge
     ON cidade (codigo_ibge);
+GO
+
+-- ============================================================
+-- ASSUNTO: CADASTRO DAS ESTAÇÕES
+-- ============================================================
+
+CREATE TABLE estacao (
+    id                  BIGINT IDENTITY(1,1) PRIMARY KEY,
+    codigo_externo      VARCHAR(100) NOT NULL UNIQUE,
+    nome                VARCHAR(200) NOT NULL,
+    tipo                VARCHAR(100) NOT NULL,
+    status              VARCHAR(30) NOT NULL,
+    cidade_id           BIGINT NOT NULL,
+    latitude            NUMERIC(9,6),
+    longitude           NUMERIC(9,6),
+    timezone            VARCHAR(50),
+    descricao           VARCHAR(MAX),
+    data_instalacao     DATE,
+    criado_em           DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
+
+    CONSTRAINT fk_estacao_cidade
+        FOREIGN KEY (cidade_id)
+        REFERENCES cidade(id),
+
+    CONSTRAINT ck_estacao_status
+        CHECK (status IN ('ativa', 'inativa', 'manutencao'))
+);
+GO
+
+CREATE INDEX idx_estacao_cidade_id
+    ON estacao (cidade_id);
+GO
+
+CREATE INDEX idx_estacao_status
+    ON estacao (status);
 GO
 
