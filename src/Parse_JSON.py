@@ -11,7 +11,7 @@ import pandas as pd
 DIR_PARSE = Path(__file__).resolve().parent
 
 # 5. Diretório para o arquivo JSON e obter o arquivo JSON
-DIR_JSON = DIR_PARSE / "src" / "ingestion" / "monitoramento_ambiental.json"
+DIR_JSON = DIR_PARSE / "ingestion" / "monitoramento_ambiental.json"
 
 # 6. Agora vamos abrir e ler o arquivo
 with open(DIR_JSON, "r", encoding="utf-8") as file:
