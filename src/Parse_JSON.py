@@ -57,9 +57,9 @@ df_leituras = df_leituras.merge(df_estacoes)
 # 12. Tabela de leituras de água criada e renomeada com colunas amigáveis, as colunas antes eram os caminhos completos dentro do JSON e selecionamos algumas e renomemaos para facilitar a análise posterior
 tabela_agua = df_leituras[
     [
-    #    "id",
-    #    "estacao_id",
-    #    "cidade",
+        "id",
+        "estacao_id",
+        "cidade",
         "estado_id",
         "data",
         "qualidade_agua.temperatura.valor",
@@ -68,7 +68,7 @@ tabela_agua = df_leituras[
         "qualidade_agua.condutividade.valor"
     ]
 ].rename(columns={
-    #"id": "leitura_id",
+    "id": "leitura_id",
     "qualidade_agua.temperatura.valor": "Temperatura_Agua",
     "qualidade_agua.ph.valor": "ph",
     "qualidade_agua.oxigenio_dissolvido.valor": "Oxigenio_Dissolvido",
