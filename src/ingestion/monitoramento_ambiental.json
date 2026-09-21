@@ -2,8 +2,8 @@
   "date": "2026-09-15",
   "estacoes": [
     {
-      "id": "EST-001-ibirapuera",
-      "nome": "Estação São Paulo Ibirapuera",
+      "id": "EST-001-capital",
+      "nome": "Estação São Paulo Centro",
       "tipo": "monitoramento_ambiental",
       "status": "ativa",
       "localizacao": {
@@ -14,12 +14,12 @@
         "longitude": -46.6333,
         "timezone": "-03:00"
       },
-      "descricao": "Estação destinada ao monitoramento da qualidade da água e das condições meteorológicas na região do Ibirapuera, em São Paulo.",
+      "descricao": "Estação destinada ao monitoramento da qualidade da água e das condições meteorológicas em São Paulo.",
       "data_instalacao": "2026-01-15"
     },
     {
-      "id": "EST-002-copacabana",
-      "nome": "Estação Rio de Janeiro Copacabana",
+      "id": "EST-002-capital",
+      "nome": "Estação Rio de Janeiro Centro",
       "tipo": "monitoramento_ambiental",
       "status": "ativa",
       "localizacao": {
@@ -30,12 +30,12 @@
         "longitude": -43.1729,
         "timezone": "-03:00"
       },
-      "descricao": "Estação destinada ao monitoramento da qualidade da água e das condições meteorológicas em Copacabana, no Rio de Janeiro.",
+      "descricao": "Estação destinada ao monitoramento da qualidade da água e das condições meteorológicas no Rio de Janeiro.",
       "data_instalacao": "2026-01-15"
     },
     {
-      "id": "EST-003-savassi",
-      "nome": "Estação Belo Horizonte Savassi",
+      "id": "EST-003-capital",
+      "nome": "Estação Belo Horizonte Centro",
       "tipo": "monitoramento_ambiental",
       "status": "ativa",
       "localizacao": {
@@ -46,12 +46,12 @@
         "longitude": -43.9345,
         "timezone": "-03:00"
       },
-      "descricao": "Estação destinada ao monitoramento da qualidade da água e das condições meteorológicas na região da Savassi, em Belo Horizonte.",
+      "descricao": "Estação destinada ao monitoramento da qualidade da água e das condições meteorológicas em Belo Horizonte.",
       "data_instalacao": "2026-01-15"
     },
     {
-      "id": "EST-004-jardim-botanico",
-      "nome": "Estação Curitiba Jardim Botânico",
+      "id": "EST-004-capital",
+      "nome": "Estação Curitiba Centro",
       "tipo": "monitoramento_ambiental",
       "status": "ativa",
       "localizacao": {
@@ -62,12 +62,12 @@
         "longitude": -49.2733,
         "timezone": "-03:00"
       },
-      "descricao": "Estação destinada ao monitoramento da qualidade da água e das condições meteorológicas na região do Jardim Botânico, em Curitiba.",
+      "descricao": "Estação destinada ao monitoramento da qualidade da água e das condições meteorológicas em Curitiba.",
       "data_instalacao": "2026-01-15"
     },
     {
-      "id": "EST-005-pelourinho",
-      "nome": "Estação Salvador Pelourinho",
+      "id": "EST-005-capital",
+      "nome": "Estação Salvador Centro",
       "tipo": "monitoramento_ambiental",
       "status": "ativa",
       "localizacao": {
@@ -78,12 +78,12 @@
         "longitude": -38.5014,
         "timezone": "-03:00"
       },
-      "descricao": "Estação destinada ao monitoramento da qualidade da água e das condições meteorológicas na região do Pelourinho, em Salvador.",
+      "descricao": "Estação destinada ao monitoramento da qualidade da água e das condições meteorológicas em Salvador.",
       "data_instalacao": "2026-01-15"
     },
     {
-      "id": "EST-006-santo-amaro",
-      "nome": "Estação São Paulo Santo Amaro",
+      "id": "EST-006-zona-sul",
+      "nome": "Estação São Paulo Sul",
       "tipo": "monitoramento_ambiental",
       "status": "ativa",
       "localizacao": {
@@ -94,12 +94,12 @@
         "longitude": -46.6033,
         "timezone": "-03:00"
       },
-      "descricao": "Estação adicional destinada ao monitoramento da qualidade da água e das condições meteorológicas em Santo Amaro, São Paulo.",
+      "descricao": "Estação adicional destinada ao monitoramento da qualidade da água e das condições meteorológicas em São Paulo.",
       "data_instalacao": "2026-03-10"
     },
     {
-      "id": "EST-007-barra-da-tijuca",
-      "nome": "Estação Rio de Janeiro Barra da Tijuca",
+      "id": "EST-007-barra",
+      "nome": "Estação Rio de Janeiro Barra",
       "tipo": "monitoramento_ambiental",
       "status": "ativa",
       "localizacao": {
@@ -110,12 +110,12 @@
         "longitude": -43.3529,
         "timezone": "-03:00"
       },
-      "descricao": "Estação adicional destinada ao monitoramento da qualidade da água e das condições meteorológicas na Barra da Tijuca, no Rio de Janeiro.",
+      "descricao": "Estação adicional destinada ao monitoramento da qualidade da água e das condições meteorológicas em Rio de Janeiro.",
       "data_instalacao": "2026-03-10"
     },
     {
-      "id": "EST-008-lagoa-da-pampulha",
-      "nome": "Estação Belo Horizonte Lagoa da Pampulha",
+      "id": "EST-008-pampulha",
+      "nome": "Estação Belo Horizonte Pampulha",
       "tipo": "monitoramento_ambiental",
       "status": "ativa",
       "localizacao": {
@@ -126,7 +126,7 @@
         "longitude": -43.9145,
         "timezone": "-03:00"
       },
-      "descricao": "Estação adicional destinada ao monitoramento da qualidade da água e das condições meteorológicas na Lagoa da Pampulha, em Belo Horizonte.",
+      "descricao": "Estação adicional destinada ao monitoramento da qualidade da água e das condições meteorológicas em Belo Horizonte.",
       "data_instalacao": "2026-03-10"
     },
     {
@@ -142,7 +142,7 @@
         "longitude": -49.2933,
         "timezone": "-03:00"
       },
-      "descricao": "Estação adicional destinada ao monitoramento da qualidade da água e das condições meteorológicas no Batel, em Curitiba.",
+      "descricao": "Estação adicional destinada ao monitoramento da qualidade da água e das condições meteorológicas em Curitiba.",
       "data_instalacao": "2026-03-10"
     },
     {
@@ -158,14 +158,14 @@
         "longitude": -38.3714,
         "timezone": "-03:00"
       },
-      "descricao": "Estação adicional destinada ao monitoramento da qualidade da água e das condições meteorológicas em Itapuã, Salvador.",
+      "descricao": "Estação adicional destinada ao monitoramento da qualidade da água e das condições meteorológicas em Salvador.",
       "data_instalacao": "2026-03-10"
     }
   ],
   "leituras": [
     {
       "id": "LEIT-000001",
-      "estacao_id": "EST-001-ibirapuera",
+      "estacao_id": "EST-001-capital",
       "timestamp": "2026-09-15T08:24:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -217,7 +217,7 @@
     },
     {
       "id": "LEIT-000002",
-      "estacao_id": "EST-001-ibirapuera",
+      "estacao_id": "EST-001-capital",
       "timestamp": "2026-09-16T08:15:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -269,7 +269,7 @@
     },
     {
       "id": "LEIT-000003",
-      "estacao_id": "EST-001-ibirapuera",
+      "estacao_id": "EST-001-capital",
       "timestamp": "2026-09-17T08:30:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -321,7 +321,7 @@
     },
     {
       "id": "LEIT-000004",
-      "estacao_id": "EST-002-copacabana",
+      "estacao_id": "EST-002-capital",
       "timestamp": "2026-09-15T08:10:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -373,7 +373,7 @@
     },
     {
       "id": "LEIT-000005",
-      "estacao_id": "EST-002-copacabana",
+      "estacao_id": "EST-002-capital",
       "timestamp": "2026-09-16T08:40:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -425,7 +425,7 @@
     },
     {
       "id": "LEIT-000006",
-      "estacao_id": "EST-002-copacabana",
+      "estacao_id": "EST-002-capital",
       "timestamp": "2026-09-17T08:20:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -477,7 +477,7 @@
     },
     {
       "id": "LEIT-000007",
-      "estacao_id": "EST-003-savassi",
+      "estacao_id": "EST-003-capital",
       "timestamp": "2026-09-15T08:50:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -529,7 +529,7 @@
     },
     {
       "id": "LEIT-000008",
-      "estacao_id": "EST-003-savassi",
+      "estacao_id": "EST-003-capital",
       "timestamp": "2026-09-16T08:12:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -581,7 +581,7 @@
     },
     {
       "id": "LEIT-000009",
-      "estacao_id": "EST-003-savassi",
+      "estacao_id": "EST-003-capital",
       "timestamp": "2026-09-17T08:45:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -633,7 +633,7 @@
     },
     {
       "id": "LEIT-000010",
-      "estacao_id": "EST-004-jardim-botanico",
+      "estacao_id": "EST-004-capital",
       "timestamp": "2026-09-15T08:05:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -685,7 +685,7 @@
     },
     {
       "id": "LEIT-000011",
-      "estacao_id": "EST-004-jardim-botanico",
+      "estacao_id": "EST-004-capital",
       "timestamp": "2026-09-16T08:35:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -737,7 +737,7 @@
     },
     {
       "id": "LEIT-000012",
-      "estacao_id": "EST-004-jardim-botanico",
+      "estacao_id": "EST-004-capital",
       "timestamp": "2026-09-17T08:18:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -789,7 +789,7 @@
     },
     {
       "id": "LEIT-000013",
-      "estacao_id": "EST-005-pelourinho",
+      "estacao_id": "EST-005-capital",
       "timestamp": "2026-09-15T08:28:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -841,7 +841,7 @@
     },
     {
       "id": "LEIT-000014",
-      "estacao_id": "EST-005-pelourinho",
+      "estacao_id": "EST-005-capital",
       "timestamp": "2026-09-16T08:52:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -893,7 +893,7 @@
     },
     {
       "id": "LEIT-000015",
-      "estacao_id": "EST-005-pelourinho",
+      "estacao_id": "EST-005-capital",
       "timestamp": "2026-09-17T08:08:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -945,7 +945,7 @@
     },
     {
       "id": "LEIT-000016",
-      "estacao_id": "EST-006-santo-amaro",
+      "estacao_id": "EST-006-zona-sul",
       "timestamp": "2026-09-15T08:24:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -997,7 +997,7 @@
     },
     {
       "id": "LEIT-000017",
-      "estacao_id": "EST-006-santo-amaro",
+      "estacao_id": "EST-006-zona-sul",
       "timestamp": "2026-09-16T08:15:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -1049,7 +1049,7 @@
     },
     {
       "id": "LEIT-000018",
-      "estacao_id": "EST-006-santo-amaro",
+      "estacao_id": "EST-006-zona-sul",
       "timestamp": "2026-09-17T08:30:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -1101,7 +1101,7 @@
     },
     {
       "id": "LEIT-000019",
-      "estacao_id": "EST-007-barra-da-tijuca",
+      "estacao_id": "EST-007-barra",
       "timestamp": "2026-09-15T08:10:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -1153,7 +1153,7 @@
     },
     {
       "id": "LEIT-000020",
-      "estacao_id": "EST-007-barra-da-tijuca",
+      "estacao_id": "EST-007-barra",
       "timestamp": "2026-09-16T08:40:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -1205,7 +1205,7 @@
     },
     {
       "id": "LEIT-000021",
-      "estacao_id": "EST-007-barra-da-tijuca",
+      "estacao_id": "EST-007-barra",
       "timestamp": "2026-09-17T08:20:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -1257,7 +1257,7 @@
     },
     {
       "id": "LEIT-000022",
-      "estacao_id": "EST-008-lagoa-da-pampulha",
+      "estacao_id": "EST-008-pampulha",
       "timestamp": "2026-09-15T08:50:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -1309,7 +1309,7 @@
     },
     {
       "id": "LEIT-000023",
-      "estacao_id": "EST-008-lagoa-da-pampulha",
+      "estacao_id": "EST-008-pampulha",
       "timestamp": "2026-09-16T08:12:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -1361,7 +1361,7 @@
     },
     {
       "id": "LEIT-000024",
-      "estacao_id": "EST-008-lagoa-da-pampulha",
+      "estacao_id": "EST-008-pampulha",
       "timestamp": "2026-09-17T08:45:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -1726,7 +1726,8 @@
   ],
   "previsao_meteorologica": [
     {
-      "estacao_id": "EST-001-ibirapuera",
+      "cidade": "São Paulo",
+      "estado": "SP",
       "data": "18/09/2026",
       "dia_semana": "Sex",
       "temperatura": {
@@ -1765,7 +1766,8 @@
       }
     },
     {
-      "estacao_id": "EST-001-ibirapuera",
+      "cidade": "São Paulo",
+      "estado": "SP",
       "data": "19/09/2026",
       "dia_semana": "Sáb",
       "temperatura": {
@@ -1804,7 +1806,8 @@
       }
     },
     {
-      "estacao_id": "EST-001-ibirapuera",
+      "cidade": "São Paulo",
+      "estado": "SP",
       "data": "20/09/2026",
       "dia_semana": "Dom",
       "temperatura": {
@@ -1843,7 +1846,8 @@
       }
     },
     {
-      "estacao_id": "EST-001-ibirapuera",
+      "cidade": "São Paulo",
+      "estado": "SP",
       "data": "21/09/2026",
       "dia_semana": "Seg",
       "temperatura": {
@@ -1882,7 +1886,8 @@
       }
     },
     {
-      "estacao_id": "EST-001-ibirapuera",
+      "cidade": "São Paulo",
+      "estado": "SP",
       "data": "22/09/2026",
       "dia_semana": "Ter",
       "temperatura": {
@@ -1921,7 +1926,8 @@
       }
     },
     {
-      "estacao_id": "EST-002-copacabana",
+      "cidade": "Rio de Janeiro",
+      "estado": "RJ",
       "data": "18/09/2026",
       "dia_semana": "Sex",
       "temperatura": {
@@ -1960,7 +1966,8 @@
       }
     },
     {
-      "estacao_id": "EST-002-copacabana",
+      "cidade": "Rio de Janeiro",
+      "estado": "RJ",
       "data": "19/09/2026",
       "dia_semana": "Sáb",
       "temperatura": {
@@ -1999,7 +2006,8 @@
       }
     },
     {
-      "estacao_id": "EST-002-copacabana",
+      "cidade": "Rio de Janeiro",
+      "estado": "RJ",
       "data": "20/09/2026",
       "dia_semana": "Dom",
       "temperatura": {
@@ -2038,7 +2046,8 @@
       }
     },
     {
-      "estacao_id": "EST-002-copacabana",
+      "cidade": "Rio de Janeiro",
+      "estado": "RJ",
       "data": "21/09/2026",
       "dia_semana": "Seg",
       "temperatura": {
@@ -2077,7 +2086,8 @@
       }
     },
     {
-      "estacao_id": "EST-002-copacabana",
+      "cidade": "Rio de Janeiro",
+      "estado": "RJ",
       "data": "22/09/2026",
       "dia_semana": "Ter",
       "temperatura": {
@@ -2116,7 +2126,8 @@
       }
     },
     {
-      "estacao_id": "EST-003-savassi",
+      "cidade": "Belo Horizonte",
+      "estado": "MG",
       "data": "18/09/2026",
       "dia_semana": "Sex",
       "temperatura": {
@@ -2155,7 +2166,8 @@
       }
     },
     {
-      "estacao_id": "EST-003-savassi",
+      "cidade": "Belo Horizonte",
+      "estado": "MG",
       "data": "19/09/2026",
       "dia_semana": "Sáb",
       "temperatura": {
@@ -2194,7 +2206,8 @@
       }
     },
     {
-      "estacao_id": "EST-003-savassi",
+      "cidade": "Belo Horizonte",
+      "estado": "MG",
       "data": "20/09/2026",
       "dia_semana": "Dom",
       "temperatura": {
@@ -2233,7 +2246,8 @@
       }
     },
     {
-      "estacao_id": "EST-003-savassi",
+      "cidade": "Belo Horizonte",
+      "estado": "MG",
       "data": "21/09/2026",
       "dia_semana": "Seg",
       "temperatura": {
@@ -2272,7 +2286,8 @@
       }
     },
     {
-      "estacao_id": "EST-003-savassi",
+      "cidade": "Belo Horizonte",
+      "estado": "MG",
       "data": "22/09/2026",
       "dia_semana": "Ter",
       "temperatura": {
@@ -2311,7 +2326,8 @@
       }
     },
     {
-      "estacao_id": "EST-004-jardim-botanico",
+      "cidade": "Curitiba",
+      "estado": "PR",
       "data": "18/09/2026",
       "dia_semana": "Sex",
       "temperatura": {
@@ -2350,7 +2366,8 @@
       }
     },
     {
-      "estacao_id": "EST-004-jardim-botanico",
+      "cidade": "Curitiba",
+      "estado": "PR",
       "data": "19/09/2026",
       "dia_semana": "Sáb",
       "temperatura": {
@@ -2389,7 +2406,8 @@
       }
     },
     {
-      "estacao_id": "EST-004-jardim-botanico",
+      "cidade": "Curitiba",
+      "estado": "PR",
       "data": "20/09/2026",
       "dia_semana": "Dom",
       "temperatura": {
@@ -2428,7 +2446,8 @@
       }
     },
     {
-      "estacao_id": "EST-004-jardim-botanico",
+      "cidade": "Curitiba",
+      "estado": "PR",
       "data": "21/09/2026",
       "dia_semana": "Seg",
       "temperatura": {
@@ -2467,7 +2486,8 @@
       }
     },
     {
-      "estacao_id": "EST-004-jardim-botanico",
+      "cidade": "Curitiba",
+      "estado": "PR",
       "data": "22/09/2026",
       "dia_semana": "Ter",
       "temperatura": {
@@ -2506,7 +2526,8 @@
       }
     },
     {
-      "estacao_id": "EST-005-pelourinho",
+      "cidade": "Salvador",
+      "estado": "BA",
       "data": "18/09/2026",
       "dia_semana": "Sex",
       "temperatura": {
@@ -2545,7 +2566,8 @@
       }
     },
     {
-      "estacao_id": "EST-005-pelourinho",
+      "cidade": "Salvador",
+      "estado": "BA",
       "data": "19/09/2026",
       "dia_semana": "Sáb",
       "temperatura": {
@@ -2584,7 +2606,8 @@
       }
     },
     {
-      "estacao_id": "EST-005-pelourinho",
+      "cidade": "Salvador",
+      "estado": "BA",
       "data": "20/09/2026",
       "dia_semana": "Dom",
       "temperatura": {
@@ -2623,7 +2646,8 @@
       }
     },
     {
-      "estacao_id": "EST-005-pelourinho",
+      "cidade": "Salvador",
+      "estado": "BA",
       "data": "21/09/2026",
       "dia_semana": "Seg",
       "temperatura": {
@@ -2662,7 +2686,8 @@
       }
     },
     {
-      "estacao_id": "EST-005-pelourinho",
+      "cidade": "Salvador",
+      "estado": "BA",
       "data": "22/09/2026",
       "dia_semana": "Ter",
       "temperatura": {
@@ -2685,981 +2710,6 @@
       },
       "vento": {
         "velocidade": 14.5,
-        "unidade": "km/h"
-      },
-      "condicao": {
-        "description": "Ensolarado",
-        "condition": "clear_day"
-      },
-      "sol": {
-        "nascer": "05:32",
-        "por": "17:32"
-      },
-      "lua": {
-        "fase": "waning_gibbous",
-        "descricao": "Lua minguante convexa"
-      }
-    },
-    {
-      "estacao_id": "EST-006-santo-amaro",
-      "data": "18/09/2026",
-      "dia_semana": "Sex",
-      "temperatura": {
-        "minima": 16,
-        "maxima": 24,
-        "unidade": "°C"
-      },
-      "umidade": {
-        "valor": 73,
-        "unidade": "%"
-      },
-      "nebulosidade": {
-        "valor": 35,
-        "unidade": "%"
-      },
-      "chuva": {
-        "quantidade": 0,
-        "unidade": "mm",
-        "probabilidade": 10
-      },
-      "vento": {
-        "velocidade": 9.9,
-        "unidade": "km/h"
-      },
-      "condicao": {
-        "description": "Parcialmente nublado",
-        "condition": "cloudly_day"
-      },
-      "sol": {
-        "nascer": "06:05",
-        "por": "17:54"
-      },
-      "lua": {
-        "fase": "first_quarter",
-        "descricao": "Quarto crescente"
-      }
-    },
-    {
-      "estacao_id": "EST-006-santo-amaro",
-      "data": "19/09/2026",
-      "dia_semana": "Sáb",
-      "temperatura": {
-        "minima": 18,
-        "maxima": 25,
-        "unidade": "°C"
-      },
-      "umidade": {
-        "valor": 68,
-        "unidade": "%"
-      },
-      "nebulosidade": {
-        "valor": 25,
-        "unidade": "%"
-      },
-      "chuva": {
-        "quantidade": 0,
-        "unidade": "mm",
-        "probabilidade": 0
-      },
-      "vento": {
-        "velocidade": 6.7,
-        "unidade": "km/h"
-      },
-      "condicao": {
-        "description": "Ensolarado",
-        "condition": "clear_day"
-      },
-      "sol": {
-        "nascer": "06:04",
-        "por": "17:55"
-      },
-      "lua": {
-        "fase": "waxing_gibbous",
-        "descricao": "Lua crescente convexa"
-      }
-    },
-    {
-      "estacao_id": "EST-006-santo-amaro",
-      "data": "20/09/2026",
-      "dia_semana": "Dom",
-      "temperatura": {
-        "minima": 17,
-        "maxima": 25,
-        "unidade": "°C"
-      },
-      "umidade": {
-        "valor": 83,
-        "unidade": "%"
-      },
-      "nebulosidade": {
-        "valor": 80,
-        "unidade": "%"
-      },
-      "chuva": {
-        "quantidade": 4.6,
-        "unidade": "mm",
-        "probabilidade": 70
-      },
-      "vento": {
-        "velocidade": 11.2,
-        "unidade": "km/h"
-      },
-      "condicao": {
-        "description": "Chuvas esparsas",
-        "condition": "rain"
-      },
-      "sol": {
-        "nascer": "06:03",
-        "por": "17:55"
-      },
-      "lua": {
-        "fase": "full",
-        "descricao": "Lua cheia"
-      }
-    },
-    {
-      "estacao_id": "EST-006-santo-amaro",
-      "data": "21/09/2026",
-      "dia_semana": "Seg",
-      "temperatura": {
-        "minima": 16,
-        "maxima": 21,
-        "unidade": "°C"
-      },
-      "umidade": {
-        "valor": 82,
-        "unidade": "%"
-      },
-      "nebulosidade": {
-        "valor": 85,
-        "unidade": "%"
-      },
-      "chuva": {
-        "quantidade": 12.0,
-        "unidade": "mm",
-        "probabilidade": 90
-      },
-      "vento": {
-        "velocidade": 15.3,
-        "unidade": "km/h"
-      },
-      "condicao": {
-        "description": "Chuvas esparsas",
-        "condition": "rain"
-      },
-      "sol": {
-        "nascer": "06:02",
-        "por": "17:56"
-      },
-      "lua": {
-        "fase": "waning_gibbous",
-        "descricao": "Lua minguante convexa"
-      }
-    },
-    {
-      "estacao_id": "EST-006-santo-amaro",
-      "data": "22/09/2026",
-      "dia_semana": "Ter",
-      "temperatura": {
-        "minima": 16,
-        "maxima": 24,
-        "unidade": "°C"
-      },
-      "umidade": {
-        "valor": 69,
-        "unidade": "%"
-      },
-      "nebulosidade": {
-        "valor": 45,
-        "unidade": "%"
-      },
-      "chuva": {
-        "quantidade": 1.6,
-        "unidade": "mm",
-        "probabilidade": 30
-      },
-      "vento": {
-        "velocidade": 11.4,
-        "unidade": "km/h"
-      },
-      "condicao": {
-        "description": "Parcialmente nublado",
-        "condition": "cloudly_day"
-      },
-      "sol": {
-        "nascer": "06:01",
-        "por": "17:56"
-      },
-      "lua": {
-        "fase": "waning_gibbous",
-        "descricao": "Lua minguante convexa"
-      }
-    },
-    {
-      "estacao_id": "EST-007-barra-da-tijuca",
-      "data": "18/09/2026",
-      "dia_semana": "Sex",
-      "temperatura": {
-        "minima": 19,
-        "maxima": 29,
-        "unidade": "°C"
-      },
-      "umidade": {
-        "valor": 65,
-        "unidade": "%"
-      },
-      "nebulosidade": {
-        "valor": 30,
-        "unidade": "%"
-      },
-      "chuva": {
-        "quantidade": 0.4,
-        "unidade": "mm",
-        "probabilidade": 10
-      },
-      "vento": {
-        "velocidade": 11.5,
-        "unidade": "km/h"
-      },
-      "condicao": {
-        "description": "Ensolarado",
-        "condition": "clear_day"
-      },
-      "sol": {
-        "nascer": "05:58",
-        "por": "17:48"
-      },
-      "lua": {
-        "fase": "first_quarter",
-        "descricao": "Quarto crescente"
-      }
-    },
-    {
-      "estacao_id": "EST-007-barra-da-tijuca",
-      "data": "19/09/2026",
-      "dia_semana": "Sáb",
-      "temperatura": {
-        "minima": 22,
-        "maxima": 30,
-        "unidade": "°C"
-      },
-      "umidade": {
-        "valor": 68,
-        "unidade": "%"
-      },
-      "nebulosidade": {
-        "valor": 35,
-        "unidade": "%"
-      },
-      "chuva": {
-        "quantidade": 0,
-        "unidade": "mm",
-        "probabilidade": 20
-      },
-      "vento": {
-        "velocidade": 11.4,
-        "unidade": "km/h"
-      },
-      "condicao": {
-        "description": "Ensolarado",
-        "condition": "clear_day"
-      },
-      "sol": {
-        "nascer": "05:57",
-        "por": "17:48"
-      },
-      "lua": {
-        "fase": "waxing_gibbous",
-        "descricao": "Lua crescente convexa"
-      }
-    },
-    {
-      "estacao_id": "EST-007-barra-da-tijuca",
-      "data": "20/09/2026",
-      "dia_semana": "Dom",
-      "temperatura": {
-        "minima": 23,
-        "maxima": 28,
-        "unidade": "°C"
-      },
-      "umidade": {
-        "valor": 81,
-        "unidade": "%"
-      },
-      "nebulosidade": {
-        "valor": 55,
-        "unidade": "%"
-      },
-      "chuva": {
-        "quantidade": 3.9,
-        "unidade": "mm",
-        "probabilidade": 40
-      },
-      "vento": {
-        "velocidade": 14.6,
-        "unidade": "km/h"
-      },
-      "condicao": {
-        "description": "Parcialmente nublado",
-        "condition": "cloudly_day"
-      },
-      "sol": {
-        "nascer": "05:56",
-        "por": "17:49"
-      },
-      "lua": {
-        "fase": "full",
-        "descricao": "Lua cheia"
-      }
-    },
-    {
-      "estacao_id": "EST-007-barra-da-tijuca",
-      "data": "21/09/2026",
-      "dia_semana": "Seg",
-      "temperatura": {
-        "minima": 21,
-        "maxima": 26,
-        "unidade": "°C"
-      },
-      "umidade": {
-        "valor": 82,
-        "unidade": "%"
-      },
-      "nebulosidade": {
-        "valor": 95,
-        "unidade": "%"
-      },
-      "chuva": {
-        "quantidade": 14.4,
-        "unidade": "mm",
-        "probabilidade": 70
-      },
-      "vento": {
-        "velocidade": 16.8,
-        "unidade": "km/h"
-      },
-      "condicao": {
-        "description": "Tempestade",
-        "condition": "storm"
-      },
-      "sol": {
-        "nascer": "05:55",
-        "por": "17:49"
-      },
-      "lua": {
-        "fase": "waning_gibbous",
-        "descricao": "Lua minguante convexa"
-      }
-    },
-    {
-      "estacao_id": "EST-007-barra-da-tijuca",
-      "data": "22/09/2026",
-      "dia_semana": "Ter",
-      "temperatura": {
-        "minima": 20,
-        "maxima": 26,
-        "unidade": "°C"
-      },
-      "umidade": {
-        "valor": 78,
-        "unidade": "%"
-      },
-      "nebulosidade": {
-        "valor": 50,
-        "unidade": "%"
-      },
-      "chuva": {
-        "quantidade": 1.8,
-        "unidade": "mm",
-        "probabilidade": 30
-      },
-      "vento": {
-        "velocidade": 14.1,
-        "unidade": "km/h"
-      },
-      "condicao": {
-        "description": "Parcialmente nublado",
-        "condition": "cloudly_day"
-      },
-      "sol": {
-        "nascer": "05:54",
-        "por": "17:50"
-      },
-      "lua": {
-        "fase": "waning_gibbous",
-        "descricao": "Lua minguante convexa"
-      }
-    },
-    {
-      "estacao_id": "EST-008-lagoa-da-pampulha",
-      "data": "18/09/2026",
-      "dia_semana": "Sex",
-      "temperatura": {
-        "minima": 15,
-        "maxima": 25,
-        "unidade": "°C"
-      },
-      "umidade": {
-        "valor": 57,
-        "unidade": "%"
-      },
-      "nebulosidade": {
-        "valor": 25,
-        "unidade": "%"
-      },
-      "chuva": {
-        "quantidade": 0.1,
-        "unidade": "mm",
-        "probabilidade": 10
-      },
-      "vento": {
-        "velocidade": 8.5,
-        "unidade": "km/h"
-      },
-      "condicao": {
-        "description": "Ensolarado",
-        "condition": "clear_day"
-      },
-      "sol": {
-        "nascer": "05:59",
-        "por": "17:52"
-      },
-      "lua": {
-        "fase": "first_quarter",
-        "descricao": "Quarto crescente"
-      }
-    },
-    {
-      "estacao_id": "EST-008-lagoa-da-pampulha",
-      "data": "19/09/2026",
-      "dia_semana": "Sáb",
-      "temperatura": {
-        "minima": 17,
-        "maxima": 27,
-        "unidade": "°C"
-      },
-      "umidade": {
-        "valor": 61,
-        "unidade": "%"
-      },
-      "nebulosidade": {
-        "valor": 30,
-        "unidade": "%"
-      },
-      "chuva": {
-        "quantidade": 0,
-        "unidade": "mm",
-        "probabilidade": 0
-      },
-      "vento": {
-        "velocidade": 9.4,
-        "unidade": "km/h"
-      },
-      "condicao": {
-        "description": "Ensolarado",
-        "condition": "clear_day"
-      },
-      "sol": {
-        "nascer": "05:58",
-        "por": "17:52"
-      },
-      "lua": {
-        "fase": "waxing_gibbous",
-        "descricao": "Lua crescente convexa"
-      }
-    },
-    {
-      "estacao_id": "EST-008-lagoa-da-pampulha",
-      "data": "20/09/2026",
-      "dia_semana": "Dom",
-      "temperatura": {
-        "minima": 18,
-        "maxima": 26,
-        "unidade": "°C"
-      },
-      "umidade": {
-        "valor": 73,
-        "unidade": "%"
-      },
-      "nebulosidade": {
-        "valor": 55,
-        "unidade": "%"
-      },
-      "chuva": {
-        "quantidade": 0.7,
-        "unidade": "mm",
-        "probabilidade": 30
-      },
-      "vento": {
-        "velocidade": 8.9,
-        "unidade": "km/h"
-      },
-      "condicao": {
-        "description": "Parcialmente nublado",
-        "condition": "cloudly_day"
-      },
-      "sol": {
-        "nascer": "05:57",
-        "por": "17:53"
-      },
-      "lua": {
-        "fase": "full",
-        "descricao": "Lua cheia"
-      }
-    },
-    {
-      "estacao_id": "EST-008-lagoa-da-pampulha",
-      "data": "21/09/2026",
-      "dia_semana": "Seg",
-      "temperatura": {
-        "minima": 16,
-        "maxima": 22,
-        "unidade": "°C"
-      },
-      "umidade": {
-        "valor": 83,
-        "unidade": "%"
-      },
-      "nebulosidade": {
-        "valor": 80,
-        "unidade": "%"
-      },
-      "chuva": {
-        "quantidade": 8.9,
-        "unidade": "mm",
-        "probabilidade": 80
-      },
-      "vento": {
-        "velocidade": 10.4,
-        "unidade": "km/h"
-      },
-      "condicao": {
-        "description": "Chuvas esparsas",
-        "condition": "rain"
-      },
-      "sol": {
-        "nascer": "05:56",
-        "por": "17:53"
-      },
-      "lua": {
-        "fase": "waning_gibbous",
-        "descricao": "Lua minguante convexa"
-      }
-    },
-    {
-      "estacao_id": "EST-008-lagoa-da-pampulha",
-      "data": "22/09/2026",
-      "dia_semana": "Ter",
-      "temperatura": {
-        "minima": 15,
-        "maxima": 24,
-        "unidade": "°C"
-      },
-      "umidade": {
-        "valor": 65,
-        "unidade": "%"
-      },
-      "nebulosidade": {
-        "valor": 45,
-        "unidade": "%"
-      },
-      "chuva": {
-        "quantidade": 0,
-        "unidade": "mm",
-        "probabilidade": 10
-      },
-      "vento": {
-        "velocidade": 8.6,
-        "unidade": "km/h"
-      },
-      "condicao": {
-        "description": "Parcialmente nublado",
-        "condition": "cloudly_day"
-      },
-      "sol": {
-        "nascer": "05:55",
-        "por": "17:53"
-      },
-      "lua": {
-        "fase": "waning_gibbous",
-        "descricao": "Lua minguante convexa"
-      }
-    },
-    {
-      "estacao_id": "EST-009-batel",
-      "data": "18/09/2026",
-      "dia_semana": "Sex",
-      "temperatura": {
-        "minima": 13,
-        "maxima": 18,
-        "unidade": "°C"
-      },
-      "umidade": {
-        "valor": 81,
-        "unidade": "%"
-      },
-      "nebulosidade": {
-        "valor": 60,
-        "unidade": "%"
-      },
-      "chuva": {
-        "quantidade": 2.0,
-        "unidade": "mm",
-        "probabilidade": 30
-      },
-      "vento": {
-        "velocidade": 12.7,
-        "unidade": "km/h"
-      },
-      "condicao": {
-        "description": "Nublado",
-        "condition": "cloud"
-      },
-      "sol": {
-        "nascer": "06:12",
-        "por": "18:02"
-      },
-      "lua": {
-        "fase": "first_quarter",
-        "descricao": "Quarto crescente"
-      }
-    },
-    {
-      "estacao_id": "EST-009-batel",
-      "data": "19/09/2026",
-      "dia_semana": "Sáb",
-      "temperatura": {
-        "minima": 10,
-        "maxima": 17,
-        "unidade": "°C"
-      },
-      "umidade": {
-        "valor": 82,
-        "unidade": "%"
-      },
-      "nebulosidade": {
-        "valor": 85,
-        "unidade": "%"
-      },
-      "chuva": {
-        "quantidade": 10.1,
-        "unidade": "mm",
-        "probabilidade": 70
-      },
-      "vento": {
-        "velocidade": 16.0,
-        "unidade": "km/h"
-      },
-      "condicao": {
-        "description": "Chuvas esparsas",
-        "condition": "rain"
-      },
-      "sol": {
-        "nascer": "06:11",
-        "por": "18:02"
-      },
-      "lua": {
-        "fase": "waxing_gibbous",
-        "descricao": "Lua crescente convexa"
-      }
-    },
-    {
-      "estacao_id": "EST-009-batel",
-      "data": "20/09/2026",
-      "dia_semana": "Dom",
-      "temperatura": {
-        "minima": 10,
-        "maxima": 16,
-        "unidade": "°C"
-      },
-      "umidade": {
-        "valor": 85,
-        "unidade": "%"
-      },
-      "nebulosidade": {
-        "valor": 80,
-        "unidade": "%"
-      },
-      "chuva": {
-        "quantidade": 5.7,
-        "unidade": "mm",
-        "probabilidade": 70
-      },
-      "vento": {
-        "velocidade": 13.8,
-        "unidade": "km/h"
-      },
-      "condicao": {
-        "description": "Chuvas esparsas",
-        "condition": "rain"
-      },
-      "sol": {
-        "nascer": "06:10",
-        "por": "18:03"
-      },
-      "lua": {
-        "fase": "full",
-        "descricao": "Lua cheia"
-      }
-    },
-    {
-      "estacao_id": "EST-009-batel",
-      "data": "21/09/2026",
-      "dia_semana": "Seg",
-      "temperatura": {
-        "minima": 13,
-        "maxima": 21,
-        "unidade": "°C"
-      },
-      "umidade": {
-        "valor": 78,
-        "unidade": "%"
-      },
-      "nebulosidade": {
-        "valor": 55,
-        "unidade": "%"
-      },
-      "chuva": {
-        "quantidade": 0.5,
-        "unidade": "mm",
-        "probabilidade": 20
-      },
-      "vento": {
-        "velocidade": 10.5,
-        "unidade": "km/h"
-      },
-      "condicao": {
-        "description": "Parcialmente nublado",
-        "condition": "cloudly_day"
-      },
-      "sol": {
-        "nascer": "06:09",
-        "por": "18:03"
-      },
-      "lua": {
-        "fase": "waning_gibbous",
-        "descricao": "Lua minguante convexa"
-      }
-    },
-    {
-      "estacao_id": "EST-009-batel",
-      "data": "22/09/2026",
-      "dia_semana": "Ter",
-      "temperatura": {
-        "minima": 14,
-        "maxima": 22,
-        "unidade": "°C"
-      },
-      "umidade": {
-        "valor": 65,
-        "unidade": "%"
-      },
-      "nebulosidade": {
-        "valor": 25,
-        "unidade": "%"
-      },
-      "chuva": {
-        "quantidade": 0,
-        "unidade": "mm",
-        "probabilidade": 10
-      },
-      "vento": {
-        "velocidade": 7.1,
-        "unidade": "km/h"
-      },
-      "condicao": {
-        "description": "Ensolarado",
-        "condition": "clear_day"
-      },
-      "sol": {
-        "nascer": "06:08",
-        "por": "18:04"
-      },
-      "lua": {
-        "fase": "waning_gibbous",
-        "descricao": "Lua minguante convexa"
-      }
-    },
-    {
-      "estacao_id": "EST-010-itapua",
-      "data": "18/09/2026",
-      "dia_semana": "Sex",
-      "temperatura": {
-        "minima": 23,
-        "maxima": 28,
-        "unidade": "°C"
-      },
-      "umidade": {
-        "valor": 75,
-        "unidade": "%"
-      },
-      "nebulosidade": {
-        "valor": 25,
-        "unidade": "%"
-      },
-      "chuva": {
-        "quantidade": 0.8,
-        "unidade": "mm",
-        "probabilidade": 0
-      },
-      "vento": {
-        "velocidade": 13.0,
-        "unidade": "km/h"
-      },
-      "condicao": {
-        "description": "Ensolarado",
-        "condition": "clear_day"
-      },
-      "sol": {
-        "nascer": "05:35",
-        "por": "17:32"
-      },
-      "lua": {
-        "fase": "first_quarter",
-        "descricao": "Quarto crescente"
-      }
-    },
-    {
-      "estacao_id": "EST-010-itapua",
-      "data": "19/09/2026",
-      "dia_semana": "Sáb",
-      "temperatura": {
-        "minima": 23,
-        "maxima": 30,
-        "unidade": "°C"
-      },
-      "umidade": {
-        "valor": 73,
-        "unidade": "%"
-      },
-      "nebulosidade": {
-        "valor": 30,
-        "unidade": "%"
-      },
-      "chuva": {
-        "quantidade": 0.6,
-        "unidade": "mm",
-        "probabilidade": 20
-      },
-      "vento": {
-        "velocidade": 15.5,
-        "unidade": "km/h"
-      },
-      "condicao": {
-        "description": "Parcialmente nublado",
-        "condition": "cloudly_day"
-      },
-      "sol": {
-        "nascer": "05:34",
-        "por": "17:32"
-      },
-      "lua": {
-        "fase": "waxing_gibbous",
-        "descricao": "Lua crescente convexa"
-      }
-    },
-    {
-      "estacao_id": "EST-010-itapua",
-      "data": "20/09/2026",
-      "dia_semana": "Dom",
-      "temperatura": {
-        "minima": 25,
-        "maxima": 28,
-        "unidade": "°C"
-      },
-      "umidade": {
-        "valor": 72,
-        "unidade": "%"
-      },
-      "nebulosidade": {
-        "valor": 55,
-        "unidade": "%"
-      },
-      "chuva": {
-        "quantidade": 2.9,
-        "unidade": "mm",
-        "probabilidade": 40
-      },
-      "vento": {
-        "velocidade": 17.0,
-        "unidade": "km/h"
-      },
-      "condicao": {
-        "description": "Chuvas esparsas",
-        "condition": "rain"
-      },
-      "sol": {
-        "nascer": "05:34",
-        "por": "17:32"
-      },
-      "lua": {
-        "fase": "full",
-        "descricao": "Lua cheia"
-      }
-    },
-    {
-      "estacao_id": "EST-010-itapua",
-      "data": "21/09/2026",
-      "dia_semana": "Seg",
-      "temperatura": {
-        "minima": 23,
-        "maxima": 28,
-        "unidade": "°C"
-      },
-      "umidade": {
-        "valor": 81,
-        "unidade": "%"
-      },
-      "nebulosidade": {
-        "valor": 55,
-        "unidade": "%"
-      },
-      "chuva": {
-        "quantidade": 3.5,
-        "unidade": "mm",
-        "probabilidade": 60
-      },
-      "vento": {
-        "velocidade": 16.2,
-        "unidade": "km/h"
-      },
-      "condicao": {
-        "description": "Chuvas esparsas",
-        "condition": "rain"
-      },
-      "sol": {
-        "nascer": "05:33",
-        "por": "17:32"
-      },
-      "lua": {
-        "fase": "waning_gibbous",
-        "descricao": "Lua minguante convexa"
-      }
-    },
-    {
-      "estacao_id": "EST-010-itapua",
-      "data": "22/09/2026",
-      "dia_semana": "Ter",
-      "temperatura": {
-        "minima": 23,
-        "maxima": 30,
-        "unidade": "°C"
-      },
-      "umidade": {
-        "valor": 74,
-        "unidade": "%"
-      },
-      "nebulosidade": {
-        "valor": 20,
-        "unidade": "%"
-      },
-      "chuva": {
-        "quantidade": 0,
-        "unidade": "mm",
-        "probabilidade": 0
-      },
-      "vento": {
-        "velocidade": 14.6,
         "unidade": "km/h"
       },
       "condicao": {
