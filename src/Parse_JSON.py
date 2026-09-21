@@ -11,23 +11,39 @@ import pandas as pd
 DIR_PARSE = Path(__file__).resolve().parent
 
 # 5. Diretório para o arquivo JSON e obter o arquivo JSON
-DIR_JSON = DIR_PARSE / "src" / "ingestion" / "monitoramento_ambiental.json"
+DIR_JSON = DIR_PARSE / "ingestion" / "monitoramento_ambiental.json"
 
 # 6. Agora vamos abrir e ler o arquivo
-with open(DIR_JSON, "r", encoding="utf-8") as file:
-    parse_json = json.load(file)
+with open(DIR_JSON, "r", encoding="utf-8") as arquivo: 
+    parse_json = json.load(arquivo)
 
 # 7. Converter o JSON em um DataFrame do pandas e renomear as colunas para um formato mais amigável
 df_estacoes = pd.json_normalize(parse_json['estacoes'])[
         ["id", 
-     "localizacao.city_name", 
-     "localizacao.estado"
+        "localizacao.city_name", 
+        "localizacao.woeid"
         ]
     ].rename(columns={
-    "id": "estacao_id",
-    "localizacao.estado": "Estado",
-    "localizacao.city_name": "Cidade"
-})
+                    "id": "estacao_id",
+                    "localizacao.woeid": "estado_id",
+                    "localizacao.city_name": "cidade"}
+)
+
+# 7.1. Criar um DataFrame de estado
+
+df_estado = df_estacoes[['estado_id']].drop_duplicates().reset_index(drop=True)
+
+df_estado['estado'] = df_estado['estado_id']
+
+# 7.2 Criar um DataFrame de cidade
+
+df_cidade = df_estacoes[['cidade', 'estado_id']].drop_duplicates().reset_index(drop=True)
+
+# 7.3 Criar um DataFrame de estação
+
+df_estacoes_merge = df_estacoes[['estacao_id','cidade']].drop_duplicates().reset_index(drop=True)
+
+
 # 8. Converter o objeto JSON de leituras em um DataFrame do pandas
 df_leituras = pd.json_normalize(parse_json['leituras'])
 
@@ -43,8 +59,8 @@ tabela_agua = df_leituras[
     [
         "id",
         "estacao_id",
-        "Cidade",
-        "Estado",
+        "cidade",
+        "estado_id",
         "data",
         "qualidade_agua.temperatura.valor",
         "qualidade_agua.ph.valor",
@@ -65,8 +81,8 @@ tabela_meteorologica = df_leituras[
     [
         "id",
         "estacao_id",
-        "Cidade",
-        "Estado",
+        "cidade",
+        "estado_id",
         "data",
         "dados_meteorologicos.temperatura_ar.valor",
         "dados_meteorologicos.umidade.valor",
@@ -85,8 +101,12 @@ tabela_meteorologica = df_leituras[
 
 # 14. Exibir as primeiras linhas de cada tabela para verificação, sendo as seguintes tabelas, Estação, Água e Meteorológica
 print("\n", 30*"=","TABELAS TRATADAS",30*"=", "\n")
-print(f"Tabela de Estações: ")
-print(df_estacoes.head())
+print(f"\nTabela de Estações/Merge : ")
+print(df_estacoes_merge.head())
+print(f"\nTabela de Estados: ")
+print(df_estado.head())
+print(f"\nTabela de Cidades: ")
+print(df_cidade.head())
 print(f"\nTabela de Água: ")
 print(tabela_agua.head())
 print(f"\nTabela Meteorológica: ")
