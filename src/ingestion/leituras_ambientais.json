@@ -1,0 +1,695 @@
+{
+  "date": "2026-09-15",
+  "leituras_ambientais": [
+    {
+      "id": "LEIT-AMB-000001",
+      "estacao_id": "AMB-001-capital",
+      "timestamp": "2026-09-15T08:24:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 21.3,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.2,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 6.8,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 145.2,
+          "unidade": "µS/cm"
+        }
+      }
+    },
+    {
+      "id": "LEIT-AMB-000002",
+      "estacao_id": "AMB-001-capital",
+      "timestamp": "2026-09-16T08:15:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 20.8,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.1,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 7.0,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 150.0,
+          "unidade": "µS/cm"
+        }
+      }
+    },
+    {
+      "id": "LEIT-AMB-000003",
+      "estacao_id": "AMB-001-capital",
+      "timestamp": "2026-09-17T08:30:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 22.1,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.3,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 6.5,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 142.0,
+          "unidade": "µS/cm"
+        }
+      }
+    },
+    {
+      "id": "LEIT-AMB-000004",
+      "estacao_id": "AMB-002-capital",
+      "timestamp": "2026-09-15T08:10:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 24.5,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.6,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 6.2,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 180.5,
+          "unidade": "µS/cm"
+        }
+      }
+    },
+    {
+      "id": "LEIT-AMB-000005",
+      "estacao_id": "AMB-002-capital",
+      "timestamp": "2026-09-16T08:40:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 24.8,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.5,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 6.1,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 182.0,
+          "unidade": "µS/cm"
+        }
+      }
+    },
+    {
+      "id": "LEIT-AMB-000006",
+      "estacao_id": "AMB-002-capital",
+      "timestamp": "2026-09-17T08:20:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 23.9,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.4,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 6.4,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 178.0,
+          "unidade": "µS/cm"
+        }
+      }
+    },
+    {
+      "id": "LEIT-AMB-000007",
+      "estacao_id": "AMB-003-capital",
+      "timestamp": "2026-09-15T08:50:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 19.5,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.0,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 7.4,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 130.0,
+          "unidade": "µS/cm"
+        }
+      }
+    },
+    {
+      "id": "LEIT-AMB-000008",
+      "estacao_id": "AMB-003-capital",
+      "timestamp": "2026-09-16T08:12:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 20.1,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.2,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 7.2,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 128.0,
+          "unidade": "µS/cm"
+        }
+      }
+    },
+    {
+      "id": "LEIT-AMB-000009",
+      "estacao_id": "AMB-003-capital",
+      "timestamp": "2026-09-17T08:45:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 20.5,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.1,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 7.1,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 132.0,
+          "unidade": "µS/cm"
+        }
+      }
+    },
+    {
+      "id": "LEIT-AMB-000010",
+      "estacao_id": "AMB-004-capital",
+      "timestamp": "2026-09-15T08:05:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 16.2,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 6.9,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 7.8,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 110.0,
+          "unidade": "µS/cm"
+        }
+      }
+    },
+    {
+      "id": "LEIT-AMB-000011",
+      "estacao_id": "AMB-004-capital",
+      "timestamp": "2026-09-16T08:35:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 15.8,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 6.8,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 8.0,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 108.0,
+          "unidade": "µS/cm"
+        }
+      }
+    },
+    {
+      "id": "LEIT-AMB-000012",
+      "estacao_id": "AMB-004-capital",
+      "timestamp": "2026-09-17T08:18:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 17.0,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.0,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 7.6,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 112.0,
+          "unidade": "µS/cm"
+        }
+      }
+    },
+    {
+      "id": "LEIT-AMB-000013",
+      "estacao_id": "AMB-005-capital",
+      "timestamp": "2026-09-15T08:28:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 26.2,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.7,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 6.0,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 195.0,
+          "unidade": "µS/cm"
+        }
+      }
+    },
+    {
+      "id": "LEIT-AMB-000014",
+      "estacao_id": "AMB-005-capital",
+      "timestamp": "2026-09-16T08:52:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 26.5,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.8,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 5.9,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 198.0,
+          "unidade": "µS/cm"
+        }
+      }
+    },
+    {
+      "id": "LEIT-AMB-000015",
+      "estacao_id": "AMB-005-capital",
+      "timestamp": "2026-09-17T08:08:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 25.9,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.6,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 6.1,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 192.0,
+          "unidade": "µS/cm"
+        }
+      }
+    },
+    {
+      "id": "LEIT-AMB-000016",
+      "estacao_id": "AMB-006-zona-sul",
+      "timestamp": "2026-09-15T08:24:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 21.5,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.3,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 7.1,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 149.6,
+          "unidade": "µS/cm"
+        }
+      }
+    },
+    {
+      "id": "LEIT-AMB-000017",
+      "estacao_id": "AMB-006-zona-sul",
+      "timestamp": "2026-09-16T08:15:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 21.0,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.1,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 7.1,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 151.4,
+          "unidade": "µS/cm"
+        }
+      }
+    },
+    {
+      "id": "LEIT-AMB-000018",
+      "estacao_id": "AMB-006-zona-sul",
+      "timestamp": "2026-09-17T08:30:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 22.0,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.3,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 6.5,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 145.8,
+          "unidade": "µS/cm"
+        }
+      }
+    },
+    {
+      "id": "LEIT-AMB-000019",
+      "estacao_id": "AMB-007-barra",
+      "timestamp": "2026-09-15T08:10:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 24.5,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.6,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 6.3,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 185.3,
+          "unidade": "µS/cm"
+        }
+      }
+    },
+    {
+      "id": "LEIT-AMB-000020",
+      "estacao_id": "AMB-007-barra",
+      "timestamp": "2026-09-16T08:40:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 24.6,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.6,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 6.4,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 181.7,
+          "unidade": "µS/cm"
+        }
+      }
+    },
+    {
+      "id": "LEIT-AMB-000021",
+      "estacao_id": "AMB-007-barra",
+      "timestamp": "2026-09-17T08:20:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 23.4,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.3,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 6.6,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 179.5,
+          "unidade": "µS/cm"
+        }
+      }
+    },
+    {
+      "id": "LEIT-AMB-000022",
+      "estacao_id": "AMB-008-pampulha",
+      "timestamp": "2026-09-15T08:50:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 19.3,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 6.9,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 7.2,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 126.0,
+          "unidade": "µS/cm"
+        }
+      }
+    },
+    {
+      "id": "LEIT-AMB-000023",
+      "estacao_id": "AMB-008-pampulha",
+      "timestamp": "2026-09-16T08:12:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 20.0,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.2,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 7.3,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 127.4,
+          "unidade": "µS/cm"
+        }
+      }
+    },
+    {
+      "id": "LEIT-AMB-000024",
+      "estacao_id": "AMB-008-pampulha",
+      "timestamp": "2026-09-17T08:45:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 21.0,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.2,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 7.0,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 129.3,
+          "unidade": "µS/cm"
+        }
+      }
+    },
+    {
+      "id": "LEIT-AMB-000025",
+      "estacao_id": "AMB-009-batel",
+      "timestamp": "2026-09-15T08:05:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 16.6,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 6.8,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 8.0,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 107.9,
+          "unidade": "µS/cm"
+        }
+      }
+    },
+    {
+      "id": "LEIT-AMB-000026",
+      "estacao_id": "AMB-009-batel",
+      "timestamp": "2026-09-16T08:35:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 15.9,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 6.7,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 8.0,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 108.2,
+          "unidade": "µS/cm"
+        }
+      }
+    },
+    {
+      "id": "LEIT-AMB-000027",
+      "estacao_id": "AMB-009-batel",
+      "timestamp": "2026-09-17T08:18:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 16.9,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.1,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 7.7,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 116.5,
+          "unidade": "µS/cm"
+        }
+      }
+    },
+    {
+      "id": "LEIT-AMB-000028",
+      "estacao_id": "AMB-010-itapua",
+      "timestamp": "2026-09-15T08:28:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 26.0,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.7,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 5.8,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 191.9,
+          "unidade": "µS/cm"
+        }
+      }
+    },
+    {
+      "id": "LEIT-AMB-000029",
+      "estacao_id": "AMB-010-itapua",
+      "timestamp": "2026-09-16T08:52:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 26.0,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.7,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 5.9,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 196.9,
+          "unidade": "µS/cm"
+        }
+      }
+    },
+    {
+      "id": "LEIT-AMB-000030",
+      "estacao_id": "AMB-010-itapua",
+      "timestamp": "2026-09-17T08:08:00-03:00",
+      "qualidade_agua": {
+        "temperatura": {
+          "valor": 26.1,
+          "unidade": "°C"
+        },
+        "ph": {
+          "valor": 7.7,
+          "unidade": "pH"
+        },
+        "oxigenio_dissolvido": {
+          "valor": 6.3,
+          "unidade": "mg/L"
+        },
+        "condutividade": {
+          "valor": 186.1,
+          "unidade": "µS/cm"
+        }
+      }
+    }
+  ]
+}
