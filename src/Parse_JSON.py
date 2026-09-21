@@ -21,11 +21,11 @@ with open(DIR_JSON, "r", encoding="utf-8") as arquivo:
 df_estacoes = pd.json_normalize(parse_json['estacoes'])[
         ["id", 
         "localizacao.city_name", 
-        "localizacao.estado"
+        "localizacao.woeid"
         ]
     ].rename(columns={
                     "id": "estacao_id",
-                    "localizacao.estado": "estado_id",
+                    "localizacao.woeid": "estado_id",
                     "localizacao.city_name": "cidade"}
 )
 

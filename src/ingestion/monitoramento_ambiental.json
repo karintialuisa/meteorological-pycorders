@@ -2,8 +2,8 @@
   "date": "2026-09-15",
   "estacoes": [
     {
-      "id": "EST-001-capital",
-      "nome": "Estação São Paulo Centro",
+      "id": "EST-001-ibirapuera",
+      "nome": "Estação São Paulo Ibirapuera",
       "tipo": "monitoramento_ambiental",
       "status": "ativa",
       "localizacao": {
@@ -14,12 +14,12 @@
         "longitude": -46.6333,
         "timezone": "-03:00"
       },
-      "descricao": "Estação destinada ao monitoramento da qualidade da água e das condições meteorológicas em São Paulo.",
+      "descricao": "Estação destinada ao monitoramento da qualidade da água e das condições meteorológicas na região do Ibirapuera, em São Paulo.",
       "data_instalacao": "2026-01-15"
     },
     {
-      "id": "EST-002-capital",
-      "nome": "Estação Rio de Janeiro Centro",
+      "id": "EST-002-copacabana",
+      "nome": "Estação Rio de Janeiro Copacabana",
       "tipo": "monitoramento_ambiental",
       "status": "ativa",
       "localizacao": {
@@ -30,12 +30,12 @@
         "longitude": -43.1729,
         "timezone": "-03:00"
       },
-      "descricao": "Estação destinada ao monitoramento da qualidade da água e das condições meteorológicas no Rio de Janeiro.",
+      "descricao": "Estação destinada ao monitoramento da qualidade da água e das condições meteorológicas em Copacabana, no Rio de Janeiro.",
       "data_instalacao": "2026-01-15"
     },
     {
-      "id": "EST-003-capital",
-      "nome": "Estação Belo Horizonte Centro",
+      "id": "EST-003-savassi",
+      "nome": "Estação Belo Horizonte Savassi",
       "tipo": "monitoramento_ambiental",
       "status": "ativa",
       "localizacao": {
@@ -46,12 +46,12 @@
         "longitude": -43.9345,
         "timezone": "-03:00"
       },
-      "descricao": "Estação destinada ao monitoramento da qualidade da água e das condições meteorológicas em Belo Horizonte.",
+      "descricao": "Estação destinada ao monitoramento da qualidade da água e das condições meteorológicas na região da Savassi, em Belo Horizonte.",
       "data_instalacao": "2026-01-15"
     },
     {
-      "id": "EST-004-capital",
-      "nome": "Estação Curitiba Centro",
+      "id": "EST-004-jardim-botanico",
+      "nome": "Estação Curitiba Jardim Botânico",
       "tipo": "monitoramento_ambiental",
       "status": "ativa",
       "localizacao": {
@@ -62,12 +62,12 @@
         "longitude": -49.2733,
         "timezone": "-03:00"
       },
-      "descricao": "Estação destinada ao monitoramento da qualidade da água e das condições meteorológicas em Curitiba.",
+      "descricao": "Estação destinada ao monitoramento da qualidade da água e das condições meteorológicas na região do Jardim Botânico, em Curitiba.",
       "data_instalacao": "2026-01-15"
     },
     {
-      "id": "EST-005-capital",
-      "nome": "Estação Salvador Centro",
+      "id": "EST-005-pelourinho",
+      "nome": "Estação Salvador Pelourinho",
       "tipo": "monitoramento_ambiental",
       "status": "ativa",
       "localizacao": {
@@ -78,12 +78,12 @@
         "longitude": -38.5014,
         "timezone": "-03:00"
       },
-      "descricao": "Estação destinada ao monitoramento da qualidade da água e das condições meteorológicas em Salvador.",
+      "descricao": "Estação destinada ao monitoramento da qualidade da água e das condições meteorológicas na região do Pelourinho, em Salvador.",
       "data_instalacao": "2026-01-15"
     },
     {
-      "id": "EST-006-zona-sul",
-      "nome": "Estação São Paulo Sul",
+      "id": "EST-006-santo-amaro",
+      "nome": "Estação São Paulo Santo Amaro",
       "tipo": "monitoramento_ambiental",
       "status": "ativa",
       "localizacao": {
@@ -94,12 +94,12 @@
         "longitude": -46.6033,
         "timezone": "-03:00"
       },
-      "descricao": "Estação adicional destinada ao monitoramento da qualidade da água e das condições meteorológicas em São Paulo.",
+      "descricao": "Estação adicional destinada ao monitoramento da qualidade da água e das condições meteorológicas em Santo Amaro, São Paulo.",
       "data_instalacao": "2026-03-10"
     },
     {
-      "id": "EST-007-barra",
-      "nome": "Estação Rio de Janeiro Barra",
+      "id": "EST-007-barra-da-tijuca",
+      "nome": "Estação Rio de Janeiro Barra da Tijuca",
       "tipo": "monitoramento_ambiental",
       "status": "ativa",
       "localizacao": {
@@ -110,12 +110,12 @@
         "longitude": -43.3529,
         "timezone": "-03:00"
       },
-      "descricao": "Estação adicional destinada ao monitoramento da qualidade da água e das condições meteorológicas em Rio de Janeiro.",
+      "descricao": "Estação adicional destinada ao monitoramento da qualidade da água e das condições meteorológicas na Barra da Tijuca, no Rio de Janeiro.",
       "data_instalacao": "2026-03-10"
     },
     {
-      "id": "EST-008-pampulha",
-      "nome": "Estação Belo Horizonte Pampulha",
+      "id": "EST-008-lagoa-da-pampulha",
+      "nome": "Estação Belo Horizonte Lagoa da Pampulha",
       "tipo": "monitoramento_ambiental",
       "status": "ativa",
       "localizacao": {
@@ -126,7 +126,7 @@
         "longitude": -43.9145,
         "timezone": "-03:00"
       },
-      "descricao": "Estação adicional destinada ao monitoramento da qualidade da água e das condições meteorológicas em Belo Horizonte.",
+      "descricao": "Estação adicional destinada ao monitoramento da qualidade da água e das condições meteorológicas na Lagoa da Pampulha, em Belo Horizonte.",
       "data_instalacao": "2026-03-10"
     },
     {
@@ -142,7 +142,7 @@
         "longitude": -49.2933,
         "timezone": "-03:00"
       },
-      "descricao": "Estação adicional destinada ao monitoramento da qualidade da água e das condições meteorológicas em Curitiba.",
+      "descricao": "Estação adicional destinada ao monitoramento da qualidade da água e das condições meteorológicas no Batel, em Curitiba.",
       "data_instalacao": "2026-03-10"
     },
     {
@@ -158,14 +158,14 @@
         "longitude": -38.3714,
         "timezone": "-03:00"
       },
-      "descricao": "Estação adicional destinada ao monitoramento da qualidade da água e das condições meteorológicas em Salvador.",
+      "descricao": "Estação adicional destinada ao monitoramento da qualidade da água e das condições meteorológicas em Itapuã, Salvador.",
       "data_instalacao": "2026-03-10"
     }
   ],
   "leituras": [
     {
       "id": "LEIT-000001",
-      "estacao_id": "EST-001-capital",
+      "estacao_id": "EST-001-ibirapuera",
       "timestamp": "2026-09-15T08:24:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -217,7 +217,7 @@
     },
     {
       "id": "LEIT-000002",
-      "estacao_id": "EST-001-capital",
+      "estacao_id": "EST-001-ibirapuera",
       "timestamp": "2026-09-16T08:15:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -269,7 +269,7 @@
     },
     {
       "id": "LEIT-000003",
-      "estacao_id": "EST-001-capital",
+      "estacao_id": "EST-001-ibirapuera",
       "timestamp": "2026-09-17T08:30:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -321,7 +321,7 @@
     },
     {
       "id": "LEIT-000004",
-      "estacao_id": "EST-002-capital",
+      "estacao_id": "EST-002-copacabana",
       "timestamp": "2026-09-15T08:10:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -373,7 +373,7 @@
     },
     {
       "id": "LEIT-000005",
-      "estacao_id": "EST-002-capital",
+      "estacao_id": "EST-002-copacabana",
       "timestamp": "2026-09-16T08:40:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -425,7 +425,7 @@
     },
     {
       "id": "LEIT-000006",
-      "estacao_id": "EST-002-capital",
+      "estacao_id": "EST-002-copacabana",
       "timestamp": "2026-09-17T08:20:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -477,7 +477,7 @@
     },
     {
       "id": "LEIT-000007",
-      "estacao_id": "EST-003-capital",
+      "estacao_id": "EST-003-savassi",
       "timestamp": "2026-09-15T08:50:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -529,7 +529,7 @@
     },
     {
       "id": "LEIT-000008",
-      "estacao_id": "EST-003-capital",
+      "estacao_id": "EST-003-savassi",
       "timestamp": "2026-09-16T08:12:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -581,7 +581,7 @@
     },
     {
       "id": "LEIT-000009",
-      "estacao_id": "EST-003-capital",
+      "estacao_id": "EST-003-savassi",
       "timestamp": "2026-09-17T08:45:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -633,7 +633,7 @@
     },
     {
       "id": "LEIT-000010",
-      "estacao_id": "EST-004-capital",
+      "estacao_id": "EST-004-jardim-botanico",
       "timestamp": "2026-09-15T08:05:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -685,7 +685,7 @@
     },
     {
       "id": "LEIT-000011",
-      "estacao_id": "EST-004-capital",
+      "estacao_id": "EST-004-jardim-botanico",
       "timestamp": "2026-09-16T08:35:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -737,7 +737,7 @@
     },
     {
       "id": "LEIT-000012",
-      "estacao_id": "EST-004-capital",
+      "estacao_id": "EST-004-jardim-botanico",
       "timestamp": "2026-09-17T08:18:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -789,7 +789,7 @@
     },
     {
       "id": "LEIT-000013",
-      "estacao_id": "EST-005-capital",
+      "estacao_id": "EST-005-pelourinho",
       "timestamp": "2026-09-15T08:28:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -841,7 +841,7 @@
     },
     {
       "id": "LEIT-000014",
-      "estacao_id": "EST-005-capital",
+      "estacao_id": "EST-005-pelourinho",
       "timestamp": "2026-09-16T08:52:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -893,7 +893,7 @@
     },
     {
       "id": "LEIT-000015",
-      "estacao_id": "EST-005-capital",
+      "estacao_id": "EST-005-pelourinho",
       "timestamp": "2026-09-17T08:08:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -945,7 +945,7 @@
     },
     {
       "id": "LEIT-000016",
-      "estacao_id": "EST-006-zona-sul",
+      "estacao_id": "EST-006-santo-amaro",
       "timestamp": "2026-09-15T08:24:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -997,7 +997,7 @@
     },
     {
       "id": "LEIT-000017",
-      "estacao_id": "EST-006-zona-sul",
+      "estacao_id": "EST-006-santo-amaro",
       "timestamp": "2026-09-16T08:15:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -1049,7 +1049,7 @@
     },
     {
       "id": "LEIT-000018",
-      "estacao_id": "EST-006-zona-sul",
+      "estacao_id": "EST-006-santo-amaro",
       "timestamp": "2026-09-17T08:30:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -1101,7 +1101,7 @@
     },
     {
       "id": "LEIT-000019",
-      "estacao_id": "EST-007-barra",
+      "estacao_id": "EST-007-barra-da-tijuca",
       "timestamp": "2026-09-15T08:10:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -1153,7 +1153,7 @@
     },
     {
       "id": "LEIT-000020",
-      "estacao_id": "EST-007-barra",
+      "estacao_id": "EST-007-barra-da-tijuca",
       "timestamp": "2026-09-16T08:40:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -1205,7 +1205,7 @@
     },
     {
       "id": "LEIT-000021",
-      "estacao_id": "EST-007-barra",
+      "estacao_id": "EST-007-barra-da-tijuca",
       "timestamp": "2026-09-17T08:20:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -1257,7 +1257,7 @@
     },
     {
       "id": "LEIT-000022",
-      "estacao_id": "EST-008-pampulha",
+      "estacao_id": "EST-008-lagoa-da-pampulha",
       "timestamp": "2026-09-15T08:50:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -1309,7 +1309,7 @@
     },
     {
       "id": "LEIT-000023",
-      "estacao_id": "EST-008-pampulha",
+      "estacao_id": "EST-008-lagoa-da-pampulha",
       "timestamp": "2026-09-16T08:12:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -1361,7 +1361,7 @@
     },
     {
       "id": "LEIT-000024",
-      "estacao_id": "EST-008-pampulha",
+      "estacao_id": "EST-008-lagoa-da-pampulha",
       "timestamp": "2026-09-17T08:45:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -1726,7 +1726,7 @@
   ],
   "previsao_meteorologica": [
     {
-      "estacao_id": "EST-001-capital",
+      "estacao_id": "EST-001-ibirapuera",
       "data": "18/09/2026",
       "dia_semana": "Sex",
       "temperatura": {
@@ -1765,7 +1765,7 @@
       }
     },
     {
-      "estacao_id": "EST-001-capital",
+      "estacao_id": "EST-001-ibirapuera",
       "data": "19/09/2026",
       "dia_semana": "Sáb",
       "temperatura": {
@@ -1804,7 +1804,7 @@
       }
     },
     {
-      "estacao_id": "EST-001-capital",
+      "estacao_id": "EST-001-ibirapuera",
       "data": "20/09/2026",
       "dia_semana": "Dom",
       "temperatura": {
@@ -1843,7 +1843,7 @@
       }
     },
     {
-      "estacao_id": "EST-001-capital",
+      "estacao_id": "EST-001-ibirapuera",
       "data": "21/09/2026",
       "dia_semana": "Seg",
       "temperatura": {
@@ -1882,7 +1882,7 @@
       }
     },
     {
-      "estacao_id": "EST-001-capital",
+      "estacao_id": "EST-001-ibirapuera",
       "data": "22/09/2026",
       "dia_semana": "Ter",
       "temperatura": {
@@ -1921,7 +1921,7 @@
       }
     },
     {
-      "estacao_id": "EST-002-capital",
+      "estacao_id": "EST-002-copacabana",
       "data": "18/09/2026",
       "dia_semana": "Sex",
       "temperatura": {
@@ -1960,7 +1960,7 @@
       }
     },
     {
-      "estacao_id": "EST-002-capital",
+      "estacao_id": "EST-002-copacabana",
       "data": "19/09/2026",
       "dia_semana": "Sáb",
       "temperatura": {
@@ -1999,7 +1999,7 @@
       }
     },
     {
-      "estacao_id": "EST-002-capital",
+      "estacao_id": "EST-002-copacabana",
       "data": "20/09/2026",
       "dia_semana": "Dom",
       "temperatura": {
@@ -2038,7 +2038,7 @@
       }
     },
     {
-      "estacao_id": "EST-002-capital",
+      "estacao_id": "EST-002-copacabana",
       "data": "21/09/2026",
       "dia_semana": "Seg",
       "temperatura": {
@@ -2077,7 +2077,7 @@
       }
     },
     {
-      "estacao_id": "EST-002-capital",
+      "estacao_id": "EST-002-copacabana",
       "data": "22/09/2026",
       "dia_semana": "Ter",
       "temperatura": {
@@ -2116,7 +2116,7 @@
       }
     },
     {
-      "estacao_id": "EST-003-capital",
+      "estacao_id": "EST-003-savassi",
       "data": "18/09/2026",
       "dia_semana": "Sex",
       "temperatura": {
@@ -2155,7 +2155,7 @@
       }
     },
     {
-      "estacao_id": "EST-003-capital",
+      "estacao_id": "EST-003-savassi",
       "data": "19/09/2026",
       "dia_semana": "Sáb",
       "temperatura": {
@@ -2194,7 +2194,7 @@
       }
     },
     {
-      "estacao_id": "EST-003-capital",
+      "estacao_id": "EST-003-savassi",
       "data": "20/09/2026",
       "dia_semana": "Dom",
       "temperatura": {
@@ -2233,7 +2233,7 @@
       }
     },
     {
-      "estacao_id": "EST-003-capital",
+      "estacao_id": "EST-003-savassi",
       "data": "21/09/2026",
       "dia_semana": "Seg",
       "temperatura": {
@@ -2272,7 +2272,7 @@
       }
     },
     {
-      "estacao_id": "EST-003-capital",
+      "estacao_id": "EST-003-savassi",
       "data": "22/09/2026",
       "dia_semana": "Ter",
       "temperatura": {
@@ -2311,7 +2311,7 @@
       }
     },
     {
-      "estacao_id": "EST-004-capital",
+      "estacao_id": "EST-004-jardim-botanico",
       "data": "18/09/2026",
       "dia_semana": "Sex",
       "temperatura": {
@@ -2350,7 +2350,7 @@
       }
     },
     {
-      "estacao_id": "EST-004-capital",
+      "estacao_id": "EST-004-jardim-botanico",
       "data": "19/09/2026",
       "dia_semana": "Sáb",
       "temperatura": {
@@ -2389,7 +2389,7 @@
       }
     },
     {
-      "estacao_id": "EST-004-capital",
+      "estacao_id": "EST-004-jardim-botanico",
       "data": "20/09/2026",
       "dia_semana": "Dom",
       "temperatura": {
@@ -2428,7 +2428,7 @@
       }
     },
     {
-      "estacao_id": "EST-004-capital",
+      "estacao_id": "EST-004-jardim-botanico",
       "data": "21/09/2026",
       "dia_semana": "Seg",
       "temperatura": {
@@ -2467,7 +2467,7 @@
       }
     },
     {
-      "estacao_id": "EST-004-capital",
+      "estacao_id": "EST-004-jardim-botanico",
       "data": "22/09/2026",
       "dia_semana": "Ter",
       "temperatura": {
@@ -2506,7 +2506,7 @@
       }
     },
     {
-      "estacao_id": "EST-005-capital",
+      "estacao_id": "EST-005-pelourinho",
       "data": "18/09/2026",
       "dia_semana": "Sex",
       "temperatura": {
@@ -2545,7 +2545,7 @@
       }
     },
     {
-      "estacao_id": "EST-005-capital",
+      "estacao_id": "EST-005-pelourinho",
       "data": "19/09/2026",
       "dia_semana": "Sáb",
       "temperatura": {
@@ -2584,7 +2584,7 @@
       }
     },
     {
-      "estacao_id": "EST-005-capital",
+      "estacao_id": "EST-005-pelourinho",
       "data": "20/09/2026",
       "dia_semana": "Dom",
       "temperatura": {
@@ -2623,7 +2623,7 @@
       }
     },
     {
-      "estacao_id": "EST-005-capital",
+      "estacao_id": "EST-005-pelourinho",
       "data": "21/09/2026",
       "dia_semana": "Seg",
       "temperatura": {
@@ -2662,7 +2662,7 @@
       }
     },
     {
-      "estacao_id": "EST-005-capital",
+      "estacao_id": "EST-005-pelourinho",
       "data": "22/09/2026",
       "dia_semana": "Ter",
       "temperatura": {
@@ -2701,7 +2701,7 @@
       }
     },
     {
-      "estacao_id": "EST-006-zona-sul",
+      "estacao_id": "EST-006-santo-amaro",
       "data": "18/09/2026",
       "dia_semana": "Sex",
       "temperatura": {
@@ -2740,7 +2740,7 @@
       }
     },
     {
-      "estacao_id": "EST-006-zona-sul",
+      "estacao_id": "EST-006-santo-amaro",
       "data": "19/09/2026",
       "dia_semana": "Sáb",
       "temperatura": {
@@ -2779,7 +2779,7 @@
       }
     },
     {
-      "estacao_id": "EST-006-zona-sul",
+      "estacao_id": "EST-006-santo-amaro",
       "data": "20/09/2026",
       "dia_semana": "Dom",
       "temperatura": {
@@ -2818,7 +2818,7 @@
       }
     },
     {
-      "estacao_id": "EST-006-zona-sul",
+      "estacao_id": "EST-006-santo-amaro",
       "data": "21/09/2026",
       "dia_semana": "Seg",
       "temperatura": {
@@ -2857,7 +2857,7 @@
       }
     },
     {
-      "estacao_id": "EST-006-zona-sul",
+      "estacao_id": "EST-006-santo-amaro",
       "data": "22/09/2026",
       "dia_semana": "Ter",
       "temperatura": {
@@ -2896,7 +2896,7 @@
       }
     },
     {
-      "estacao_id": "EST-007-barra",
+      "estacao_id": "EST-007-barra-da-tijuca",
       "data": "18/09/2026",
       "dia_semana": "Sex",
       "temperatura": {
@@ -2935,7 +2935,7 @@
       }
     },
     {
-      "estacao_id": "EST-007-barra",
+      "estacao_id": "EST-007-barra-da-tijuca",
       "data": "19/09/2026",
       "dia_semana": "Sáb",
       "temperatura": {
@@ -2974,7 +2974,7 @@
       }
     },
     {
-      "estacao_id": "EST-007-barra",
+      "estacao_id": "EST-007-barra-da-tijuca",
       "data": "20/09/2026",
       "dia_semana": "Dom",
       "temperatura": {
@@ -3013,7 +3013,7 @@
       }
     },
     {
-      "estacao_id": "EST-007-barra",
+      "estacao_id": "EST-007-barra-da-tijuca",
       "data": "21/09/2026",
       "dia_semana": "Seg",
       "temperatura": {
@@ -3052,7 +3052,7 @@
       }
     },
     {
-      "estacao_id": "EST-007-barra",
+      "estacao_id": "EST-007-barra-da-tijuca",
       "data": "22/09/2026",
       "dia_semana": "Ter",
       "temperatura": {
@@ -3091,7 +3091,7 @@
       }
     },
     {
-      "estacao_id": "EST-008-pampulha",
+      "estacao_id": "EST-008-lagoa-da-pampulha",
       "data": "18/09/2026",
       "dia_semana": "Sex",
       "temperatura": {
@@ -3130,7 +3130,7 @@
       }
     },
     {
-      "estacao_id": "EST-008-pampulha",
+      "estacao_id": "EST-008-lagoa-da-pampulha",
       "data": "19/09/2026",
       "dia_semana": "Sáb",
       "temperatura": {
@@ -3169,7 +3169,7 @@
       }
     },
     {
-      "estacao_id": "EST-008-pampulha",
+      "estacao_id": "EST-008-lagoa-da-pampulha",
       "data": "20/09/2026",
       "dia_semana": "Dom",
       "temperatura": {
@@ -3208,7 +3208,7 @@
       }
     },
     {
-      "estacao_id": "EST-008-pampulha",
+      "estacao_id": "EST-008-lagoa-da-pampulha",
       "data": "21/09/2026",
       "dia_semana": "Seg",
       "temperatura": {
@@ -3247,7 +3247,7 @@
       }
     },
     {
-      "estacao_id": "EST-008-pampulha",
+      "estacao_id": "EST-008-lagoa-da-pampulha",
       "data": "22/09/2026",
       "dia_semana": "Ter",
       "temperatura": {
