@@ -21,10 +21,10 @@ CREATE TABLE cidade (
     estado_id       BIGINT NOT NULL,
     codigo_ibge     INTEGER UNIQUE,
     nome            VARCHAR(150) NOT NULL,
-    woeid           BIGINT,
-    latitude        NUMERIC(9,6),
-    longitude       NUMERIC(9,6),
-    timezone        VARCHAR(50),
+    woeid           BIGINT  NOT NULL,
+    latitude        NUMERIC(9,6) NOT NULL,
+    longitude       NUMERIC(9,6) NOT NULL,
+    timezone        VARCHAR(50) NOT NULL,
     criado_em       DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 
     CONSTRAINT fk_cidade_estado
