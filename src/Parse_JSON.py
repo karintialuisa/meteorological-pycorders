@@ -51,6 +51,7 @@ def tabela_leituras_agua() -> pd.DataFrame:
             "estacao_id",
             "cidade",
             "estado",
+            "timestamp",
             "qualidade_agua.temperatura.valor",
             "qualidade_agua.ph.valor",
             "qualidade_agua.oxigenio_dissolvido.valor",
@@ -62,11 +63,13 @@ def tabela_leituras_agua() -> pd.DataFrame:
             "qualidade_agua.ph.valor": "pH",
             "qualidade_agua.oxigenio_dissolvido.valor": "Oxigenio_Dissolvido_mg/L",
             "qualidade_agua.condutividade.valor": "Condutividade_µS/cm",
-            
+            "timestamp": "Horário"
 
     })
-    
-    # Retorna o DataFrame com a coluna Data em formato de data.
+
+    df_leituras_agua["Horário"] = pd.to_datetime(df_leituras_agua["Horário"]).dt.time
+
+    # Retorna o DataFrame com a coluna Horário em formato de hora.
     return print(df_leituras_agua)
 
 # Executa a função para mostrar uma amostra da tabela de água.
