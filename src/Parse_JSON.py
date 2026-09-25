@@ -15,12 +15,12 @@ logger = logging.getLogger("Parse_JSON_Log")
 # Obtém a pasta onde este arquivo Python está salvo.
 DIR_PARSE = Path(__file__).resolve().parent
 # Monta o caminho completo do JSON que contém as leituras de qualidade da água.
-DIR_JSON_AMBIENTAIS = DIR_PARSE / "ingestion" / "leituras" / "leituras_ambientais.json"
+DIR_JSON_AMBIENTAIS = DIR_PARSE / "ingestion" / "leituras" /"leituras_ambientais.json"
 # Monta o caminho completo do JSON que contém as leituras meteorológicas.
 DIR_JSON_METEOROLOGICAS = DIR_PARSE / "ingestion" / "leituras" / "leituras_meteorologicas.json"
 
 # Criação da função para ler arquivos JSON ambientais
-def ler_json_ambientais(path_json: Path) -> dict:
+def ler_json(path_json: Path) -> dict:
     # Recebe o caminho do arquivo ambiental, abre-o em modo leitura e interpreta seu conteúdo como JSON.
     with open(path_json, "r", encoding="utf-8") as arquivo: 
         parse_json_ambientais = json.load(arquivo)
@@ -38,7 +38,7 @@ def ler_json_meteorologicas(path_json: Path) -> dict:
 
 
 # Carrega os dois arquivos JSON uma única vez para que seus dados possam ser reutilizados.
-parse_json_ambientais = ler_json_ambientais(DIR_JSON_AMBIENTAIS)
+parse_json_ambientais = ler_json(DIR_JSON_AMBIENTAIS)
 parse_json_meteorologicas = ler_json_meteorologicas(DIR_JSON_METEOROLOGICAS)
 
 

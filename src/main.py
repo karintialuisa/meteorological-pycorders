@@ -7,6 +7,12 @@ import pandas as pd
 # 4. Import logging para registro de mensagens de depuração e erro
 import logging
 
+from Parse_JSON import ler_json_ambientais
+
+
+
+
+
 # 5. Configuração da função do logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger("Parse_JSON_Log")
@@ -14,6 +20,7 @@ logger = logging.getLogger("Parse_JSON_Log")
 # 6. Obtenção do diretório do arquivo atual, por meio da constante DIR_PARSE e a função Path(__file__) e obter posteriormente o caminho para o arquivo JSON das leituras ambientais da qualidade da água.
 DIR_PARSE = Path(__file__).resolve().parent
 DIR_JSON_AMBIENTAIS = DIR_PARSE / "ingestion" / "leituras" / "leituras_ambientais.json"
+
 
 
 def ler_json(path_json: Path) -> dict:
@@ -46,6 +53,6 @@ def tabela_leituras_agua() -> pd.DataFrame:
             "qualidade_agua.condutividade.valor": "Condutividade",
 
     })
-    return print(df_leituras_agua)
+    return df_leituras_agua
 
 tabela_agua = tabela_leituras_agua()
