@@ -1,3 +1,5 @@
+USE monitoramento;
+GO
 DROP TABLE IF EXISTS estacao;   
 DROP TABLE IF EXISTS cidade;
 DROP TABLE IF EXISTS estado;
@@ -97,3 +99,6 @@ CREATE TABLE qualidade_agua (
         CHECK (condutividade IS NULL OR condutividade >= 0)
 );
 GO
+
+
+SELECT * FROM estado;

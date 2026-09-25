@@ -30,7 +30,7 @@ parse_estacao = ler_json(DIR_ESTACAO)
 # não incluída a coluna id por conta da remoção da duplicidade nos dados e o id será gerado automaticamente no banco de dados
 
 def tabela_localizacao() -> pd.DataFrame:
-
+    global df_estado
     df_estado = pd.json_normalize(parse_estado)[
             [
             "ibge", 
@@ -38,9 +38,7 @@ def tabela_localizacao() -> pd.DataFrame:
             "nome"
             ]
         ].rename(columns={                    
-                        "ibge": "codigo_ibge_estado",
-                        "sigla": "sigla_estado",
-                        "nome": "nome_estado"
+                        "ibge": "codigo_ibge"
                         })
 
     df_cidade = pd.json_normalize(parse_cidade)[
@@ -56,14 +54,14 @@ def tabela_localizacao() -> pd.DataFrame:
                         })
     
     # 8. [Tabela Estado] Criar um DataFrame de estado e remover duplicatas
-    df_estado = df_estado[['codigo_ibge_estado', 'sigla_estado', 'nome_estado']].drop_duplicates().reset_index(drop=True)
+    df_estado = df_estado[['codigo_ibge', 'sigla', 'nome']].drop_duplicates().reset_index(drop=True)
 
     # 9. [Tabela Cidade] Criar um DataFrame de cidade e remover duplicatas
-    df_cidade = df_cidade[['codigo_ibge_cidade', 'sigla_estado', 'nome_cidade']].drop_duplicates().reset_index(drop=True)
+    # df_cidade = df_cidade[['codigo_ibge_cidade', 'sigla_estado', 'nome_cidade']].drop_duplicates().reset_index(drop=True)
 
     # 10. [Tabela Estado, Tabela Cidade] Exibir os DataFrames resultantes para verificação e juntá-los com base no ID da estação
-    df_localizacao = df_cidade.merge(df_estado, on="sigla_estado")
-    return df_localizacao
+    # df_localizacao = df_cidade.merge(df_estado, left_on="sigla_estado", right_on="sigla")
+    return df_estado
 
 def tabela_estacao(df_localizacao: pd.DataFrame) -> pd.DataFrame:
     df_estacao = pd.json_normalize(parse_estacao['estacoes_ambientais'])[
@@ -109,4 +107,5 @@ def tabela_estacao(df_localizacao: pd.DataFrame) -> pd.DataFrame:
     print(df_estacao_localizacao)
     return df_estacao_localizacao
 
-tabela_estacao(tabela_localizacao())
+if __name__ == "__main__":
+    tabela_estacao(tabela_localizacao())
