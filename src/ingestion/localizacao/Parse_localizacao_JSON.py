@@ -11,16 +11,20 @@ import pandas as pd
 DIR_PARSE = Path(__file__).resolve().parent
 
 # 5. Diretório para o arquivo JSON de cidade e estado
-DIR_CIDADE = DIR_PARSE / "ingestion" / "municipio.json"
+DIR_CIDADE = DIR_PARSE / "municipio.json"
 
-DIR_ESTADO = DIR_PARSE / "ingestion" / "estado.json"
+DIR_ESTADO = DIR_PARSE / "estado.json"
 
-# 6. Abrir e ler o arquivo JSON de cidade
-with open(DIR_CIDADE, "r", encoding="utf-8") as arquivo: 
-    parse_cidade = json.load(arquivo)
+# 5. criar função e ler o arquivo JSON de cidade
 
-with open(DIR_ESTADO, "r", encoding="utf-8") as arquivo: 
-    parse_estado = json.load(arquivo)
+def ler_json(path_arquivo):
+    with open(path_arquivo, "r", encoding="utf-8") as arquivo:
+        conteudo = json.load(arquivo)
+    return conteudo
+ 
+parse_cidade = ler_json(DIR_CIDADE)
+
+parse_estado = ler_json(DIR_ESTADO)
 
 # 7. Converter o JSON em um DataFrame do pandas e renomear as colunas para um formato mais amigável
 df_estado = pd.json_normalize(parse_estado)[
@@ -55,9 +59,10 @@ df_estado = df_estado[['id_estado', 'codigo_ibge_estado', 'sigla_estado', 'nome_
 df_cidade = df_cidade[['id_cidade', 'codigo_ibge_cidade', 'sigla_estado', 'nome_cidade']].drop_duplicates().reset_index(drop=True)
 
 # 10. Exibir os DataFrames resultantes para verificação e juntá-los com base no ID da estação
-df_localizacao = df_cidade.merge(df_estado, on="sigla_estado", how="left")
+df_localizacao = df_cidade.merge(df_estado, on="sigla_estado")
 
-#df_estacoes_merge = df_estacoes[['estacao_id','cidade']].drop_duplicates().reset_index(drop=True)
+# 11. Remover as colunas de ID após a junção
+df_localizacao = df_localizacao.drop(columns=["id_estado","id_cidade"])
 
 print(f"\nTabela de Localização (Cidades e Estados) : ")
-print(df_localizacao.head())
+print(df_localizacao)
