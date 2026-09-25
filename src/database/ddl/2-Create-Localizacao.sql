@@ -44,7 +44,6 @@ GO
 
 CREATE TABLE estacao (
     id                  BIGINT IDENTITY(1,1) PRIMARY KEY,
-    codigo_externo      VARCHAR(100) NOT NULL UNIQUE,
     nome                VARCHAR(200) NOT NULL,
     tipo                VARCHAR(100) NOT NULL,
     status              BIT,
@@ -68,4 +67,33 @@ GO
 
 CREATE INDEX idx_estacao_status
     ON estacao (status);
+GO
+
+-- ============================================================
+-- ASSUNTO: LEITURA DA QUALIDADE DA ÁGUA
+-- ============================================================
+
+CREATE TABLE qualidade_agua (
+    id                      BIGINT IDENTITY(1,1) PRIMARY KEY,
+    id_estacao              BIGINT NOT NULL,
+    temperatura_agua        NUMERIC(8,3),
+    ph                      NUMERIC(5,3),
+    oxigenio                NUMERIC(10,3),
+    condutividade           NUMERIC(12,3),
+    criado_em               DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
+
+    CONSTRAINT fk_qualidade_estacao
+        FOREIGN KEY (id_estacao)
+        REFERENCES estacao(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT ck_qualidade_ph
+        CHECK (ph IS NULL OR ph BETWEEN 0 AND 14),
+
+    CONSTRAINT ck_qualidade_oxigenio
+        CHECK (oxigenio IS NULL OR oxigenio >= 0),
+
+    CONSTRAINT ck_qualidade_condutividade
+        CHECK (condutividade IS NULL OR condutividade >= 0)
+);
 GO
