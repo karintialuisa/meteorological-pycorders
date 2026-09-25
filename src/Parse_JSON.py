@@ -27,19 +27,10 @@ def ler_json(path_json: Path) -> dict:
     # Devolve os dados convertidos para estruturas Python, normalmente um dicionário.
     return parse_json_ambientais
 
-# Criação da função para ler arquivos JSON meteorológicos
-def ler_json_meteorologicas(path_json: Path) -> dict:
-    # Recebe o caminho do arquivo meteorológico e abre-o garantindo a leitura correta de caracteres especiais.
-    with open(path_json, "r", encoding="utf-8") as arquivo:
-        # Converte o conteúdo JSON em estruturas Python para permitir seu processamento.
-        parse_json_meteorologicas = json.load(arquivo)
-    # Retorna os dados meteorológicos carregados.
-    return parse_json_meteorologicas
-
 
 # Carrega os dois arquivos JSON uma única vez para que seus dados possam ser reutilizados.
 parse_json_ambientais = ler_json(DIR_JSON_AMBIENTAIS)
-parse_json_meteorologicas = ler_json_meteorologicas(DIR_JSON_METEOROLOGICAS)
+parse_json_meteorologicas = ler_json(DIR_JSON_METEOROLOGICAS)
 
 
 # Transforma as leituras ambientais em uma tabela organizada e com nomes de colunas mais fáceis de entender.
@@ -49,8 +40,6 @@ def tabela_leituras_agua() -> pd.DataFrame:
         [
             "id",
             "estacao_id",
-            "cidade",
-            "estado",
             "qualidade_agua.temperatura.valor",
             "qualidade_agua.ph.valor",
             "qualidade_agua.oxigenio_dissolvido.valor",
@@ -87,8 +76,6 @@ def tabela_leituras_meteorologicas() -> pd.DataFrame:
         [
             "id",
             "estacao_id",
-            "cidade",
-            "estado",
             "dados_meteorologicos.temperatura_ar.valor",
             "dados_meteorologicos.umidade.valor",
             "dados_meteorologicos.condicao.description",
@@ -121,6 +108,10 @@ def tabela_estado() -> pd.DataFrame:
             "estado",
         ]
     ].drop_duplicates().reset_index(drop=True)
+    df_estado = df_estado.rename(columns={
+        "estacao_id": "Estacao_ID",
+        "estado": "Estado"
+    })
 
     # Mostra uma amostra da tabela para facilitar a conferência dos dados.
     print("\n","Tabela de estado: \n", df_estado.head(), "\n")
@@ -141,6 +132,10 @@ def tabela_cidade() -> pd.DataFrame:
             
         ]
     ].drop_duplicates().reset_index(drop=True)
+    df_cidade = df_cidade.rename(columns={
+        "estacao_id": "Estacao_ID",
+        "cidade": "Cidade"
+    })
 
     # Exibe uma amostra para confirmar que a tabela foi criada corretamente.
     print("\n","Tabela de cidade: \n", df_cidade.head(), "\n")
