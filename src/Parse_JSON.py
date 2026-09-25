@@ -51,11 +51,11 @@ def tabela_leituras_agua() -> pd.DataFrame:
             "estacao_id",
             "cidade",
             "estado",
-            "timestamp",
             "qualidade_agua.temperatura.valor",
             "qualidade_agua.ph.valor",
             "qualidade_agua.oxigenio_dissolvido.valor",
             "qualidade_agua.condutividade.valor",
+            "timestamp",
         ]
     ].rename(columns={
             # Substitui os caminhos longos das propriedades JSON por nomes curtos e descritivos.
@@ -63,14 +63,17 @@ def tabela_leituras_agua() -> pd.DataFrame:
             "qualidade_agua.ph.valor": "pH",
             "qualidade_agua.oxigenio_dissolvido.valor": "Oxigenio_Dissolvido_mg/L",
             "qualidade_agua.condutividade.valor": "Condutividade_µS/cm",
-            "timestamp": "Horário"
+            "timestamp": "Data"
 
     })
+    # Aqui ta criando uma nova coluna "Horário" a partir da coluna "Data".
+    df_leituras_agua["Horário"] = pd.to_datetime(df_leituras_agua["Data"]).dt.time
 
-    df_leituras_agua["Horário"] = pd.to_datetime(df_leituras_agua["Horário"]).dt.time
-
+    # Agora a coluna "Data" contém apenas a data, enquanto "Horário" contém apenas a hora.
+    df_leituras_agua["Data"] = pd.to_datetime(df_leituras_agua["Data"]).dt.strftime("%d/%m/%Y")
+    
     # Retorna o DataFrame com a coluna Horário em formato de hora.
-    return print(df_leituras_agua)
+    return print(df_leituras_agua.head())
 
 # Executa a função para mostrar uma amostra da tabela de água.
 tabela_agua = tabela_leituras_agua()
