@@ -3,7 +3,7 @@
   "leituras_ambientais": [
     {
       "id": "LEIT-AMB-000001",
-      "estacao_id": "AMB-001",
+      "estacao_id": "AMB-001-capital",
       "timestamp": "2026-09-15T08:24:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -22,13 +22,11 @@
           "valor": 145.2,
           "unidade": "µS/cm"
         }
-      },
-      "cidade": "Porto Velho",
-      "estado": "Rondônia"
+      }
     },
     {
       "id": "LEIT-AMB-000002",
-      "estacao_id": "AMB-001",
+      "estacao_id": "AMB-001-capital",
       "timestamp": "2026-09-16T08:15:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -47,13 +45,11 @@
           "valor": 150.0,
           "unidade": "µS/cm"
         }
-      },
-      "cidade": "Porto Velho",
-      "estado": "Rondônia"
+      }
     },
     {
       "id": "LEIT-AMB-000003",
-      "estacao_id": "AMB-001",
+      "estacao_id": "AMB-001-capital",
       "timestamp": "2026-09-17T08:30:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -72,13 +68,11 @@
           "valor": 142.0,
           "unidade": "µS/cm"
         }
-      },
-      "cidade": "Porto Velho",
-      "estado": "Rondônia"
+      }
     },
     {
       "id": "LEIT-AMB-000004",
-      "estacao_id": "AMB-002",
+      "estacao_id": "AMB-002-capital",
       "timestamp": "2026-09-15T08:10:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -97,13 +91,11 @@
           "valor": 180.5,
           "unidade": "µS/cm"
         }
-      },
-      "cidade": "Rio Branco",
-      "estado": "Acre"
+      }
     },
     {
       "id": "LEIT-AMB-000005",
-      "estacao_id": "AMB-002",
+      "estacao_id": "AMB-002-capital",
       "timestamp": "2026-09-16T08:40:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -122,13 +114,11 @@
           "valor": 182.0,
           "unidade": "µS/cm"
         }
-      },
-      "cidade": "Rio Branco",
-      "estado": "Acre"
+      }
     },
     {
       "id": "LEIT-AMB-000006",
-      "estacao_id": "AMB-002",
+      "estacao_id": "AMB-002-capital",
       "timestamp": "2026-09-17T08:20:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -147,13 +137,11 @@
           "valor": 178.0,
           "unidade": "µS/cm"
         }
-      },
-      "cidade": "Rio Branco",
-      "estado": "Acre"
+      }
     },
     {
       "id": "LEIT-AMB-000007",
-      "estacao_id": "AMB-003",
+      "estacao_id": "AMB-003-capital",
       "timestamp": "2026-09-15T08:50:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -172,13 +160,11 @@
           "valor": 130.0,
           "unidade": "µS/cm"
         }
-      },
-      "cidade": "Manaus",
-      "estado": "Amazonas"
+      }
     },
     {
       "id": "LEIT-AMB-000008",
-      "estacao_id": "AMB-003",
+      "estacao_id": "AMB-003-capital",
       "timestamp": "2026-09-16T08:12:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -197,13 +183,11 @@
           "valor": 128.0,
           "unidade": "µS/cm"
         }
-      },
-      "cidade": "Manaus",
-      "estado": "Amazonas"
+      }
     },
     {
       "id": "LEIT-AMB-000009",
-      "estacao_id": "AMB-003",
+      "estacao_id": "AMB-003-capital",
       "timestamp": "2026-09-17T08:45:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -222,13 +206,11 @@
           "valor": 132.0,
           "unidade": "µS/cm"
         }
-      },
-      "cidade": "Manaus",
-      "estado": "Amazonas"
+      }
     },
     {
       "id": "LEIT-AMB-000010",
-      "estacao_id": "AMB-004",
+      "estacao_id": "AMB-004-capital",
       "timestamp": "2026-09-15T08:05:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -247,13 +229,11 @@
           "valor": 110.0,
           "unidade": "µS/cm"
         }
-      },
-      "cidade": "Boa Vista",
-      "estado": "Roraima"
+      }
     },
     {
       "id": "LEIT-AMB-000011",
-      "estacao_id": "AMB-004",
+      "estacao_id": "AMB-004-capital",
       "timestamp": "2026-09-16T08:35:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -272,13 +252,11 @@
           "valor": 108.0,
           "unidade": "µS/cm"
         }
-      },
-      "cidade": "Boa Vista",
-      "estado": "Roraima"
+      }
     },
     {
       "id": "LEIT-AMB-000012",
-      "estacao_id": "AMB-004",
+      "estacao_id": "AMB-004-capital",
       "timestamp": "2026-09-17T08:18:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -297,13 +275,11 @@
           "valor": 112.0,
           "unidade": "µS/cm"
         }
-      },
-      "cidade": "Boa Vista",
-      "estado": "Roraima"
+      }
     },
     {
       "id": "LEIT-AMB-000013",
-      "estacao_id": "AMB-005",
+      "estacao_id": "AMB-005-capital",
       "timestamp": "2026-09-15T08:28:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -322,13 +298,11 @@
           "valor": 195.0,
           "unidade": "µS/cm"
         }
-      },
-      "cidade": "Belém",
-      "estado": "Pará"
+      }
     },
     {
       "id": "LEIT-AMB-000014",
-      "estacao_id": "AMB-005",
+      "estacao_id": "AMB-005-capital",
       "timestamp": "2026-09-16T08:52:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -347,13 +321,11 @@
           "valor": 198.0,
           "unidade": "µS/cm"
         }
-      },
-      "cidade": "Belém",
-      "estado": "Pará"
+      }
     },
     {
       "id": "LEIT-AMB-000015",
-      "estacao_id": "AMB-005",
+      "estacao_id": "AMB-005-capital",
       "timestamp": "2026-09-17T08:08:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -372,13 +344,11 @@
           "valor": 192.0,
           "unidade": "µS/cm"
         }
-      },
-      "cidade": "Belém",
-      "estado": "Pará"
+      }
     },
     {
       "id": "LEIT-AMB-000016",
-      "estacao_id": "AMB-006",
+      "estacao_id": "AMB-006-zona-sul",
       "timestamp": "2026-09-15T08:24:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -397,13 +367,11 @@
           "valor": 149.6,
           "unidade": "µS/cm"
         }
-      },
-      "cidade": "Macapá",
-      "estado": "Amapá"
+      }
     },
     {
       "id": "LEIT-AMB-000017",
-      "estacao_id": "AMB-006",
+      "estacao_id": "AMB-006-zona-sul",
       "timestamp": "2026-09-16T08:15:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -422,13 +390,11 @@
           "valor": 151.4,
           "unidade": "µS/cm"
         }
-      },
-      "cidade": "Macapá",
-      "estado": "Amapá"
+      }
     },
     {
       "id": "LEIT-AMB-000018",
-      "estacao_id": "AMB-006",
+      "estacao_id": "AMB-006-zona-sul",
       "timestamp": "2026-09-17T08:30:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -447,13 +413,11 @@
           "valor": 145.8,
           "unidade": "µS/cm"
         }
-      },
-      "cidade": "Macapá",
-      "estado": "Amapá"
+      }
     },
     {
       "id": "LEIT-AMB-000019",
-      "estacao_id": "AMB-007",
+      "estacao_id": "AMB-007-barra",
       "timestamp": "2026-09-15T08:10:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -472,13 +436,11 @@
           "valor": 185.3,
           "unidade": "µS/cm"
         }
-      },
-      "cidade": "Palmas",
-      "estado": "Tocantins"
+      }
     },
     {
       "id": "LEIT-AMB-000020",
-      "estacao_id": "AMB-007",
+      "estacao_id": "AMB-007-barra",
       "timestamp": "2026-09-16T08:40:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -497,13 +459,11 @@
           "valor": 181.7,
           "unidade": "µS/cm"
         }
-      },
-      "cidade": "Palmas",
-      "estado": "Tocantins"
+      }
     },
     {
       "id": "LEIT-AMB-000021",
-      "estacao_id": "AMB-007",
+      "estacao_id": "AMB-007-barra",
       "timestamp": "2026-09-17T08:20:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -522,13 +482,11 @@
           "valor": 179.5,
           "unidade": "µS/cm"
         }
-      },
-      "cidade": "Palmas",
-      "estado": "Tocantins"
+      }
     },
     {
       "id": "LEIT-AMB-000022",
-      "estacao_id": "AMB-008",
+      "estacao_id": "AMB-008-pampulha",
       "timestamp": "2026-09-15T08:50:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -547,13 +505,11 @@
           "valor": 126.0,
           "unidade": "µS/cm"
         }
-      },
-      "cidade": "São Luís",
-      "estado": "Maranhão"
+      }
     },
     {
       "id": "LEIT-AMB-000023",
-      "estacao_id": "AMB-008",
+      "estacao_id": "AMB-008-pampulha",
       "timestamp": "2026-09-16T08:12:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -572,13 +528,11 @@
           "valor": 127.4,
           "unidade": "µS/cm"
         }
-      },
-      "cidade": "São Luís",
-      "estado": "Maranhão"
+      }
     },
     {
       "id": "LEIT-AMB-000024",
-      "estacao_id": "AMB-008",
+      "estacao_id": "AMB-008-pampulha",
       "timestamp": "2026-09-17T08:45:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -597,13 +551,11 @@
           "valor": 129.3,
           "unidade": "µS/cm"
         }
-      },
-      "cidade": "São Luís",
-      "estado": "Maranhão"
+      }
     },
     {
       "id": "LEIT-AMB-000025",
-      "estacao_id": "AMB-009",
+      "estacao_id": "AMB-009-batel",
       "timestamp": "2026-09-15T08:05:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -622,13 +574,11 @@
           "valor": 107.9,
           "unidade": "µS/cm"
         }
-      },
-      "cidade": "São Paulo",
-      "estado": "São Paulo"
+      }
     },
     {
       "id": "LEIT-AMB-000026",
-      "estacao_id": "AMB-009",
+      "estacao_id": "AMB-009-batel",
       "timestamp": "2026-09-16T08:35:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -647,13 +597,11 @@
           "valor": 108.2,
           "unidade": "µS/cm"
         }
-      },
-      "cidade": "São Paulo",
-      "estado": "São Paulo"
+      }
     },
     {
       "id": "LEIT-AMB-000027",
-      "estacao_id": "AMB-009",
+      "estacao_id": "AMB-009-batel",
       "timestamp": "2026-09-17T08:18:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -672,13 +620,11 @@
           "valor": 116.5,
           "unidade": "µS/cm"
         }
-      },
-      "cidade": "São Paulo",
-      "estado": "São Paulo"
+      }
     },
     {
       "id": "LEIT-AMB-000028",
-      "estacao_id": "AMB-010",
+      "estacao_id": "AMB-010-itapua",
       "timestamp": "2026-09-15T08:28:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -697,13 +643,11 @@
           "valor": 191.9,
           "unidade": "µS/cm"
         }
-      },
-      "cidade": "Salvador",
-      "estado": "Bahia"
+      }
     },
     {
       "id": "LEIT-AMB-000029",
-      "estacao_id": "AMB-010",
+      "estacao_id": "AMB-010-itapua",
       "timestamp": "2026-09-16T08:52:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -722,13 +666,11 @@
           "valor": 196.9,
           "unidade": "µS/cm"
         }
-      },
-      "cidade": "Salvador",
-      "estado": "Bahia"
+      }
     },
     {
       "id": "LEIT-AMB-000030",
-      "estacao_id": "AMB-010",
+      "estacao_id": "AMB-010-itapua",
       "timestamp": "2026-09-17T08:08:00-03:00",
       "qualidade_agua": {
         "temperatura": {
@@ -747,9 +689,7 @@
           "valor": 186.1,
           "unidade": "µS/cm"
         }
-      },
-      "cidade": "Salvador",
-      "estado": "Bahia"
+      }
     }
   ]
 }

@@ -3,7 +3,7 @@
   "leituras_meteorologicas": [
     {
       "id": "LEIT-MET-000001",
-      "estacao_id": "MET-001",
+      "estacao_id": "MET-001-capital",
       "timestamp": "2026-09-15T08:24:00-03:00",
       "dados_meteorologicos": {
         "temperatura_ar": {
@@ -33,13 +33,11 @@
           "direcao": 120,
           "direcao_cardinal": "SE"
         }
-      },
-      "cidade": "Porto Velho",
-      "estado": "Rondônia"
+      }
     },
     {
       "id": "LEIT-MET-000002",
-      "estacao_id": "MET-001",
+      "estacao_id": "MET-001-capital",
       "timestamp": "2026-09-16T08:15:00-03:00",
       "dados_meteorologicos": {
         "temperatura_ar": {
@@ -69,13 +67,11 @@
           "direcao": 180,
           "direcao_cardinal": "S"
         }
-      },
-      "cidade": "Porto Velho",
-      "estado": "Rondônia"
+      }
     },
     {
       "id": "LEIT-MET-000003",
-      "estacao_id": "MET-001",
+      "estacao_id": "MET-001-capital",
       "timestamp": "2026-09-17T08:30:00-03:00",
       "dados_meteorologicos": {
         "temperatura_ar": {
@@ -105,13 +101,11 @@
           "direcao": 90,
           "direcao_cardinal": "E"
         }
-      },
-      "cidade": "Porto Velho",
-      "estado": "Rondônia"
+      }
     },
     {
       "id": "LEIT-MET-000004",
-      "estacao_id": "MET-002",
+      "estacao_id": "MET-002-capital",
       "timestamp": "2026-09-15T08:10:00-03:00",
       "dados_meteorologicos": {
         "temperatura_ar": {
@@ -141,13 +135,11 @@
           "direcao": 45,
           "direcao_cardinal": "NE"
         }
-      },
-      "cidade": "Rio Branco",
-      "estado": "Acre"
+      }
     },
     {
       "id": "LEIT-MET-000005",
-      "estacao_id": "MET-002",
+      "estacao_id": "MET-002-capital",
       "timestamp": "2026-09-16T08:40:00-03:00",
       "dados_meteorologicos": {
         "temperatura_ar": {
@@ -177,13 +169,11 @@
           "direcao": 60,
           "direcao_cardinal": "NE"
         }
-      },
-      "cidade": "Rio Branco",
-      "estado": "Acre"
+      }
     },
     {
       "id": "LEIT-MET-000006",
-      "estacao_id": "MET-002",
+      "estacao_id": "MET-002-capital",
       "timestamp": "2026-09-17T08:20:00-03:00",
       "dados_meteorologicos": {
         "temperatura_ar": {
@@ -213,13 +203,11 @@
           "direcao": 210,
           "direcao_cardinal": "SW"
         }
-      },
-      "cidade": "Rio Branco",
-      "estado": "Acre"
+      }
     },
     {
       "id": "LEIT-MET-000007",
-      "estacao_id": "MET-003",
+      "estacao_id": "MET-003-capital",
       "timestamp": "2026-09-15T08:50:00-03:00",
       "dados_meteorologicos": {
         "temperatura_ar": {
@@ -249,13 +237,11 @@
           "direcao": 135,
           "direcao_cardinal": "SE"
         }
-      },
-      "cidade": "Manaus",
-      "estado": "Amazonas"
+      }
     },
     {
       "id": "LEIT-MET-000008",
-      "estacao_id": "MET-003",
+      "estacao_id": "MET-003-capital",
       "timestamp": "2026-09-16T08:12:00-03:00",
       "dados_meteorologicos": {
         "temperatura_ar": {
@@ -285,13 +271,11 @@
           "direcao": 90,
           "direcao_cardinal": "E"
         }
-      },
-      "cidade": "Manaus",
-      "estado": "Amazonas"
+      }
     },
     {
       "id": "LEIT-MET-000009",
-      "estacao_id": "MET-003",
+      "estacao_id": "MET-003-capital",
       "timestamp": "2026-09-17T08:45:00-03:00",
       "dados_meteorologicos": {
         "temperatura_ar": {
@@ -321,13 +305,11 @@
           "direcao": 110,
           "direcao_cardinal": "E"
         }
-      },
-      "cidade": "Manaus",
-      "estado": "Amazonas"
+      }
     },
     {
       "id": "LEIT-MET-000010",
-      "estacao_id": "MET-004",
+      "estacao_id": "MET-004-capital",
       "timestamp": "2026-09-15T08:05:00-03:00",
       "dados_meteorologicos": {
         "temperatura_ar": {
@@ -357,13 +339,11 @@
           "direcao": 190,
           "direcao_cardinal": "S"
         }
-      },
-      "cidade": "Boa Vista",
-      "estado": "Roraima"
+      }
     },
     {
       "id": "LEIT-MET-000011",
-      "estacao_id": "MET-004",
+      "estacao_id": "MET-004-capital",
       "timestamp": "2026-09-16T08:35:00-03:00",
       "dados_meteorologicos": {
         "temperatura_ar": {
@@ -393,13 +373,11 @@
           "direcao": 200,
           "direcao_cardinal": "S"
         }
-      },
-      "cidade": "Boa Vista",
-      "estado": "Roraima"
+      }
     },
     {
       "id": "LEIT-MET-000012",
-      "estacao_id": "MET-004",
+      "estacao_id": "MET-004-capital",
       "timestamp": "2026-09-17T08:18:00-03:00",
       "dados_meteorologicos": {
         "temperatura_ar": {
@@ -429,13 +407,11 @@
           "direcao": 160,
           "direcao_cardinal": "SE"
         }
-      },
-      "cidade": "Boa Vista",
-      "estado": "Roraima"
+      }
     },
     {
       "id": "LEIT-MET-000013",
-      "estacao_id": "MET-005",
+      "estacao_id": "MET-005-capital",
       "timestamp": "2026-09-15T08:28:00-03:00",
       "dados_meteorologicos": {
         "temperatura_ar": {
@@ -465,13 +441,11 @@
           "direcao": 90,
           "direcao_cardinal": "E"
         }
-      },
-      "cidade": "Belém",
-      "estado": "Pará"
+      }
     },
     {
       "id": "LEIT-MET-000014",
-      "estacao_id": "MET-005",
+      "estacao_id": "MET-005-capital",
       "timestamp": "2026-09-16T08:52:00-03:00",
       "dados_meteorologicos": {
         "temperatura_ar": {
@@ -501,13 +475,11 @@
           "direcao": 100,
           "direcao_cardinal": "E"
         }
-      },
-      "cidade": "Belém",
-      "estado": "Pará"
+      }
     },
     {
       "id": "LEIT-MET-000015",
-      "estacao_id": "MET-005",
+      "estacao_id": "MET-005-capital",
       "timestamp": "2026-09-17T08:08:00-03:00",
       "dados_meteorologicos": {
         "temperatura_ar": {
@@ -537,13 +509,11 @@
           "direcao": 110,
           "direcao_cardinal": "E"
         }
-      },
-      "cidade": "Belém",
-      "estado": "Pará"
+      }
     },
     {
       "id": "LEIT-MET-000016",
-      "estacao_id": "MET-006",
+      "estacao_id": "MET-006-zona-sul",
       "timestamp": "2026-09-15T08:24:00-03:00",
       "dados_meteorologicos": {
         "temperatura_ar": {
@@ -573,13 +543,11 @@
           "direcao": 120,
           "direcao_cardinal": "SE"
         }
-      },
-      "cidade": "Macapá",
-      "estado": "Amapá"
+      }
     },
     {
       "id": "LEIT-MET-000017",
-      "estacao_id": "MET-006",
+      "estacao_id": "MET-006-zona-sul",
       "timestamp": "2026-09-16T08:15:00-03:00",
       "dados_meteorologicos": {
         "temperatura_ar": {
@@ -609,13 +577,11 @@
           "direcao": 180,
           "direcao_cardinal": "S"
         }
-      },
-      "cidade": "Macapá",
-      "estado": "Amapá"
+      }
     },
     {
       "id": "LEIT-MET-000018",
-      "estacao_id": "MET-006",
+      "estacao_id": "MET-006-zona-sul",
       "timestamp": "2026-09-17T08:30:00-03:00",
       "dados_meteorologicos": {
         "temperatura_ar": {
@@ -645,13 +611,11 @@
           "direcao": 90,
           "direcao_cardinal": "E"
         }
-      },
-      "cidade": "Macapá",
-      "estado": "Amapá"
+      }
     },
     {
       "id": "LEIT-MET-000019",
-      "estacao_id": "MET-007",
+      "estacao_id": "MET-007-barra",
       "timestamp": "2026-09-15T08:10:00-03:00",
       "dados_meteorologicos": {
         "temperatura_ar": {
@@ -681,13 +645,11 @@
           "direcao": 45,
           "direcao_cardinal": "NE"
         }
-      },
-      "cidade": "Palmas",
-      "estado": "Tocantins"
+      }
     },
     {
       "id": "LEIT-MET-000020",
-      "estacao_id": "MET-007",
+      "estacao_id": "MET-007-barra",
       "timestamp": "2026-09-16T08:40:00-03:00",
       "dados_meteorologicos": {
         "temperatura_ar": {
@@ -717,13 +679,11 @@
           "direcao": 60,
           "direcao_cardinal": "NE"
         }
-      },
-      "cidade": "Palmas",
-      "estado": "Tocantins"
+      }
     },
     {
       "id": "LEIT-MET-000021",
-      "estacao_id": "MET-007",
+      "estacao_id": "MET-007-barra",
       "timestamp": "2026-09-17T08:20:00-03:00",
       "dados_meteorologicos": {
         "temperatura_ar": {
@@ -753,13 +713,11 @@
           "direcao": 210,
           "direcao_cardinal": "SW"
         }
-      },
-      "cidade": "Palmas",
-      "estado": "Tocantins"
+      }
     },
     {
       "id": "LEIT-MET-000022",
-      "estacao_id": "MET-008",
+      "estacao_id": "MET-008-pampulha",
       "timestamp": "2026-09-15T08:50:00-03:00",
       "dados_meteorologicos": {
         "temperatura_ar": {
@@ -789,13 +747,11 @@
           "direcao": 135,
           "direcao_cardinal": "SE"
         }
-      },
-      "cidade": "São Luís",
-      "estado": "Maranhão"
+      }
     },
     {
       "id": "LEIT-MET-000023",
-      "estacao_id": "MET-008",
+      "estacao_id": "MET-008-pampulha",
       "timestamp": "2026-09-16T08:12:00-03:00",
       "dados_meteorologicos": {
         "temperatura_ar": {
@@ -825,13 +781,11 @@
           "direcao": 90,
           "direcao_cardinal": "E"
         }
-      },
-      "cidade": "São Luís",
-      "estado": "Maranhão"
+      }
     },
     {
       "id": "LEIT-MET-000024",
-      "estacao_id": "MET-008",
+      "estacao_id": "MET-008-pampulha",
       "timestamp": "2026-09-17T08:45:00-03:00",
       "dados_meteorologicos": {
         "temperatura_ar": {
@@ -861,13 +815,11 @@
           "direcao": 110,
           "direcao_cardinal": "E"
         }
-      },
-      "cidade": "São Luís",
-      "estado": "Maranhão"
+      }
     },
     {
       "id": "LEIT-MET-000025",
-      "estacao_id": "MET-009",
+      "estacao_id": "MET-009-batel",
       "timestamp": "2026-09-15T08:05:00-03:00",
       "dados_meteorologicos": {
         "temperatura_ar": {
@@ -897,13 +849,11 @@
           "direcao": 190,
           "direcao_cardinal": "S"
         }
-      },
-      "cidade": "São Paulo",
-      "estado": "São Paulo"
+      }
     },
     {
       "id": "LEIT-MET-000026",
-      "estacao_id": "MET-009",
+      "estacao_id": "MET-009-batel",
       "timestamp": "2026-09-16T08:35:00-03:00",
       "dados_meteorologicos": {
         "temperatura_ar": {
@@ -933,13 +883,11 @@
           "direcao": 200,
           "direcao_cardinal": "S"
         }
-      },
-      "cidade": "São Paulo",
-      "estado": "São Paulo"
+      }
     },
     {
       "id": "LEIT-MET-000027",
-      "estacao_id": "MET-009",
+      "estacao_id": "MET-009-batel",
       "timestamp": "2026-09-17T08:18:00-03:00",
       "dados_meteorologicos": {
         "temperatura_ar": {
@@ -969,13 +917,11 @@
           "direcao": 160,
           "direcao_cardinal": "SE"
         }
-      },
-      "cidade": "São Paulo",
-      "estado": "São Paulo"
+      }
     },
     {
       "id": "LEIT-MET-000028",
-      "estacao_id": "MET-010",
+      "estacao_id": "MET-010-itapua",
       "timestamp": "2026-09-15T08:28:00-03:00",
       "dados_meteorologicos": {
         "temperatura_ar": {
@@ -1005,13 +951,11 @@
           "direcao": 90,
           "direcao_cardinal": "E"
         }
-      },
-      "cidade": "Salvador",
-      "estado": "Bahia"
+      }
     },
     {
       "id": "LEIT-MET-000029",
-      "estacao_id": "MET-010",
+      "estacao_id": "MET-010-itapua",
       "timestamp": "2026-09-16T08:52:00-03:00",
       "dados_meteorologicos": {
         "temperatura_ar": {
@@ -1041,13 +985,11 @@
           "direcao": 100,
           "direcao_cardinal": "E"
         }
-      },
-      "cidade": "Salvador",
-      "estado": "Bahia"
+      }
     },
     {
       "id": "LEIT-MET-000030",
-      "estacao_id": "MET-010",
+      "estacao_id": "MET-010-itapua",
       "timestamp": "2026-09-17T08:08:00-03:00",
       "dados_meteorologicos": {
         "temperatura_ar": {
@@ -1077,9 +1019,7 @@
           "direcao": 110,
           "direcao_cardinal": "E"
         }
-      },
-      "cidade": "Salvador",
-      "estado": "Bahia"
+      }
     }
   ]
 }

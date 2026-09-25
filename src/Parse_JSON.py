@@ -1,13 +1,18 @@
-# 1 . Biblioteca para manipulação de arquivos JSON
+# 1. Importa a biblioteca padrão usada para abrir, ler e converter arquivos JSON.
 import json
-
-# 2. Biblioteca para manipulação de caminhos de arquivos
+# 2. Importa Path para montar caminhos de arquivos de forma segura e independente do sistema operacional.
 from pathlib import Path
-
-# 3. Biblioteca para manipulação de dados em formato tabular (DataFrames)
+# 3. Importa o pandas, usado para organizar os dados em tabelas chamadas DataFrames.
 import pandas as pd
+# 4. Importa logging, que permite registrar mensagens informativas e erros durante a execução.
+import logging
 
-# 4. Diretório base para arquivos de parsing JSON
+# Configura o formato e o nível mínimo das mensagens que serão registradas no programa.
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# Cria um registrador identificado, facilitando localizar mensagens deste módulo.
+logger = logging.getLogger("Parse_JSON_Log")
+
+# Obtém a pasta onde este arquivo Python está salvo.
 DIR_PARSE = Path(__file__).resolve().parent
 
 # 5. Diretório para o arquivo JSON e obter o arquivo JSON
