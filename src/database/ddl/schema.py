@@ -4,6 +4,7 @@
 
 import urllib
 import pandas as pd
+
 from sqlalchemy import create_engine
 from Parse_JSON import df_cidade as df
  
@@ -18,7 +19,6 @@ params = urllib.parse.quote_plus(
     f"DATABASE={database};"
     f"Trusted_Connection=yes;"
 )
-
  
 # 3. Crie a engine de conexão do SQLAlchemy
 engine = create_engine(f"mssql+pyodbc:///?odbc_connect={params}")

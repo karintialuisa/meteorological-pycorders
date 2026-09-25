@@ -21,16 +21,13 @@ def ler_json(path_arquivo):
     with open(path_arquivo, "r", encoding="utf-8") as arquivo:
         conteudo = json.load(arquivo)
     return conteudo
- 
-parse_cidade = ler_json(DIR_CIDADE)
-parse_estado = ler_json(DIR_ESTADO)
-parse_estacao = ler_json(DIR_ESTACAO)
 
 # 7. Converter o JSON em um DataFrame do pandas e renomear as colunas para um formato mais amigável
 # não incluída a coluna id por conta da remoção da duplicidade nos dados e o id será gerado automaticamente no banco de dados
 
-def tabela_localizacao() -> pd.DataFrame:
-
+def tabela_estado() -> pd.DataFrame:
+    #criar função e ler o arquivo JSON de estado
+    parse_estado = ler_json(DIR_ESTADO)
     df_estado = pd.json_normalize(parse_estado)[
             [
             "ibge", 
@@ -42,7 +39,13 @@ def tabela_localizacao() -> pd.DataFrame:
                         "sigla": "sigla_estado",
                         "nome": "nome_estado"
                         })
+    
+    # [Tabela Estado] Criar um DataFrame de estado e remover duplicatas
+    df_estado = df_estado[['codigo_ibge_estado', 'sigla_estado', 'nome_estado']].drop_duplicates().reset_index(drop=True)
+    return df_estado
 
+def tabela_cidade() -> pd.DataFrame:
+    parse_cidade = ler_json(DIR_CIDADE)
     df_cidade = pd.json_normalize(parse_cidade)[
             [
             "ibge", 
@@ -54,18 +57,18 @@ def tabela_localizacao() -> pd.DataFrame:
                         "sigla_estado": "sigla_estado",
                         "cidade": "nome_cidade"
                         })
-    
-    # 8. [Tabela Estado] Criar um DataFrame de estado e remover duplicatas
-    df_estado = df_estado[['codigo_ibge_estado', 'sigla_estado', 'nome_estado']].drop_duplicates().reset_index(drop=True)
 
     # 9. [Tabela Cidade] Criar um DataFrame de cidade e remover duplicatas
     df_cidade = df_cidade[['codigo_ibge_cidade', 'sigla_estado', 'nome_cidade']].drop_duplicates().reset_index(drop=True)
+    return df_cidade
 
+def tabela_localizacao(df_cidade: pd.DataFrame, df_estado: pd.DataFrame) -> pd.DataFrame:
     # 10. [Tabela Estado, Tabela Cidade] Exibir os DataFrames resultantes para verificação e juntá-los com base no ID da estação
     df_localizacao = df_cidade.merge(df_estado, on="sigla_estado")
     return df_localizacao
 
 def tabela_estacao(df_localizacao: pd.DataFrame) -> pd.DataFrame:
+    parse_estacao = ler_json(DIR_ESTACAO)
     df_estacao = pd.json_normalize(parse_estacao['estacoes_ambientais'])[
             [
             "id",
