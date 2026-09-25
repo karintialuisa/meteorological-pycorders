@@ -1,3 +1,6 @@
+USE monitoramento
+GO
+
 
 DROP TABLE IF EXISTS estacao;   
 DROP TABLE IF EXISTS cidade;
