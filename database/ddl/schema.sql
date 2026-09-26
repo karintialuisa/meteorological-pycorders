@@ -1,1 +1,0 @@
--- Estruturas DDL iniciais do projeto PyCordersMeteorological. DDL é Data Definition Language, utilizada para criar, alterar e deletar estruturas de tabelas no banco de dados.

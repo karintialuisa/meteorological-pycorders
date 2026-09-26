@@ -1,0 +1,160 @@
+{
+  "date": "2026-09-15",
+  "estacoes_ambientais": [
+     {
+      "id": "AMB-001-capital",
+      "nome": "Estação Piracicaba",
+      "tipo": "monitoramento_ambiental",
+      "status": "desativado",
+      "localizacao": {
+        "estado": "SP",
+        "city_name": "São Paulo",
+        "latitude": -23.5505,
+        "longitude": -46.6333
+      },
+      "descricao": "Estação destinada ao monitoramento da qualidade da água em Piracicaba.",
+      "data_instalacao": "2026-01-15"
+    },
+    {
+      "id": "AMB-001-capital",
+      "nome": "Estação São Paulo Centro",
+      "tipo": "monitoramento_ambiental",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "SP",
+        "city_name": "São Paulo",
+        "latitude": -23.5505,
+        "longitude": -46.6333
+      },
+      "descricao": "Estação destinada ao monitoramento da qualidade da água em São Paulo.",
+      "data_instalacao": "2026-01-15"
+    },
+    {
+      "id": "AMB-002-capital",
+      "nome": "Estação Rio de Janeiro Centro",
+      "tipo": "monitoramento_ambiental",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "RJ",
+        "city_name": "Rio de Janeiro",
+        "latitude": -22.9068,
+        "longitude": -43.1729
+      },
+      "descricao": "Estação destinada ao monitoramento da qualidade da água no Rio de Janeiro.",
+      "data_instalacao": "2026-01-15"
+    },
+    {
+      "id": "AMB-003-capital",
+      "nome": "Estação Belo Horizonte Centro",
+      "tipo": "monitoramento_ambiental",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "MG",
+        "city_name": "Belo Horizonte",
+        "latitude": -19.9167,
+        "longitude": -43.9345,
+        "timezone": "-03:00"
+      },
+      "descricao": "Estação destinada ao monitoramento da qualidade da água em Belo Horizonte.",
+      "data_instalacao": "2026-01-15"
+    },
+    {
+      "id": "AMB-004-capital",
+      "nome": "Estação Curitiba Centro",
+      "tipo": "monitoramento_ambiental",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "PR",
+        "city_name": "Curitiba",
+        "latitude": -25.4284,
+        "longitude": -49.2733
+      },
+      "descricao": "Estação destinada ao monitoramento da qualidade da água em Curitiba.",
+      "data_instalacao": "2026-01-15"
+    },
+    {
+      "id": "AMB-005-capital",
+      "nome": "Estação Salvador Centro",
+      "tipo": "monitoramento_ambiental",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "BA",
+        "city_name": "Salvador",
+        "latitude": -12.9714,
+        "longitude": -38.5014
+      },
+      "descricao": "Estação destinada ao monitoramento da qualidade da água em Salvador.",
+      "data_instalacao": "2026-01-15"
+    },
+    {
+      "id": "AMB-006-zona-sul",
+      "nome": "Estação São Paulo Sul",
+      "tipo": "monitoramento_ambiental",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "SP",
+        "city_name": "São Paulo",
+        "latitude": -23.6305,
+        "longitude": -46.6033
+      },
+      "descricao": "Estação adicional destinada ao monitoramento da qualidade da água em São Paulo.",
+      "data_instalacao": "2026-03-10"
+    },
+    {
+      "id": "AMB-007-barra",
+      "nome": "Estação Rio de Janeiro Barra",
+      "tipo": "monitoramento_ambiental",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "RJ",
+        "city_name": "Rio de Janeiro",
+        "latitude": -22.9968,
+        "longitude": -43.3529
+      },
+      "descricao": "Estação adicional destinada ao monitoramento da qualidade da água em Rio de Janeiro.",
+      "data_instalacao": "2026-03-10"
+    },
+    {
+      "id": "AMB-008-pampulha",
+      "nome": "Estação Belo Horizonte Pampulha",
+      "tipo": "monitoramento_ambiental",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "MG",
+        "city_name": "Belo Horizonte",
+        "latitude": -19.8467,
+        "longitude": -43.9145
+      },
+      "descricao": "Estação adicional destinada ao monitoramento da qualidade da água em Belo Horizonte.",
+      "data_instalacao": "2026-03-10"
+    },
+    {
+      "id": "AMB-009-batel",
+      "nome": "Estação Curitiba Batel",
+      "tipo": "monitoramento_ambiental",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "PR",
+        "city_name": "Curitiba",
+        "latitude": -25.4384,
+        "longitude": -49.2933
+      },
+      "descricao": "Estação adicional destinada ao monitoramento da qualidade da água em Curitiba.",
+      "data_instalacao": "2026-03-10"
+    },
+    {
+      "id": "AMB-010-itapua",
+      "nome": "Estação Salvador Itapuã",
+      "tipo": "monitoramento_ambiental",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "BA",
+        "city_name": "Salvador",
+        "latitude": -12.9514,
+        "longitude": -38.3714
+      },
+      "descricao": "Estação adicional destinada ao monitoramento da qualidade da água em Salvador.",
+      "data_instalacao": "2026-03-10"
+    }
+  ]
+}
