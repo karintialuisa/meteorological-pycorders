@@ -62,7 +62,7 @@ def tabela_leituras_agua() -> pd.DataFrame:
     df_leituras_agua["Data"] = pd.to_datetime(df_leituras_agua["Data"]).dt.strftime("%d/%m/%Y")
     
     # Retorna o DataFrame com a coluna Horário em formato de hora.
-    return print(df_leituras_agua.head())
+    return df_leituras_agua
 
 # Executa a função para mostrar uma amostra da tabela de água.
 tabela_agua = tabela_leituras_agua()
@@ -93,7 +93,7 @@ def tabela_leituras_meteorologicas() -> pd.DataFrame:
     }
     )
     # Exibe as primeiras linhas para validar visualmente o resultado do tratamento.
-    return print("\nTabela de leitura meteorológica:  \n", df_leituras_meteorologicas.head())
+    return df_leituras_meteorologicas
 
 # Executa a função para exibir uma amostra da tabela meteorológica.
 tabela_leitura_meteorologica = tabela_leituras_meteorologicas()
