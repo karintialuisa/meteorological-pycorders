@@ -1,3 +1,8 @@
+# ======================================================================================================
+# ASSUNTO: Conexão com o banco de dados SQL Server Express
+# Preparação e criação do DataFrame para as tabelas de localização (Cidade, Estado, Estação)
+# ============================================================
+
 # 1. Biblioteca para manipulação de arquivos JSON
 import json
 

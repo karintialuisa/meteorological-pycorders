@@ -1,3 +1,8 @@
+# ============================================================
+# ASSUNTO: Conexão com o banco de dados SQL Server Express
+# Inserção de dados na tabela leituras meteorologica
+# ============================================================
+
 import sys
 import urllib.parse
 from pathlib import Path
@@ -9,7 +14,7 @@ from sqlalchemy import create_engine, text
 sys.path.append(str(Path(__file__).resolve().parents[2]))
 
 # Importa a função do módulo Parse_leituras_JSON
-from Parse_leituras_JSON import tabela_meteorologica
+from src.ingestion.leituras.Parse_LeituraMetereologica import tabela_meteorologica
 
 # Configurações da conexão com a instância local do SQL Server
 servidor = r".\SQLEXPRESS"  # Ou 'localhost\SQLEXPRESS'

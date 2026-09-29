@@ -1,3 +1,9 @@
+# ============================================================
+# ASSUNTO: Conexão com o banco de dados SQL Server Express
+# Inserção de dados na tabela Cidade, estado, estacao
+# ============================================================
+
+
 import urllib
 import pandas as pd
 # text recebe uma string SQL, como "DELETE FROM estado", e cria um objeto

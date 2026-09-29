@@ -1,3 +1,8 @@
+# ============================================================
+# ASSUNTO: Conexão com o banco de dados SQL Server Express
+# Inserção de dados na tabela leituras ambiental
+# ============================================================
+
 import sys
 import urllib.parse
 from pathlib import Path
@@ -9,7 +14,7 @@ from sqlalchemy import create_engine, text
 sys.path.append(str(Path(__file__).resolve().parents[2]))
 
 # Importa a função do módulo Parse_leituras_JSON
-from Parse_leituras_JSON import tabela_ambiental
+from src.ingestion.leituras.Parse_LeituraAmbiental import tabela_ambiental
 from ingestion.localizacao.Parse_localizacao_JSON import (
     tabela_cidade,
     tabela_estacao,

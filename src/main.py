@@ -7,7 +7,7 @@ import pandas as pd
 # 4. Import logging para registro de mensagens de depuração e erro
 import logging
 
-from Parse_JSON import ler_json_ambientais
+from src.ingestion.leituras.Parse_LeiturasAmbiental_JSON import ler_json_ambientais
 
 
 

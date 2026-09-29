@@ -4,6 +4,8 @@ GO
 DROP TABLE IF EXISTS estacao; 
 DROP TABLE IF EXISTS cidade;
 DROP TABLE IF EXISTS estado;
+DROP TABLE IF EXISTS qualidade_agua;
+DROP TABLE IF EXISTS leitura_meteorologica;
 
 -- ============================================================
 -- ASSUNTO: GEOGRAFIA / LOCALIZAÇÃO FÍSICA
