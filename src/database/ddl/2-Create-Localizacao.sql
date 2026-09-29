@@ -1,5 +1,7 @@
+USE monitoramento
+GO
 
-DROP TABLE IF EXISTS estacao;   
+DROP TABLE IF EXISTS estacao; 
 DROP TABLE IF EXISTS cidade;
 DROP TABLE IF EXISTS estado;
 
@@ -46,16 +48,18 @@ GO
 CREATE TABLE estacao (
     id                  BIGINT IDENTITY(1,1) PRIMARY KEY,
     nome                VARCHAR(200) NOT NULL,
-    tipo                VARCHAR(100) NOT NULL,
     status              BIT,
-    cidade_id           BIGINT NOT NULL,
-    descricao           VARCHAR(MAX),
-    data_instalacao     DATE,
+    id_cidade           BIGINT NOT NULL,
+    id_estado           BIGINT NOT NULL,
     criado_em           DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 
     CONSTRAINT fk_estacao_cidade
-        FOREIGN KEY (cidade_id)
+        FOREIGN KEY (id_cidade)
         REFERENCES cidade(id),
+    
+    CONSTRAINT fk_estacao_estado
+        FOREIGN KEY (id_estado)
+        REFERENCES estado(id),
 
     CONSTRAINT ck_estacao_status
         CHECK (status IN (0, 1))
@@ -63,13 +67,12 @@ CREATE TABLE estacao (
 GO
 
 CREATE INDEX idx_estacao_cidade_id
-    ON estacao (cidade_id);
+    ON estacao (id_cidade);
 GO
 
 CREATE INDEX idx_estacao_status
     ON estacao (status);
 GO
-
 -- ============================================================
 -- ASSUNTO: LEITURA DA QUALIDADE DA ÁGUA
 -- ============================================================
@@ -77,6 +80,7 @@ GO
 CREATE TABLE qualidade_agua (
     id                      BIGINT IDENTITY(1,1) PRIMARY KEY,
     id_estacao              BIGINT NOT NULL,
+    data_leitura            DATETIMEOFFSET NOT NULL,
     temperatura_agua        NUMERIC(8,3),
     ph                      NUMERIC(5,3),
     oxigenio                NUMERIC(10,3),
@@ -98,3 +102,4 @@ CREATE TABLE qualidade_agua (
         CHECK (condutividade IS NULL OR condutividade >= 0)
 );
 GO
+

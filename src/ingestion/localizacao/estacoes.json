@@ -1,14 +1,14 @@
 {
   "date": "2026-09-15",
   "estacoes_ambientais": [
-     {
-      "id": "AMB-001-capital",
+    {
+      "id": "AMB-011",
       "nome": "Estação Piracicaba",
       "tipo": "monitoramento_ambiental",
       "status": "desativado",
       "localizacao": {
         "estado": "SP",
-        "city_name": "São Paulo",
+        "city_name": "Piracicaba",
         "latitude": -23.5505,
         "longitude": -46.6333
       },
@@ -16,7 +16,7 @@
       "data_instalacao": "2026-01-15"
     },
     {
-      "id": "AMB-001-capital",
+      "id": "AMB-001",
       "nome": "Estação São Paulo Centro",
       "tipo": "monitoramento_ambiental",
       "status": "ativa",
@@ -30,7 +30,7 @@
       "data_instalacao": "2026-01-15"
     },
     {
-      "id": "AMB-002-capital",
+      "id": "AMB-002",
       "nome": "Estação Rio de Janeiro Centro",
       "tipo": "monitoramento_ambiental",
       "status": "ativa",
@@ -44,7 +44,7 @@
       "data_instalacao": "2026-01-15"
     },
     {
-      "id": "AMB-003-capital",
+      "id": "AMB-003",
       "nome": "Estação Belo Horizonte Centro",
       "tipo": "monitoramento_ambiental",
       "status": "ativa",
@@ -59,7 +59,7 @@
       "data_instalacao": "2026-01-15"
     },
     {
-      "id": "AMB-004-capital",
+      "id": "AMB-004",
       "nome": "Estação Curitiba Centro",
       "tipo": "monitoramento_ambiental",
       "status": "ativa",
@@ -73,7 +73,7 @@
       "data_instalacao": "2026-01-15"
     },
     {
-      "id": "AMB-005-capital",
+      "id": "AMB-005",
       "nome": "Estação Salvador Centro",
       "tipo": "monitoramento_ambiental",
       "status": "ativa",
@@ -87,7 +87,7 @@
       "data_instalacao": "2026-01-15"
     },
     {
-      "id": "AMB-006-zona-sul",
+      "id": "AMB-006",
       "nome": "Estação São Paulo Sul",
       "tipo": "monitoramento_ambiental",
       "status": "ativa",
@@ -101,7 +101,7 @@
       "data_instalacao": "2026-03-10"
     },
     {
-      "id": "AMB-007-barra",
+      "id": "AMB-007",
       "nome": "Estação Rio de Janeiro Barra",
       "tipo": "monitoramento_ambiental",
       "status": "ativa",
@@ -115,7 +115,7 @@
       "data_instalacao": "2026-03-10"
     },
     {
-      "id": "AMB-008-pampulha",
+      "id": "AMB-008",
       "nome": "Estação Belo Horizonte Pampulha",
       "tipo": "monitoramento_ambiental",
       "status": "ativa",
@@ -129,7 +129,7 @@
       "data_instalacao": "2026-03-10"
     },
     {
-      "id": "AMB-009-batel",
+      "id": "AMB-009",
       "nome": "Estação Curitiba Batel",
       "tipo": "monitoramento_ambiental",
       "status": "ativa",
@@ -143,7 +143,7 @@
       "data_instalacao": "2026-03-10"
     },
     {
-      "id": "AMB-010-itapua",
+      "id": "AMB-010",
       "nome": "Estação Salvador Itapuã",
       "tipo": "monitoramento_ambiental",
       "status": "ativa",
