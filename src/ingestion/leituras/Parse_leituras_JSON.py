@@ -5,8 +5,8 @@ import pandas as pd
 # 1. Diretório base do script
 DIR_PARSE = Path(__file__).resolve().parent
 
-# 2. Caminho para o arquivo JSON de monitoramento ambiental
-DIR_AMBIENTAL_JSON = DIR_PARSE / "leituras_ambientais.json"
+# 2. Caminho para o arquivo JSON de meteorologia
+DIR_METEOROLOGIA_JSON = DIR_PARSE / "leituras_meteorologicas.json"
 
 
 def ler_json(path_arquivo: Path) -> dict:
@@ -16,59 +16,58 @@ def ler_json(path_arquivo: Path) -> dict:
     return conteudo
 
 
-def tabela_ambiental() -> pd.DataFrame:
-    """Carrega o arquivo JSON ambiental, realiza todo o parse, limpeza e 
-    tratamento de tipos dos dados para corresponder à tabela SQL Server.
+def tabela_meteorologica() -> pd.DataFrame:
+    """Carrega o arquivo JSON meteorológico, realiza todo o parse, limpeza e
+    tratamento de tipos dos dados para corresponder à tabela leiturameteorologica.
     """
-    parse_ambiental = ler_json(DIR_AMBIENTAL_JSON)
+    parse_meteo = ler_json(DIR_METEOROLOGIA_JSON)
 
-    # 1. Normalização do JSON e seleção/renomeação de colunas idênticas às do banco de dados
-    df_ambiental = pd.json_normalize(parse_ambiental["leituras_ambientais"])[
+    # 1. Normalização do JSON e seleção/renomeação das colunas
+    df_meteo = pd.json_normalize(parse_meteo["leituras_meteorologicas"])[
         [
-            "estacao_id",
+            "cidade",
             "timestamp",
-            "qualidade_agua.temperatura.valor",
-            "qualidade_agua.ph.valor",
-            "qualidade_agua.oxigenio_dissolvido.valor",
-            "qualidade_agua.condutividade.valor",
+            "dados_meteorologicos.temperatura_ar.valor",
+            "dados_meteorologicos.umidade.valor",
+            "dados_meteorologicos.chuva.valor",
+            "dados_meteorologicos.vento.velocidade",
+            "dados_meteorologicos.condicao.description",
         ]
     ].rename(
         columns={
-           
             "timestamp": "data_leitura",
-            "qualidade_agua.temperatura.valor": "temperatura_agua",
-            "qualidade_agua.ph.valor": "ph",
-            "qualidade_agua.oxigenio_dissolvido.valor": "oxigenio",
-            "qualidade_agua.condutividade.valor": "condutividade",
+            "dados_meteorologicos.temperatura_ar.valor": "temperatura_ar",
+            "dados_meteorologicos.umidade.valor": "umidade",
+            "dados_meteorologicos.chuva.valor": "chuva",
+            "dados_meteorologicos.vento.velocidade": "vento",
+            "dados_meteorologicos.condicao.description": "condicao",
         }
     )
 
     # 2. Remoção de duplicatas exatas
-    df_ambiental = df_ambiental.drop_duplicates().reset_index(drop=True)
+    df_meteo = df_meteo.drop_duplicates().reset_index(drop=True)
 
     # 3. Ordenação para priorizar o registro mais recente em caso de duplicatas
-    df_ambiental = df_ambiental.sort_values(["data_leitura"], ascending=False)
+    df_meteo = df_meteo.sort_values(["data_leitura"], ascending=False)
 
-    # 4. Tratamento de duplicatas mantendo apenas o registro mais recente por estação/data
-    df_ambiental = df_ambiental.drop_duplicates(
-        subset=["estacao_id", "data_leitura"], keep="first"
+    # 4. Tratamento de duplicatas mantendo apenas o registro mais recente por cidade/data
+    df_meteo = df_meteo.drop_duplicates(
+        subset=["cidade", "data_leitura"], keep="first"
     ).reset_index(drop=True)
 
     # =========================================================================
     # TRATAMENTO E CONVERSÃO DE TIPOS (DTYPES)
     # =========================================================================
+    df_meteo["data_leitura"] = pd.to_datetime(df_meteo["data_leitura"])
 
-    # Data de leitura convertida para datetime nativo - compatível com o datetime do SQL
-    df_ambiental["data_leitura"] = pd.to_datetime(df_ambiental["data_leitura"]).dt.strftime("%Y-%m-%d %H:%M")
-    
- 
-        
-    
-    return df_ambiental
+    colunas_numericas = ["temperatura_ar", "umidade", "chuva", "vento"]
+    for col in colunas_numericas:
+        df_meteo[col] = pd.to_numeric(df_meteo[col], errors="coerce")
 
+    return df_meteo
 
-
-#Caso precise da cidade, nos relatorios, fazer 'merge com tabela de estações para obter a cidade correspondente
 
 if __name__ == "__main__":
-    df = tabela_ambiental()
+    df = tabela_meteorologica()
+    print("Preview do DataFrame tratado:")
+    print(df.head())
