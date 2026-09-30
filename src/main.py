@@ -3,85 +3,94 @@ from pathlib import Path
 import sys
 import subprocess
 
-# Define caminhos base
-# BASE_DIR aponta para a pasta 'src'
 BASE_DIR = Path(__file__).resolve().parent
-# DATABASE_DIR aponta para 'src/database'
-DATABASE_DIR = BASE_DIR / "database"
-# LOGS_DIR aponta para a pasta 'logs' na raiz do projeto (fora de 'src')
 LOGS_DIR = BASE_DIR.parent / "logs"
-
-# Cria a pasta de logs automaticamente se ela não existir
 LOGS_DIR.mkdir(parents=True, exist_ok=True)
-arquivo_log = LOGS_DIR / "execucao.log"
 
-# Configuração global do Logging
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    datefmt="%d-%m-%Y %H:%M",
     handlers=[
-        logging.FileHandler(arquivo_log, encoding="utf-8"), # Escreve no arquivo .log
-        logging.StreamHandler(sys.stdout)                   # Exibe no terminal
+        logging.FileHandler(LOGS_DIR / "execucao_relatorio.log", encoding="utf-8"),
+        logging.StreamHandler()
     ]
 )
 
-# Lista com a sequência exata dos scripts a serem executados
-PARSER_SEQUENCIA = [
-    ("dml", "Insert_Localizacao.py"),
-    ("dml", "Insert_Leituras_Ambiental.py"),
-    ("dml", "Insert_Leituras_Meteorologica.py"),
-]
+MENU = {
+    "1": "ETL JSON -> BD",
+    "2": "Gerar relatórios estatísticos dos dados",
+    "3": "Cancelar operação"
+}
 
-def executar_script(pasta: str, arquivo: str) -> None:
+def exibir_menu() -> str:
+    print("\n" + "=" * 40)
+    print("Menu de opções:")
+    for key, value in MENU.items():
+        print(f" {key}. {value}")
+    print("=" * 40)
+    return input("Escolha uma opção: ").strip()
+
+def executar_script(pasta: str, arquivo: str, interativo: bool = False) -> bool:
     """
-    Executa um script Python localizado em uma subpasta de 'database'.
-    Interrompe a execução e grava o erro caso o script falhe.
+    Executa o script secundário. 
+    Se interativo=True, permite input() e print() direto no terminal.
     """
-    caminho_script = DATABASE_DIR / pasta / arquivo
+    caminho_script = BASE_DIR / pasta / arquivo if pasta else BASE_DIR / arquivo
     
-    # Verifica se o arquivo existe antes de tentar executar
     if not caminho_script.exists():
-        raise FileNotFoundError(f"O arquivo '{caminho_script}' não foi encontrado.")
-    
-    logging.info(f"Iniciando a execução do script: {pasta}/{arquivo}")
-    
-    # Executa o script e captura erros caso o código de retorno seja !== 0
+        logging.error(f"O arquivo '{caminho_script}' não foi encontrado.")
+        return False
+
+    logging.info("=" * 20 + f" Iniciando: {arquivo} " + "=" * 20)
+
+    # Se for interativo (como o relatório), NÃO usa capture_output
+    if interativo:
+        resultado = subprocess.run([sys.executable, str(caminho_script)])
+        if resultado.returncode != 0:
+            logging.error(f"❌ Falha em {arquivo}")
+            return False
+        logging.info(f"✅ Sucesso em {arquivo}")
+        return True
+
+    # Para scripts de backend/insert, captura a saída normalmente
     resultado = subprocess.run(
         [sys.executable, str(caminho_script)],
         capture_output=True,
         text=True
     )
-    
-    # Se o script gerou saídas printadas no terminal, registra como INFO
+
     if resultado.stdout.strip():
         logging.info(f"[{arquivo}] Saída: {resultado.stdout.strip()}")
-        
-    # Se o script falhar, registra no erro e interrompe
+
     if resultado.returncode != 0:
-        erro_detalhado = resultado.stderr.strip() if resultado.stderr else "Erro desconhecido na execução."
-        raise RuntimeError(f"Falha na execução de '{arquivo}':\n{erro_detalhado}")
+        erro_msg = resultado.stderr.strip() if resultado.stderr else "Erro desconhecido."
+        logging.error(f"❌ Falha em {arquivo}:\n{erro_msg}")
+        return False
     
-    logging.info(f"Sucesso: Script {pasta}/{arquivo} finalizado.")
+    logging.info(f"✅ Sucesso em {arquivo}")
+    return True
 
 def main():
-    logging.info("=" * 60)
-    logging.info("Iniciando o fluxo de execuções dos Parsers...")
-    logging.info("=" * 60)
-    
-    for pasta, arquivo in PARSER_SEQUENCIA:
-        try:
-            executar_script(pasta, arquivo)
-        except (RuntimeError, FileNotFoundError) as e:
-            logging.error(f"ERRO CRÍTICO no processo '{pasta}/{arquivo}'")
-            logging.error(f"Detalhes: {e}")
-            logging.error("Interrompendo a sequência de execução.")
-            logging.info("=" * 60)
-            sys.exit(1)  # Encerra o script com código de erro
-            
-    logging.info("=" * 60)
-    logging.info("Todos os Parsers foram executados com SUCESSO!")
-    logging.info("=" * 60)
+    while True:
+        opcao = exibir_menu()
+
+        if opcao == "3":
+            logging.info("Encerrando a aplicação.")
+            break
+
+        elif opcao == "1":
+            # Executa os inserts em sequência
+            executar_script("database/dml", "Insert_Localizacao.py")
+            executar_script("database/dml", "Insert_Leituras_Ambiental.py")
+            executar_script("database/dml", "Insert_Leituras_Meteorologica.py")
+
+        elif opcao == "2":
+            # Passa interativo=True para permitir o filtro por cidade no terminal
+            executar_script("analytics", "Relatorios_estatisticos.py", interativo=True)
+
+        else:
+            print("\n ⚠️ Opção inválida! Digite 1, 2 ou 3.")
 
 if __name__ == "__main__":
     main()
