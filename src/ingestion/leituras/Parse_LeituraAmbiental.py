@@ -42,12 +42,11 @@ def tabela_ambiental() -> pd.DataFrame:
         ]].rename(
             columns={
             # Substitui os caminhos longos das propriedades JSON por nomes curtos e descritivos.
-            "estacao_id": "id_estacao",
             "timestamp": "data_leitura",
-            "qualidade_agua.temperatura.valor": "Temperatura_ºC",
-            "qualidade_agua.ph.valor": "pH",
-            "qualidade_agua.oxigenio_dissolvido.valor": "Oxigenio_Dissolvido_mg/L",
-            "qualidade_agua.condutividade.valor": "Condutividade_µS/cm"
+            "qualidade_agua.temperatura.valor": "temperatura_agua",
+            "qualidade_agua.ph.valor": "ph",
+            "qualidade_agua.oxigenio_dissolvido.valor": "oxigenio",
+            "qualidade_agua.condutividade.valor": "condutividade"
             })
 
     df_ambiental = df_ambiental.drop_duplicates().reset_index(drop=True)
@@ -57,11 +56,13 @@ def tabela_ambiental() -> pd.DataFrame:
 
     # Tratamento de duplicatas mantendo apenas o registro mais recente por cidade/data
     df_ambiental = df_ambiental.drop_duplicates(
-        subset=["id_estacao", "data_leitura"],
+        subset=["estacao_id", "data_leitura"],
         keep="first"
     ).reset_index(drop=True)   
 
-    df_ambiental["data_leitura"] = pd.to_datetime(df_ambiental["data_leitura"]).dt.strftime("%d/%m/%Y %H:%M")
+    df_ambiental["data_leitura"] = pd.to_datetime(
+        df_ambiental["data_leitura"], utc=True
+    )
 
     return df_ambiental 
 

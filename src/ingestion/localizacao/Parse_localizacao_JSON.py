@@ -43,7 +43,10 @@ def tabela_estado() -> pd.DataFrame:
 def tabela_cidade() -> pd.DataFrame:
     parse_cidade = ler_json(DIR_CIDADE)
     df_cidade = pd.json_normalize(parse_cidade)[
-        ["ibge", "cidade", "sigla_estado"]
+        ["ibge", 
+         "cidade", 
+         "sigla_estado"
+        ]
     ].rename(columns={
         "ibge": "codigo_ibge_cidade",
         "cidade": "nome_cidade"

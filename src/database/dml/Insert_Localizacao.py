@@ -11,11 +11,16 @@ import pandas as pd
 # o comando; a alteração só acontece quando connection.execute() o executa.
 from sqlalchemy import create_engine, text
 
+import sys
+from pathlib import Path
+parse_dir = Path(__file__).resolve().parents[2]
+sys.path.append(str(parse_dir))
+
 
 from ingestion.localizacao.Parse_localizacao_JSON import (
     tabela_cidade,
     tabela_estado,
-    tabela_estacao,
+    tabela_estacao
 )
 
 # Configurações da conexão com a instância local do SQL Server.

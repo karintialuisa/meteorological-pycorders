@@ -39,6 +39,7 @@ def tabela_metereologica() -> pd.DataFrame:
         parse_metereologica["leituras_meteorologicas"]
         )[[
             "cidade",
+            "estado",
             "timestamp",
             "dados_meteorologicos.temperatura_ar.valor",
             "dados_meteorologicos.condicao.description",
@@ -62,7 +63,7 @@ def tabela_metereologica() -> pd.DataFrame:
 
     # Tratamento de duplicatas mantendo apenas o registro mais recente por cidade/data
     df_metereologica = df_metereologica.drop_duplicates(
-        subset=["cidade", "data_leitura"], keep="first"
+        subset=["cidade", "estado", "data_leitura"], keep="first"
     ).reset_index(drop=True)   
 
     # =========================================================================

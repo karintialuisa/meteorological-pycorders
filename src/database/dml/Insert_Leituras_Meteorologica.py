@@ -14,7 +14,7 @@ from sqlalchemy import create_engine, text
 sys.path.append(str(Path(__file__).resolve().parents[2]))
 
 # Importa a função do módulo Parse_leituras_JSON
-from src.ingestion.leituras.Parse_LeituraMetereologica import tabela_meteorologica
+from ingestion.leituras.Parse_LeituraMetereologica import tabela_metereologica
 
 # Configurações da conexão com a instância local do SQL Server
 servidor = r".\SQLEXPRESS"  # Ou 'localhost\SQLEXPRESS'
@@ -35,21 +35,33 @@ engine = create_engine(f"mssql+pyodbc:///?odbc_connect={params}")
 
 
 def resolver_id_cidade(df_leituras: pd.DataFrame, connection) -> pd.DataFrame:
-    """Associa o nome da cidade trazido do JSON ao id numérico (id_cidade) da tabela cidade do banco."""
-    if "cidade" not in df_leituras.columns:
-        raise KeyError("A coluna 'cidade' não foi encontrada no DataFrame vindo de tabela_meteorologica().")
+    """Associa cidade e estado do JSON ao id_cidade gerado pelo banco."""
+    colunas_necessarias = {"cidade", "estado"}
+    colunas_ausentes = colunas_necessarias.difference(df_leituras.columns)
+    if colunas_ausentes:
+        raise KeyError(
+            "Colunas ausentes no DataFrame meteorológico: "
+            f"{sorted(colunas_ausentes)}"
+        )
 
-    # 1. Busca cidades cadastradas no SQL Server mapeando para id_cidade
+    # 1. Busca as cidades e seus estados usando os IDs gerados pelo SQL Server.
     cidades_banco = pd.read_sql(
-        text("SELECT id AS id_cidade, nome FROM cidade"), connection
+        text(
+            "SELECT c.id AS id_cidade, c.nome AS nome_cidade, "
+            "e.nome AS nome_estado "
+            "FROM cidade AS c "
+            "INNER JOIN estado AS e ON e.id = c.id_estado"
+        ),
+        connection,
     )
 
-    # 2. Merge com a tabela de cidades do banco
+    # 2. Cidade e estado evitam vínculos incorretos entre municípios homônimos.
     df_leituras = df_leituras.merge(
         cidades_banco,
-        left_on="cidade",
-        right_on="nome",
+        left_on=["cidade", "estado"],
+        right_on=["nome_cidade", "nome_estado"],
         how="left",
+        validate="many_to_one",
     )
 
     # 3. Verifica se alguma cidade no JSON não possui id_cidade correspondente no banco
@@ -61,7 +73,9 @@ def resolver_id_cidade(df_leituras: pd.DataFrame, connection) -> pd.DataFrame:
 
 
     # 5. Remove colunas auxiliares que não fazem parte da tabela de destino
-    df_leituras = df_leituras.drop(columns=["cidade", "nome"], errors="ignore")
+    df_leituras = df_leituras.drop(
+        columns=["cidade", "estado", "nome_cidade", "nome_estado"]
+    )
 
     return df_leituras
 
@@ -69,7 +83,7 @@ def resolver_id_cidade(df_leituras: pd.DataFrame, connection) -> pd.DataFrame:
 def inserir_dados():
     try:
         print("Obtendo dados do Parse JSON...")
-        df_dados = tabela_meteorologica()
+        df_dados = tabela_metereologica()
 
         if df_dados.empty:
             print("Nenhum dado encontrado para inserir.")

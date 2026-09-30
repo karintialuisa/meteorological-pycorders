@@ -14,12 +14,13 @@ from sqlalchemy import create_engine, text
 sys.path.append(str(Path(__file__).resolve().parents[2]))
 
 # Importa a função do módulo Parse_leituras_JSON
-from src.ingestion.leituras.Parse_LeituraAmbiental import tabela_ambiental
+from ingestion.leituras.Parse_LeituraAmbiental import tabela_ambiental
 from ingestion.localizacao.Parse_localizacao_JSON import (
     tabela_cidade,
     tabela_estacao,
-    tabela_estado,
+    tabela_estado
 )
+
 
 # Configurações da conexão com a instância local do SQL Server
 servidor = r".\SQLEXPRESS"  # Ou 'localhost\SQLEXPRESS'
