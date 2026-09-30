@@ -1,0 +1,36 @@
+2026-09-30 10:56:20 [INFO] ============================================================
+2026-09-30 10:56:20 [INFO] Iniciando o fluxo de execuções dos Parsers...
+2026-09-30 10:56:20 [INFO] ============================================================
+2026-09-30 10:56:20 [INFO] Iniciando a execução do script: dml/Insert_Localizacao.py
+2026-09-30 10:56:25 [INFO] [Insert_Localizacao.py] Saída: Dados inseridos com sucesso!
+2026-09-30 10:56:25 [INFO] Sucesso: Script dml/Insert_Localizacao.py finalizado.
+2026-09-30 10:56:25 [INFO] Iniciando a execução do script: dml/Insert_Leituras_Ambiental.py
+2026-09-30 10:56:28 [INFO] [Insert_Leituras_Ambiental.py] Saída: Obtendo dados tratados do Parse JSON...
+Inserindo 30 registros na tabela 'qualidade_agua'...
+Carga realizada com sucesso!
+2026-09-30 10:56:28 [INFO] Sucesso: Script dml/Insert_Leituras_Ambiental.py finalizado.
+2026-09-30 10:56:28 [INFO] Iniciando a execução do script: dml/Insert_Leituras_Meteorologica.py
+2026-09-30 10:56:31 [INFO] [Insert_Leituras_Meteorologica.py] Saída: Obtendo dados do Parse JSON...
+Inserindo 30 registros na tabela 'leitura_meteorologica'...
+2026-09-30 10:56:31 [INFO] Sucesso: Script dml/Insert_Leituras_Meteorologica.py finalizado.
+2026-09-30 10:56:31 [INFO] ============================================================
+2026-09-30 10:56:31 [INFO] Todos os Parsers foram executados com SUCESSO!
+2026-09-30 10:56:31 [INFO] ============================================================
+2026-09-30 10:58:37 [INFO] ============================================================
+2026-09-30 10:58:37 [INFO] Iniciando o fluxo de execuções dos Parsers...
+2026-09-30 10:58:37 [INFO] ============================================================
+2026-09-30 10:58:37 [INFO] Iniciando a execução do script: dml/Insert_Localizacao.py
+2026-09-30 10:58:41 [INFO] [Insert_Localizacao.py] Saída: Dados inseridos com sucesso!
+2026-09-30 10:58:41 [INFO] Sucesso: Script dml/Insert_Localizacao.py finalizado.
+2026-09-30 10:58:41 [INFO] Iniciando a execução do script: dml/Insert_Leituras_Ambiental.py
+2026-09-30 10:58:45 [INFO] [Insert_Leituras_Ambiental.py] Saída: Obtendo dados tratados do Parse JSON...
+Inserindo 30 registros na tabela 'qualidade_agua'...
+Carga realizada com sucesso!
+2026-09-30 10:58:45 [INFO] Sucesso: Script dml/Insert_Leituras_Ambiental.py finalizado.
+2026-09-30 10:58:45 [INFO] Iniciando a execução do script: dml/Insert_Leituras_Meteorologica.py
+2026-09-30 10:58:48 [INFO] [Insert_Leituras_Meteorologica.py] Saída: Obtendo dados do Parse JSON...
+Inserindo 30 registros na tabela 'leitura_meteorologica'...
+2026-09-30 10:58:48 [INFO] Sucesso: Script dml/Insert_Leituras_Meteorologica.py finalizado.
+2026-09-30 10:58:48 [INFO] ============================================================
+2026-09-30 10:58:48 [INFO] Todos os Parsers foram executados com SUCESSO!
+2026-09-30 10:58:48 [INFO] ============================================================
