@@ -5,7 +5,7 @@ estruturas aninhadas em DataFrames tabulares e prepara os dados para a carga
 no banco de dados.
 """
 
-# 1. Biblioteca para manipulação de arquivos JSON
+# 1 . Biblioteca para manipulação de arquivos JSON
 import json
 
 # 2. Biblioteca para manipulação de caminhos de arquivos
@@ -17,7 +17,7 @@ import pandas as pd
 # 4. Diretório base para arquivos de parsing JSON
 DIR_PARSE = Path(__file__).resolve().parent
 
-# 5. Diretório para os arquivos JSON
+# 5. Diretório para o arquivo JSON de cidade e estado
 DIR_CIDADE = DIR_PARSE / "municipio.json"
 DIR_ESTADO = DIR_PARSE / "estado.json"
 DIR_ESTACAO = DIR_PARSE / "estacoes.json"
