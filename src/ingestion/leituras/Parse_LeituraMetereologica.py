@@ -8,7 +8,6 @@
 import json
 
 # 2. Biblioteca para manipulação de caminhos de arquivos
-from multiprocessing import connection
 from pathlib import Path
 
 # 3. Biblioteca para manipulação de dados em formato tabular (DataFrames)
