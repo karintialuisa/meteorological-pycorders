@@ -1,3 +1,4 @@
+USE monitoramento;
 -- 1. Desativa temporariamente as restrições de chave estrangeira
 EXEC sp_msforeachtable "ALTER TABLE ? NOCHECK CONSTRAINT all";
 

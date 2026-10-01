@@ -1,47 +1,59 @@
-# ============================================================
-# ASSUNTO: Conexão com o banco de dados SQL Server Express
-# Inserção de dados na tabela leituras ambiental
-# ============================================================
-
+import os
 import sys
 import urllib.parse
 from pathlib import Path
 
+from dotenv import load_dotenv
 import pandas as pd
 from sqlalchemy import create_engine, text
 
-# Permite importar o pacote ingestion ao executar este arquivo diretamente.
+
 sys.path.append(str(Path(__file__).resolve().parents[2]))
 
-# Importa a função do módulo Parse_leituras_JSON
 from ingestion.leituras.Parse_LeituraAmbiental import tabela_ambiental
 from ingestion.localizacao.Parse_localizacao_JSON import (
     tabela_cidade,
     tabela_estacao,
-    tabela_estado
+    tabela_estado,
 )
 
+# Localiza a raiz do projeto para o .env e sys.path
+BASE_DIR = Path(__file__).resolve().parents[3]
 
-# Configurações da conexão com a instância local do SQL Server
-servidor = r".\SQLEXPRESS"  # Ou 'localhost\SQLEXPRESS'
-database = "monitoramento"
+# Carrega as variáveis de ambiente do arquivo .env localizado na raiz do projeto
+load_dotenv(dotenv_path=BASE_DIR / ".env")
+
+
+def get_env(chave: str) -> str:
+    valor = os.getenv(chave)
+    if not valor:
+        raise KeyError(
+            f"❌ Configuração ausente: A chave '{chave}' não foi encontrada no arquivo .env"
+        )
+    return valor
+
+
+# Leitura direta das variáveis do .env
+servidor = get_env("DB_HOST")
+database = get_env("DB_NAME")
+trusted_connection = get_env("DB_TRUSTED_CONNECTION")
+
 tabela_destino = "qualidade_agua"
-modo_carga = "append"  # Mantém os dados existentes na tabela
+modo_carga = "append"
 
-# Codifica a string ODBC para utilização com SQLAlchemy
+
+
 params = urllib.parse.quote_plus(
     f"DRIVER={{ODBC Driver 17 for SQL Server}};"
     f"SERVER={servidor};"
     f"DATABASE={database};"
-    f"Trusted_Connection=yes;"
+    f"Trusted_Connection={trusted_connection};"
 )
 
-# Cria a engine de conexão com o banco
 engine = create_engine(f"mssql+pyodbc:///?odbc_connect={params}")
 
 
 def resolver_id_estacao(df_leituras: pd.DataFrame, connection) -> pd.DataFrame:
-    """Troca o código da estação do JSON pelo id gerado no banco, usando o nome."""
     df_estacao = tabela_estacao(tabela_cidade(), tabela_estado())[["id", "nome"]]
     duplicados = df_estacao[df_estacao["id"].duplicated(keep=False)]
     if not duplicados.empty:
@@ -85,10 +97,8 @@ def inserir_dados():
 
         with engine.begin() as connection:
             df_dados = resolver_id_estacao(df_dados, connection)
-
             print(f"Inserindo {len(df_dados)} registros na tabela '{tabela_destino}'...")
 
-            # O Pandas/SQLAlchemy identificará automaticamente os dtypes do DataFrame
             df_dados.to_sql(
                 name=tabela_destino,
                 con=connection,
