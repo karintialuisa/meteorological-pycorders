@@ -1,7 +1,8 @@
-# ============================================================
-# ASSUNTO: Conexão com o banco de dados SQL Server Express
-# Inserção de dados na tabela leituras ambiental
-# ============================================================
+"""Carga das leituras ambientais no banco de dados.
+
+Este módulo lê os dados de qualidade da água tratados em JSON, resolve os IDs
+de estação no banco e insere os registros na tabela qualidade_agua.
+"""
 
 import sys
 import urllib.parse
@@ -41,7 +42,15 @@ engine = create_engine(f"mssql+pyodbc:///?odbc_connect={params}")
 
 
 def resolver_id_estacao(df_leituras: pd.DataFrame, connection) -> pd.DataFrame:
-    """Troca o código da estação do JSON pelo id gerado no banco, usando o nome."""
+    """Converte o identificador da estação do JSON para o ID do banco.
+
+    Args:
+        df_leituras (pd.DataFrame): DataFrame com as leituras ambientais.
+        connection: Conexão ativa com o banco de dados.
+
+    Returns:
+        pd.DataFrame: DataFrame com a coluna de estação convertida para id_estacao.
+    """
     df_estacao = tabela_estacao(tabela_cidade(), tabela_estado())[["id", "nome"]]
     duplicados = df_estacao[df_estacao["id"].duplicated(keep=False)]
     if not duplicados.empty:
@@ -75,6 +84,11 @@ def resolver_id_estacao(df_leituras: pd.DataFrame, connection) -> pd.DataFrame:
 
 
 def inserir_dados():
+    """Executa a inserção dos dados ambientais no banco de dados.
+
+    O processo inclui carregamento dos dados, resolução do ID da estação,
+    gravação dos registros e confirmação final da operação.
+    """
     try:
         print("Obtendo dados tratados do Parse JSON...")
         df_dados = tabela_ambiental()

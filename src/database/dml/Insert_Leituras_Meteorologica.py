@@ -1,7 +1,9 @@
-# ============================================================
-# ASSUNTO: Conexão com o banco de dados SQL Server Express
-# Inserção de dados na tabela leituras meteorologica
-# ============================================================
+"""Carga das leituras meteorológicas no banco de dados.
+
+Este módulo lê os dados tratados do JSON meteorológico, resolve os IDs de cidade
+correspondentes no banco e realiza a inserção dos registros na tabela
+leitura_meteorologica.
+"""
 
 import sys
 import urllib.parse
@@ -35,7 +37,15 @@ engine = create_engine(f"mssql+pyodbc:///?odbc_connect={params}")
 
 
 def resolver_id_cidade(df_leituras: pd.DataFrame, connection) -> pd.DataFrame:
-    """Associa cidade e estado do JSON ao id_cidade gerado pelo banco."""
+    """Resolve o identificador da cidade com base no nome e estado.
+
+    Args:
+        df_leituras (pd.DataFrame): DataFrame contendo as leituras meteorológicas.
+        connection: Conexão ativa com o banco de dados SQL Server.
+
+    Returns:
+        pd.DataFrame: DataFrame enriquecido com o id_cidade do banco.
+    """
     colunas_necessarias = {"cidade", "estado"}
     colunas_ausentes = colunas_necessarias.difference(df_leituras.columns)
     if colunas_ausentes:
@@ -81,6 +91,11 @@ def resolver_id_cidade(df_leituras: pd.DataFrame, connection) -> pd.DataFrame:
 
 
 def inserir_dados():
+    """Executa o processo completo de carga dos dados meteorológicos.
+
+    A função carrega os dados tratados, resolve os identificadores do banco,
+    insere os registros na tabela e imprime o resultado da operação.
+    """
     try:
         print("Obtendo dados do Parse JSON...")
         df_dados = tabela_metereologica()

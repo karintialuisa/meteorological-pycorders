@@ -1,8 +1,9 @@
-# ============================================================
-# ASSUNTO: Conexão com o banco de dados SQL Server Express
-# Inserção de dados na tabela Cidade, estado, estacao
-# ============================================================
+"""Carga inicial de dados de localização no banco de dados.
 
+Este módulo conecta ao SQL Server Express, lê as tabelas de localização
+normalizadas a partir dos arquivos JSON e insere os dados nas tabelas de
+estado, cidade e estação.
+"""
 
 import urllib
 import pandas as pd
@@ -42,7 +43,11 @@ engine = create_engine(f"mssql+pyodbc:///?odbc_connect={params}")
 
 
 def limpar_localizacao(connection):
-    """Remove os dados de localização e reinicia os IDs no modo replace."""
+    """Remove os registros de localização e reinicia os identificadores.
+
+    Args:
+        connection: Conexão ativa com o banco de dados SQL Server.
+    """
     if modo_carga == "replace":
         # A exclusão segue a ordem das foreign keys: filha antes da tabela pai.
         # text() prepara o comando e connection.execute() envia esse comando ao SQL Server. Sem o comando execute(), text() não consulta nem altera o banco.
@@ -58,7 +63,14 @@ def limpar_localizacao(connection):
 
 
 def inserir_localizacao(connection):
-    """Insere estados e cidades, relacionando cidades aos IDs dos estados."""
+    """Insere os estados e cidades no banco, vinculando cada cidade ao estado.
+
+    Args:
+        connection: Conexão SQLAlchemy utilizada para executar as operações.
+
+    Returns:
+        pandas.DataFrame: Tabela com os IDs de estado e seus códigos IBGE.
+    """
     df_estado = tabela_estado()
     # O JSON usa texto para IBGE; a coluna do banco e a comparação usam inteiro.
     df_estado["codigo_ibge_estado"] = pd.to_numeric(
@@ -121,7 +133,13 @@ def inserir_localizacao(connection):
 
 
 def inserir_estacoes(connection, estado_ids):
-    """Resolve os códigos IBGE em IDs do banco antes de inserir as estações."""
+    """Insere as estações da rede, relacionando cada uma a cidade e ao estado.
+
+    Args:
+        connection: Conexão ativa com o banco de dados.
+        estado_ids (pandas.DataFrame): DataFrame com os IDs de estado e os códigos
+            IBGE relacionados.
+    """
     df_estacao = tabela_estacao(tabela_cidade(), tabela_estado())
     cidade_ids = pd.read_sql(
         text("SELECT id, codigo_ibge, id_estado FROM cidade"), connection

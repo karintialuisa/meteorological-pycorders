@@ -1,3 +1,10 @@
+"""Módulo principal da aplicação de processamento meteorológico.
+
+Este arquivo configura o sistema de logs, apresenta o menu interativo da
+aplicação e orquestra a execução de scripts de ETL (Extração, Transformação
+ e Carga) e de relatórios estatísticos.
+"""
+
 import logging
 from pathlib import Path
 import sys
@@ -24,6 +31,11 @@ MENU = {
 }
 
 def exibir_menu() -> str:
+    """Exibe as opções disponíveis ao usuário e retorna a escolha informada.
+
+    Returns:
+        str: Valor digitado pelo usuário, sem espaços extras.
+    """
     print("\n" + "=" * 40)
     print("Menu de opções:")
     for key, value in MENU.items():
@@ -32,9 +44,16 @@ def exibir_menu() -> str:
     return input("Escolha uma opção: ").strip()
 
 def executar_script(pasta: str, arquivo: str, interativo: bool = False) -> bool:
-    """
-    Executa o script secundário. 
-    Se interativo=True, permite input() e print() direto no terminal.
+    """Executa um script Python do projeto.
+
+    Args:
+        pasta (str): Nome da subpasta em que o script está localizado.
+        arquivo (str): Nome do arquivo Python a ser executado.
+        interativo (bool, optional): Quando True, executa o script diretamente no
+            terminal para permitir interação do usuário. Defaults to False.
+
+    Returns:
+        bool: True se a execução do script foi bem-sucedida, False em caso de erro.
     """
     caminho_script = BASE_DIR / pasta / arquivo if pasta else BASE_DIR / arquivo
     
@@ -72,6 +91,10 @@ def executar_script(pasta: str, arquivo: str, interativo: bool = False) -> bool:
     return True
 
 def main():
+    """Ponto de entrada principal da aplicação.
+
+    Mantém o menu principal em execução até que o usuário escolha sair.
+    """
     while True:
         opcao = exibir_menu()
 

@@ -1,3 +1,10 @@
+"""Orquestra a execução dos scripts de carga de dados no banco.
+
+Este módulo executa em sequência os scripts responsáveis por importar as
+informações de localização e de leituras ambientais e meteorológicas para o
+SQL Server.
+"""
+
 import logging
 from pathlib import Path
 import sys
@@ -34,9 +41,15 @@ PARSER_SEQUENCIA = [
 ]
 
 def executar_main(pasta: str, arquivo: str) -> None:
-    """
-    Executa um script Python localizado em uma subpasta de 'database'.
-    Interrompe a execução e grava o erro caso o script falhe.
+    """Executa um script Python localizado na pasta de dados do projeto.
+
+    Args:
+        pasta (str): Nome da subpasta dentro de database onde o script está.
+        arquivo (str): Nome do arquivo Python a ser executado.
+
+    Raises:
+        FileNotFoundError: Se o arquivo informado não existir.
+        RuntimeError: Se a execução do script retornar erro.
     """
     caminho_script = DATABASE_DIR / pasta / arquivo
     
@@ -66,6 +79,11 @@ def executar_main(pasta: str, arquivo: str) -> None:
     logging.info(f"Sucesso: Script {pasta}/{arquivo} finalizado.")
 
 def main():
+    """Executa a sequência completa de scripts de carga do projeto.
+
+    A rotina percorre a lista de arquivos em ordem e interrompe a execução caso
+    qualquer etapa falhe.
+    """
     logging.info("=" * 60)
     logging.info("Iniciando o fluxo de execuções dos Parsers...")
     logging.info("=" * 60)

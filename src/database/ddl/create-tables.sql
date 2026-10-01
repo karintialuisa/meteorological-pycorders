@@ -1,3 +1,7 @@
+-- Cria a estrutura relacional do banco de dados monitoramento.
+-- O script remove as tabelas existentes e recria as entidades de localização, estações ambientais, qualidade da água e leituras meteorológicas. 
+-- A ordem das operações respeita as dependências entre as chaves estrangeiras.
+
 USE monitoramento
 GO
 

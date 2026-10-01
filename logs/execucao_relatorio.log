@@ -1,0 +1,23 @@
+30-09-2026 21:25 - INFO - ==================== Iniciando: Relatorios_estatisticos.py ====================
+30-09-2026 21:25 - ERROR - ❌ Falha em Relatorios_estatisticos.py
+30-09-2026 21:25 - INFO - Encerrando a aplicação.
+30-09-2026 21:26 - INFO - ==================== Iniciando: Relatorios_estatisticos.py ====================
+30-09-2026 21:26 - ERROR - ❌ Falha em Relatorios_estatisticos.py
+30-09-2026 21:28 - INFO - ==================== Iniciando: Relatorios_estatisticos.py ====================
+30-09-2026 21:28 - ERROR - ❌ Falha em Relatorios_estatisticos.py
+30-09-2026 21:28 - INFO - Encerrando a aplicação.
+30-09-2026 21:29 - INFO - ==================== Iniciando: Relatorios_estatisticos.py ====================
+30-09-2026 21:30 - INFO - ✅ Sucesso em Relatorios_estatisticos.py
+30-09-2026 21:30 - INFO - ==================== Iniciando: Insert_Localizacao.py ====================
+30-09-2026 21:30 - INFO - [Insert_Localizacao.py] Saída: Dados inseridos com sucesso!
+30-09-2026 21:30 - INFO - ✅ Sucesso em Insert_Localizacao.py
+30-09-2026 21:30 - INFO - ==================== Iniciando: Insert_Leituras_Ambiental.py ====================
+30-09-2026 21:30 - INFO - [Insert_Leituras_Ambiental.py] Saída: Obtendo dados tratados do Parse JSON...
+Inserindo 30 registros na tabela 'qualidade_agua'...
+Carga realizada com sucesso!
+30-09-2026 21:30 - INFO - ✅ Sucesso em Insert_Leituras_Ambiental.py
+30-09-2026 21:30 - INFO - ==================== Iniciando: Insert_Leituras_Meteorologica.py ====================
+30-09-2026 21:30 - INFO - [Insert_Leituras_Meteorologica.py] Saída: Obtendo dados do Parse JSON...
+Inserindo 30 registros na tabela 'leitura_meteorologica'...
+30-09-2026 21:30 - INFO - ✅ Sucesso em Insert_Leituras_Meteorologica.py
+30-09-2026 21:31 - INFO - Encerrando a aplicação.

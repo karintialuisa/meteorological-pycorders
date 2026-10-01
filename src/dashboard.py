@@ -1,3 +1,10 @@
+"""Dashboard interativo para monitoramento de qualidade da água.
+
+Este módulo carrega os dados de leituras ambientais, aplica filtros por estado,
+cidade e estação, calcula estatísticas resumidas e exibe os resultados em uma
+interface web com Streamlit.
+"""
+
 import json
 from pathlib import Path
 
@@ -17,7 +24,12 @@ DIR_LEITURAS = Path(__file__).resolve().parent / "ingestion" / "leituras"
 
 @st.cache_data
 def carregar_leituras() -> pd.DataFrame:
-    """Lê o JSON ambiental e transforma os campos aninhados em colunas."""
+    """Carrega e normaliza as leituras ambientais contidas no arquivo JSON.
+
+    Returns:
+        pd.DataFrame: DataFrame com colunas mais legíveis e ordenado pela data mais
+            recente.
+    """
     caminho = DIR_LEITURAS / "leituras_ambientais.json"
     with caminho.open("r", encoding="utf-8") as arquivo:
         dados = json.load(arquivo)["leituras_ambientais"]
@@ -35,7 +47,15 @@ def carregar_leituras() -> pd.DataFrame:
 
 
 def calcular_estatisticas(dados: pd.DataFrame, grupo: str) -> pd.DataFrame:
-    """Calcula média, mediana, quartis e IQR por grupo."""
+    """Calcula estatísticas resumidas para um conjunto de dados agrupado.
+
+    Args:
+        dados (pd.DataFrame): DataFrame com os dados a serem agregados.
+        grupo (str): Nome da coluna usada para agrupar as observações.
+
+    Returns:
+        pd.DataFrame: Tabela com médias, medianas, quartis e IQR por grupo.
+    """
     colunas_numericas = dados.select_dtypes(include="number").columns
     estatisticas = dados.groupby(grupo)[list(colunas_numericas)].agg(
         ["mean", "median", lambda serie: serie.quantile(0.25), lambda serie: serie.quantile(0.75)]

@@ -1,7 +1,9 @@
-# ======================================================================================================
-# ASSUNTO: Conexão com o banco de dados SQL Server Express
-# Preparação e criação do DataFrame para as tabelas de localização (Cidade, Estado, Estação)
-# ============================================================
+"""Parsing e normalização dos dados de localização do projeto.
+
+Este módulo lê os arquivos JSON de estados, cidades e estações, transforma as
+estruturas aninhadas em DataFrames tabulares e prepara os dados para a carga
+no banco de dados.
+"""
 
 # 1. Biblioteca para manipulação de arquivos JSON
 import json
@@ -22,12 +24,25 @@ DIR_ESTACAO = DIR_PARSE / "estacoes.json"
 
 # 6. Função para ler arquivo JSON
 def ler_json(path_arquivo):
+    """Lê um arquivo JSON e retorna o conteúdo em memória.
+
+    Args:
+        path_arquivo: Caminho do arquivo JSON a ser carregado.
+
+    Returns:
+        object: Estrutura Python contida no JSON.
+    """
     with open(path_arquivo, "r", encoding="utf-8") as arquivo:
         conteudo = json.load(arquivo)
     return conteudo
 
 # 7. Tabela Estado
 def tabela_estado() -> pd.DataFrame:
+    """Gera o DataFrame com os dados de estados.
+
+    Returns:
+        pd.DataFrame: Tabela contendo código IBGE, sigla e nome dos estados.
+    """
     parse_estado = ler_json(DIR_ESTADO)
     df_estado = pd.json_normalize(parse_estado)[
         ["ibge", "sigla", "nome"]
@@ -41,6 +56,11 @@ def tabela_estado() -> pd.DataFrame:
 
 # 8. Tabela Cidade
 def tabela_cidade() -> pd.DataFrame:
+    """Gera o DataFrame com os dados de cidades.
+
+    Returns:
+        pd.DataFrame: Tabela contendo código IBGE, nome da cidade e sigla do estado.
+    """
     parse_cidade = ler_json(DIR_CIDADE)
     df_cidade = pd.json_normalize(parse_cidade)[
         ["ibge", 
@@ -57,6 +77,16 @@ def tabela_cidade() -> pd.DataFrame:
 
 # 9. Tabela Estação (localiza os códigos IBGE para buscar as FKs no banco)
 def tabela_estacao(df_cidade: pd.DataFrame, df_estado: pd.DataFrame) -> pd.DataFrame:
+    """Gera o DataFrame com os dados de estações meteorológicas.
+
+    Args:
+        df_cidade (pd.DataFrame): DataFrame com os dados de cidades.
+        df_estado (pd.DataFrame): DataFrame com os dados de estados.
+
+    Returns:
+        pd.DataFrame: Tabela preparada com os códigos IBGE de cidade e estado e
+            os metadados da estação.
+    """
     parse_estacao = ler_json(DIR_ESTACAO)
     
     df_estacao = pd.json_normalize(parse_estacao['estacoes_ambientais'])[
