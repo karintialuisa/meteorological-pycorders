@@ -67,3 +67,7 @@ def obter_leituras_meteorologicas(cidade: Optional[str] = Query(None, descriptio
     if cidade and "cidade" in df.columns:
         df = df[df["cidade"].str.lower() == cidade.lower()]
     return df.to_dict(orient="records")
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -1,3 +1,10 @@
+"""Módulo principal da aplicação de processamento meteorológico.
+
+Este arquivo configura o sistema de logs, apresenta o menu interativo da
+aplicação e orquestra a execução de scripts de ETL (Extração, Transformação
+ e Carga) e de relatórios estatísticos.
+"""
+
 import logging
 import os
 from pathlib import Path
@@ -46,6 +53,11 @@ MENU = {
 
 
 def exibir_menu() -> str:
+    """Exibe as opções disponíveis ao usuário e retorna a escolha informada.
+
+    Returns:
+        str: Valor digitado pelo usuário, sem espaços extras.
+    """
     print("\n" + "=" * 40)
     print("Menu de opções:")
     for key, value in MENU.items():
@@ -96,6 +108,10 @@ def executar_script(
 
 
 def main():
+    """Ponto de entrada principal da aplicação.
+
+    Mantém o menu principal em execução até que o usuário escolha sair.
+    """
     while True:
         opcao = exibir_menu()
 

@@ -1,12 +1,12 @@
-# ======================================================================================================
-# ASSUNTO: Conexão com o banco de dados SQL Server Express
-# Preparação e criação do DataFrame para as tabelas leituras ambientais
-# ======================================================================================================
+"""Parsing e normalização das leituras ambientais.
+
+Este módulo lê as leituras de qualidade da água em formato JSON, achata os
+campos aninhados e prepara um DataFrame pronto para inserção no banco.
+"""
 
 # 1. Biblioteca para manipulação de arquivos JSON
 import json
 # 2. Biblioteca para manipulação de caminhos de arquivos
-from multiprocessing import connection
 from pathlib import Path
 
 # 3. Biblioteca para manipulação de dados em formato tabular (DataFrames)
@@ -17,14 +17,27 @@ DIR_JSON_AMBIENTAIS = Path(__file__).resolve().parent / "leituras_ambientais.jso
 
 # 5. criar função e ler o arquivo JSON de leituras meteorológicas
 def ler_json(path_arquivo):
+    """Lê um arquivo JSON de leituras ambientais.
+
+    Args:
+        path_arquivo: Caminho do arquivo JSON a ser lido.
+
+    Returns:
+        object: Conteúdo carregado do arquivo JSON.
+    """
     with open(path_arquivo, "r", encoding="utf-8") as arquivo:
         conteudo = json.load(arquivo)
     return conteudo
 
 # 6. Função para criar o DataFrame a partir do JSON de leituras meteorológicas
 def tabela_ambiental() -> pd.DataFrame:
-    """Carrega o arquivo JSON ambiental, realiza todo o parse, limpeza e
-    tratamento de tipos dos dados para corresponder à tabela leituras_ambientais.
+    """Cria e trata o DataFrame com as leituras ambientais.
+
+    O processo inclui normalização dos dados aninhados, remoção de registros
+    duplicados por estação e data e conversão da coluna de tempo para datetime.
+
+    Returns:
+        pd.DataFrame: DataFrame pronto para inserção no banco de dados.
     """
     # 1. Normalização do JSON e seleção/renomeação das colunas
     parse_ambiental = ler_json(DIR_JSON_AMBIENTAIS)

@@ -1,3 +1,10 @@
+"""Geração de relatórios estatísticos para leituras ambientais e meteorológicas.
+
+Este módulo carrega os arquivos JSON de leitura, normaliza os dados aninhados,
+permite a seleção de uma cidade pelo terminal e calcula estatísticas descritivas
+como mediana, quartis e IQR para cada variável monitorada.
+"""
+
 import json
 import logging
 import os
@@ -47,11 +54,17 @@ COLUNAS_METEOROLOGICAS = {
 
 
 def carregar_json(caminho_arquivo: Path, chave_lista: str) -> pd.DataFrame:
-    """Lê o arquivo JSON e usa json_normalize para achatar a estrutura aninhada.
+    """Carrega um arquivo JSON e normaliza a estrutura em um DataFrame.
 
-    'chave_lista' representa a chave do array interno (ex:
-    'leituras_ambientais').
+    Args:
+        caminho_arquivo (Path): Caminho para o arquivo JSON a ser lido.
+        chave_lista (str): Nome da chave que contém a lista de registros dentro
+            do JSON.
+
+    Returns:
+        pd.DataFrame: DataFrame com os dados achatados e prontos para análise.
     """
+    
     if not caminho_arquivo.exists():
         logging.warning(f"Arquivo não encontrado: {caminho_arquivo}")
         return pd.DataFrame()
@@ -78,10 +91,20 @@ def carregar_json(caminho_arquivo: Path, chave_lista: str) -> pd.DataFrame:
         return pd.DataFrame()
 
 
-def calcular_estatisticas(
-    df: pd.DataFrame, mapa_colunas: dict, nome_relatorio: str
-) -> pd.DataFrame:
-    """Calcula Mediana, Q1, Q3 e IQR para os campos mapeados."""
+def calcular_estatisticas(df: pd.DataFrame, mapa_colunas: dict, nome_relatorio: str) -> pd.DataFrame:
+    """Calcula estatísticas descritivas para as colunas informadas.
+
+    Args:
+        df (pd.DataFrame): DataFrame com os dados a serem avaliados.
+        mapa_colunas (dict): Dicionário mapeando nomes originais das colunas para
+            rótulos amigáveis exibidos no relatório.
+        nome_relatorio (str): Nome do tipo de relatório, como "Qualidade da Água"
+            ou "Meteorologia".
+
+    Returns:
+        pd.DataFrame: Tabela com mediana, quartis e IQR para cada variável.
+    """
+
     relatorio = []
 
     for coluna_json, nome_amigavel in mapa_colunas.items():
@@ -89,20 +112,32 @@ def calcular_estatisticas(
             serie = pd.to_numeric(df[coluna_json], errors="coerce").dropna()
 
             if not serie.empty:
+                media = serie.mean()
                 mediana = serie.median()
+                std = serie.std()
                 q1 = serie.quantile(0.25)
                 q3 = serie.quantile(0.75)
                 iqr = q3 - q1
 
+                # Cálculo de Outliers via Regra do IQR (Limite Inferior e Superior)
+                limite_inf = q1 - 1.5 * iqr
+                limite_sup = q3 + 1.5 * iqr
+                outliers = serie[
+                    (serie < limite_inf) | (serie > limite_sup)
+                ].count()
+
                 relatorio.append(
                     {
                         "Relatório": nome_relatorio,
-                        "Variável": nome_amigavel,
-                        "Total_Registros": len(serie),
+                        "Leituras": nome_amigavel,
+                        "Total Registros": len(serie),
+                        "Média": round(media, 2),
                         "Mediana": round(mediana, 2),
-                        "Q1 (25%)": round(q1, 2),
-                        "Q3 (75%)": round(q3, 2),
+                        "Desvio Padrão": round(std, 2)
+                        if pd.notna(std)
+                        else 0.0,
                         "IQR": round(iqr, 2),
+                        "Outliers": int(outliers),
                     }
                 )
         else:
@@ -113,65 +148,119 @@ def calcular_estatisticas(
     return pd.DataFrame(relatorio)
 
 
-def selecionar_e_filtrar_cidade(df_agua: pd.DataFrame, df_meteo: pd.DataFrame):
-    """Exibe um menu no terminal com as cidades encontradas nos dados e filtra os DataFrames."""
+def selecionar_cidade_e_estacao(
+    df_agua: pd.DataFrame, df_meteo: pd.DataFrame
+):
+    """Filtra os DataFrames em 2 níveis: Cidade -> Estação."""
+    col_cidade = "cidade"
+    col_estacao = "estacao" if "estacao" in df_agua.columns else "estacao_id"
+
+    # --- 1. FILTRO DE CIDADES ---
     cidades_agua = (
-        set(df_agua["cidade"].dropna().unique())
-        if "cidade" in df_agua.columns
+        set(df_agua[col_cidade].dropna().unique())
+        if col_cidade in df_agua.columns
         else set()
     )
     cidades_meteo = (
-        set(df_meteo["cidade"].dropna().unique())
-        if "cidade" in df_meteo.columns
+        set(df_meteo[col_cidade].dropna().unique())
+        if col_cidade in df_meteo.columns
         else set()
     )
-
-    # Consolida a lista única de cidades
     todas_cidades = sorted(list(cidades_agua.union(cidades_meteo)))
 
     if not todas_cidades:
-        print("⚠️ Nenhuma coluna 'cidade' foi identificada nos dados.")
-        return df_agua, df_meteo, "Todas as Cidades"
+        print("⚠️ Nenhuma coluna de cidade foi identificada nos dados.")
+        return (
+            df_agua,
+            df_meteo,
+            "Todas as Cidades",
+            "Todas as Estações",
+        )
 
     print("\n" + "=" * 50)
-    print("      FILTRO DE CIDADES DISPONÍVEIS")
+    print("      1. SELEÇÃO DE CIDADE")
     print("=" * 50)
     print(" [0] TODAS AS CIDADES (Visão Geral)")
-    for index, cidade in enumerate(todas_cidades, start=1):
-        print(f" [{index}] {cidade}")
+    for idx, cidade in enumerate(todas_cidades, start=1):
+        print(f" [{idx}] {cidade}")
     print("=" * 50)
 
+    cidade_escolhida = "Todas as Cidades"
     while True:
-        opcao = input("Digite o número da cidade desejada: ").strip()
-        if opcao == "0":
-            return df_agua, df_meteo, "Todas as Cidades"
-        elif opcao.isdigit() and 1 <= int(opcao) <= len(todas_cidades):
-            cidade_escolhida = todas_cidades[int(opcao) - 1]
-
-            # Aplica os filtros
-            df_agua_filtrado = (
-                df_agua[df_agua["cidade"] == cidade_escolhida]
-                if "cidade" in df_agua.columns
-                else df_agua
-            )
-            df_meteo_filtrado = (
-                df_meteo[df_meteo["cidade"] == cidade_escolhida]
-                if "cidade" in df_meteo.columns
-                else df_meteo
-            )
-
-            return df_agua_filtrado, df_meteo_filtrado, cidade_escolhida
+        opcao_cidade = input("Digite o número da CIDADE desejada: ").strip()
+        if opcao_cidade == "0":
+            break
+        elif opcao_cidade.isdigit() and 1 <= int(opcao_cidade) <= len(
+            todas_cidades
+        ):
+            cidade_escolhida = todas_cidades[int(opcao_cidade) - 1]
+            if col_cidade in df_agua.columns:
+                df_agua = df_agua[df_agua[col_cidade] == cidade_escolhida]
+            if col_cidade in df_meteo.columns:
+                df_meteo = df_meteo[df_meteo[col_cidade] == cidade_escolhida]
+            break
         else:
             print("⚠️ Opção inválida! Digite um número da lista acima.")
 
+    # --- 2. FILTRO DE ESTAÇÕES DA CIDADE SELECIONADA ---
+    estacoes_agua = (
+        set(df_agua[col_estacao].dropna().unique())
+        if col_estacao in df_agua.columns
+        else set()
+    )
+    estacoes_meteo = (
+        set(df_meteo[col_estacao].dropna().unique())
+        if col_estacao in df_meteo.columns
+        else set()
+    )
+    todas_estacoes = sorted(list(estacoes_agua.union(estacoes_meteo)))
+
+    estacao_escolhida = "Todas as Estações"
+    if todas_estacoes:
+        print("\n" + "=" * 50)
+        print(f"      2. SELEÇÃO DE ESTAÇÃO ({cidade_escolhida})")
+        print("=" * 50)
+        print(" [0] TODAS AS ESTAÇÕES DESSA CIDADE")
+        for idx, estacao in enumerate(todas_estacoes, start=1):
+            print(f" [{idx}] {estacao}")
+        print("=" * 50)
+
+        while True:
+            opcao_estacao = input(
+                "Digite o número da ESTAÇÃO desejada: "
+            ).strip()
+            if opcao_estacao == "0":
+                break
+            elif opcao_estacao.isdigit() and 1 <= int(opcao_estacao) <= len(
+                todas_estacoes
+            ):
+                estacao_escolhida = todas_estacoes[int(opcao_estacao) - 1]
+                if col_estacao in df_agua.columns:
+                    df_agua = df_agua[
+                        df_agua[col_estacao] == estacao_escolhida
+                    ]
+                if col_estacao in df_meteo.columns:
+                    df_meteo = df_meteo[
+                        df_meteo[col_estacao] == estacao_escolhida
+                    ]
+                break
+            else:
+                print("⚠️ Opção inválida! Digite um número da lista acima.")
+
+    return df_agua, df_meteo, cidade_escolhida, estacao_escolhida
+
 
 def main():
+    """Executa o fluxo principal de geração dos relatórios estatísticos.
+
+    O processo inclui carregamento dos dados, seleção interativa da cidade,
+    cálculo das estatísticas por variável e impressão dos resultados em tabela.
+    """
+
     logging.info("Iniciando a geração dos Relatórios Estatísticos...")
 
     # 1. CARREGA OS DATAFRAMES
-    df_agua = carregar_json(
-        DIR_JSON_AGUA, chave_lista="leituras_ambientais"
-    )
+    df_agua = carregar_json(DIR_JSON_AGUA, chave_lista="leituras_ambientais")
     df_meteo = carregar_json(
         DIR_JSON_METEO, chave_lista="leituras_meteorologicas"
     )
@@ -180,12 +269,14 @@ def main():
         logging.warning("Nenhum dado pôde ser carregado dos arquivos JSON.")
         return
 
-    # 2. SELEÇÃO INTERATIVA DE FILTRO POR CIDADE VIA TERMINAL
-    df_agua, df_meteo, nome_filtro_cidade = selecionar_e_filtrar_cidade(
-        df_agua, df_meteo
+    # 2. SELEÇÃO DINÂMICA DE CIDADE E ESTAÇÃO
+    df_agua, df_meteo, nome_cidade, nome_estacao = (
+        selecionar_cidade_e_estacao(df_agua, df_meteo)
     )
 
-    print(f"\n📌 Exibindo estatísticas para: [ {nome_filtro_cidade} ]\n")
+    print(
+        f"\n📌 Exibindo estatísticas para Cidade: [ {nome_cidade} ] | Estação: [ {nome_estacao} ]\n"
+    )
 
     # 3. PROCESSA E IMPRIME LEITURAS AMBIENTAIS
     if not df_agua.empty:
@@ -193,9 +284,11 @@ def main():
             df_agua, COLUNAS_AGUA, "Qualidade da Água"
         )
         if not relatorio_agua.empty:
-            print("=" * 80)
-            print(f"📊 RELATÓRIO: LEITURAS AMBIENTAIS - {nome_filtro_cidade}")
-            print("=" * 80)
+            print("=" * 90)
+            print(
+                f"📊 RELATÓRIO: LEITURAS AMBIENTAIS - Cidade: {nome_cidade} | Estação: {nome_estacao}"
+            )
+            print("=" * 90)
             print(
                 tabulate(
                     relatorio_agua,
@@ -206,7 +299,7 @@ def main():
             )
             print("\n")
             logging.info(
-                f"--- RELATÓRIO AMBIENTAL ({nome_filtro_cidade}) ---\n{relatorio_agua.to_string(index=False)}\n"
+                f"--- RELATÓRIO AMBIENTAL ({nome_cidade} - {nome_estacao}) ---\n{relatorio_agua.to_string(index=False)}\n"
             )
 
     # 4. PROCESSA E IMPRIME LEITURAS METEOROLÓGICAS
@@ -215,11 +308,11 @@ def main():
             df_meteo, COLUNAS_METEOROLOGICAS, "Meteorologia"
         )
         if not relatorio_meteo.empty:
-            print("=" * 80)
+            print("=" * 90)
             print(
-                f"🌤️ RELATÓRIO: LEITURAS METEOROLÓGICAS - {nome_filtro_cidade}"
+                f"🌤️️  RELATÓRIO: LEITURAS METEOROLÓGICAS - Cidade: {nome_cidade} | Estação: {nome_estacao}"
             )
-            print("=" * 80)
+            print("=" * 90)
             print(
                 tabulate(
                     relatorio_meteo,
@@ -230,7 +323,7 @@ def main():
             )
             print("\n")
             logging.info(
-                f"--- RELATÓRIO METEOROLÓGICO ({nome_filtro_cidade}) ---\n{relatorio_meteo.to_string(index=False)}\n"
+                f"--- RELATÓRIO METEOROLÓGICO ({nome_cidade} - {nome_estacao}) ---\n{relatorio_meteo.to_string(index=False)}\n"
             )
 
 
