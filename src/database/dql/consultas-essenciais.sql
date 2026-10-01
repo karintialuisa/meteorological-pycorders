@@ -90,3 +90,4 @@ WHERE lm.data_leitura >= @data_inicio
   AND lm.data_leitura < @data_fim
 GROUP BY ci.nome, uf.sigla
 ORDER BY uf.sigla, ci.nome;
+
