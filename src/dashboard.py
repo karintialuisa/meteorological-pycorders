@@ -130,8 +130,8 @@ filtro_estacao = estacao_selecionada if estacao_selecionada != "Todas" else None
 # 3. FILTRO DE PERÍODO DE DATAS
 st.sidebar.subheader("📅 Período")
 hoje = date.today()
-data_padrao_inicio = date(2026, 09, 15)
-data_padrao_fim = date(2026, 09, 26)
+data_padrao_inicio = date(2026, 9, 15)
+data_padrao_fim = date(2026, 9, 26)
 
 periodo_selecionado = st.sidebar.date_input(
     "Selecione o Intervalo",
