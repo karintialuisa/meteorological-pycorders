@@ -750,6 +750,396 @@
       },
       "cidade": "Salvador",
       "estado": "Bahia"
+    },
+    {
+      "id": "LEIT-AMB-000031", "estacao_id": "AMB-001", "timestamp": "2026-09-18T08:24:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 21.6, "unidade": "°C" }, "ph": { "valor": 7.2, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.7, "unidade": "mg/L" }, "condutividade": { "valor": 147.3, "unidade": "µS/cm" } },
+      "cidade": "Porto Velho", "estado": "Rondônia"
+    },
+    {
+      "id": "LEIT-AMB-000032", "estacao_id": "AMB-001", "timestamp": "2026-09-19T08:18:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 38.2, "unidade": "°C" }, "ph": { "valor": 7.1, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.9, "unidade": "mg/L" }, "condutividade": { "valor": 148.5, "unidade": "µS/cm" } },
+      "cidade": "Porto Velho", "estado": "Rondônia"
+    },
+    {
+      "id": "LEIT-AMB-000033", "estacao_id": "AMB-001", "timestamp": "2026-09-20T08:32:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 21.9, "unidade": "°C" }, "ph": { "valor": 7.3, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.6, "unidade": "mg/L" }, "condutividade": { "valor": 144.7, "unidade": "µS/cm" } },
+      "cidade": "Porto Velho", "estado": "Rondônia"
+    },
+    {
+      "id": "LEIT-AMB-000034", "estacao_id": "AMB-002", "timestamp": "2026-09-18T08:14:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 24.3, "unidade": "°C" }, "ph": { "valor": 7.5, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.2, "unidade": "mg/L" }, "condutividade": { "valor": 181.4, "unidade": "µS/cm" } },
+      "cidade": "Rio Branco", "estado": "Acre"
+    },
+    {
+      "id": "LEIT-AMB-000035", "estacao_id": "AMB-002", "timestamp": "2026-09-19T08:36:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 24.7, "unidade": "°C" }, "ph": { "valor": 3.2, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.0, "unidade": "mg/L" }, "condutividade": { "valor": 179.8, "unidade": "µS/cm" } },
+      "cidade": "Rio Branco", "estado": "Acre"
+    },
+    {
+      "id": "LEIT-AMB-000036", "estacao_id": "AMB-002", "timestamp": "2026-09-20T08:27:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 24.4, "unidade": "°C" }, "ph": { "valor": 7.4, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.3, "unidade": "mg/L" }, "condutividade": { "valor": 183.1, "unidade": "µS/cm" } },
+      "cidade": "Rio Branco", "estado": "Acre"
+    },
+    {
+      "id": "LEIT-AMB-000037", "estacao_id": "AMB-003", "timestamp": "2026-09-18T08:46:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 20.2, "unidade": "°C" }, "ph": { "valor": 7.1, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 7.3, "unidade": "mg/L" }, "condutividade": { "valor": 129.4, "unidade": "µS/cm" } },
+      "cidade": "Manaus", "estado": "Amazonas"
+    },
+    {
+      "id": "LEIT-AMB-000038", "estacao_id": "AMB-003", "timestamp": "2026-09-19T08:39:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 20.0, "unidade": "°C" }, "ph": { "valor": 7.0, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 0.8, "unidade": "mg/L" }, "condutividade": { "valor": 131.1, "unidade": "µS/cm" } },
+      "cidade": "Manaus", "estado": "Amazonas"
+    },
+    {
+      "id": "LEIT-AMB-000039", "estacao_id": "AMB-003", "timestamp": "2026-09-20T08:44:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 20.4, "unidade": "°C" }, "ph": { "valor": 7.2, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 7.4, "unidade": "mg/L" }, "condutividade": { "valor": 130.5, "unidade": "µS/cm" } },
+      "cidade": "Manaus", "estado": "Amazonas"
+    },
+    {
+      "id": "LEIT-AMB-000040", "estacao_id": "AMB-004", "timestamp": "2026-09-18T08:11:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 16.4, "unidade": "°C" }, "ph": { "valor": 6.9, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 7.9, "unidade": "mg/L" }, "condutividade": { "valor": 109.5, "unidade": "µS/cm" } },
+      "cidade": "Boa Vista", "estado": "Roraima"
+    },
+    {
+      "id": "LEIT-AMB-000041", "estacao_id": "AMB-004", "timestamp": "2026-09-19T08:16:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 16.1, "unidade": "°C" }, "ph": { "valor": 6.8, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 8.0, "unidade": "mg/L" }, "condutividade": { "valor": 940.0, "unidade": "µS/cm" } },
+      "cidade": "Boa Vista", "estado": "Roraima"
+    },
+    {
+      "id": "LEIT-AMB-000042", "estacao_id": "AMB-004", "timestamp": "2026-09-20T08:09:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 16.8, "unidade": "°C" }, "ph": { "valor": 7.0, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 7.7, "unidade": "mg/L" }, "condutividade": { "valor": 110.7, "unidade": "µS/cm" } },
+      "cidade": "Boa Vista", "estado": "Roraima"
+    },
+    {
+      "id": "LEIT-AMB-000043", "estacao_id": "AMB-005", "timestamp": "2026-09-18T08:35:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 26.3, "unidade": "°C" }, "ph": { "valor": 7.7, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 5.9, "unidade": "mg/L" }, "condutividade": { "valor": 196.4, "unidade": "µS/cm" } },
+      "cidade": "Belém", "estado": "Pará"
+    },
+    {
+      "id": "LEIT-AMB-000044", "estacao_id": "AMB-005", "timestamp": "2026-09-19T08:29:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 26.1, "unidade": "°C" }, "ph": { "valor": 7.6, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 0.6, "unidade": "mg/L" }, "condutividade": { "valor": 194.8, "unidade": "µS/cm" } },
+      "cidade": "Belém", "estado": "Pará"
+    },
+    {
+      "id": "LEIT-AMB-000045", "estacao_id": "AMB-005", "timestamp": "2026-09-20T08:33:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 26.4, "unidade": "°C" }, "ph": { "valor": 7.8, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.1, "unidade": "mg/L" }, "condutividade": { "valor": 197.1, "unidade": "µS/cm" } },
+      "cidade": "Belém", "estado": "Pará"
+    },
+    {
+      "id": "LEIT-AMB-000046", "estacao_id": "AMB-006", "timestamp": "2026-09-18T08:43:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 21.4, "unidade": "°C" }, "ph": { "valor": 7.2, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.9, "unidade": "mg/L" }, "condutividade": { "valor": 148.6, "unidade": "µS/cm" } },
+      "cidade": "Macapá", "estado": "Amapá"
+    },
+    {
+      "id": "LEIT-AMB-000047", "estacao_id": "AMB-006", "timestamp": "2026-09-19T08:48:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 21.7, "unidade": "°C" }, "ph": { "valor": 7.3, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.8, "unidade": "mg/L" }, "condutividade": { "valor": 150.2, "unidade": "µS/cm" } },
+      "cidade": "Macapá", "estado": "Amapá"
+    },
+    {
+      "id": "LEIT-AMB-000048", "estacao_id": "AMB-006", "timestamp": "2026-09-20T08:41:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 21.2, "unidade": "°C" }, "ph": { "valor": 7.1, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 7.0, "unidade": "mg/L" }, "condutividade": { "valor": 147.5, "unidade": "µS/cm" } },
+      "cidade": "Macapá", "estado": "Amapá"
+    },
+    {
+      "id": "LEIT-AMB-000049", "estacao_id": "AMB-007", "timestamp": "2026-09-18T08:23:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 24.2, "unidade": "°C" }, "ph": { "valor": 7.5, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.4, "unidade": "mg/L" }, "condutividade": { "valor": 183.2, "unidade": "µS/cm" } },
+      "cidade": "Palmas", "estado": "Tocantins"
+    },
+    {
+      "id": "LEIT-AMB-000050", "estacao_id": "AMB-007", "timestamp": "2026-09-19T08:26:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 24.4, "unidade": "°C" }, "ph": { "valor": 7.6, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.3, "unidade": "mg/L" }, "condutividade": { "valor": 181.0, "unidade": "µS/cm" } },
+      "cidade": "Palmas", "estado": "Tocantins"
+    },
+    {
+      "id": "LEIT-AMB-000051", "estacao_id": "AMB-007", "timestamp": "2026-09-20T08:20:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 23.8, "unidade": "°C" }, "ph": { "valor": 7.4, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.5, "unidade": "mg/L" }, "condutividade": { "valor": 184.1, "unidade": "µS/cm" } },
+      "cidade": "Palmas", "estado": "Tocantins"
+    },
+    {
+      "id": "LEIT-AMB-000052", "estacao_id": "AMB-008", "timestamp": "2026-09-18T08:37:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 19.8, "unidade": "°C" }, "ph": { "valor": 7.1, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 7.2, "unidade": "mg/L" }, "condutividade": { "valor": 127.8, "unidade": "µS/cm" } },
+      "cidade": "São Luís", "estado": "Maranhão"
+    },
+    {
+      "id": "LEIT-AMB-000053", "estacao_id": "AMB-008", "timestamp": "2026-09-19T08:34:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 20.2, "unidade": "°C" }, "ph": { "valor": 11.6, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 7.1, "unidade": "mg/L" }, "condutividade": { "valor": 126.9, "unidade": "µS/cm" } },
+      "cidade": "São Luís", "estado": "Maranhão"
+    },
+    {
+      "id": "LEIT-AMB-000054", "estacao_id": "AMB-008", "timestamp": "2026-09-20T08:42:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 20.1, "unidade": "°C" }, "ph": { "valor": 7.0, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 7.3, "unidade": "mg/L" }, "condutividade": { "valor": 128.4, "unidade": "µS/cm" } },
+      "cidade": "São Luís", "estado": "Maranhão"
+    },
+    {
+      "id": "LEIT-AMB-000055", "estacao_id": "AMB-009", "timestamp": "2026-09-18T08:22:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 16.3, "unidade": "°C" }, "ph": { "valor": 6.9, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 7.9, "unidade": "mg/L" }, "condutividade": { "valor": 110.6, "unidade": "µS/cm" } },
+      "cidade": "São Paulo", "estado": "São Paulo"
+    },
+    {
+      "id": "LEIT-AMB-000056", "estacao_id": "AMB-009", "timestamp": "2026-09-19T08:17:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 16.1, "unidade": "°C" }, "ph": { "valor": 6.8, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 8.1, "unidade": "mg/L" }, "condutividade": { "valor": 109.4, "unidade": "µS/cm" } },
+      "cidade": "São Paulo", "estado": "São Paulo"
+    },
+    {
+      "id": "LEIT-AMB-000057", "estacao_id": "AMB-009", "timestamp": "2026-09-20T08:24:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 16.7, "unidade": "°C" }, "ph": { "valor": 7.0, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 7.8, "unidade": "mg/L" }, "condutividade": { "valor": 112.3, "unidade": "µS/cm" } },
+      "cidade": "São Paulo", "estado": "São Paulo"
+    },
+    {
+      "id": "LEIT-AMB-000058", "estacao_id": "AMB-010", "timestamp": "2026-09-18T08:27:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 26.2, "unidade": "°C" }, "ph": { "valor": 7.7, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.0, "unidade": "mg/L" }, "condutividade": { "valor": 193.4, "unidade": "µS/cm" } },
+      "cidade": "Salvador", "estado": "Bahia"
+    },
+    {
+      "id": "LEIT-AMB-000059", "estacao_id": "AMB-010", "timestamp": "2026-09-19T08:30:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 26.4, "unidade": "°C" }, "ph": { "valor": 7.8, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 5.9, "unidade": "mg/L" }, "condutividade": { "valor": 1180.0, "unidade": "µS/cm" } },
+      "cidade": "Salvador", "estado": "Bahia"
+    },
+    {
+      "id": "LEIT-AMB-000060", "estacao_id": "AMB-010", "timestamp": "2026-09-20T08:28:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 26.1, "unidade": "°C" }, "ph": { "valor": 7.7, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.1, "unidade": "mg/L" }, "condutividade": { "valor": 194.6, "unidade": "µS/cm" } },
+      "cidade": "Salvador", "estado": "Bahia"
+    },
+    {
+      "id": "LEIT-AMB-000061", "estacao_id": "AMB-001", "timestamp": "2026-09-21T08:26:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 21.9, "unidade": "°C" }, "ph": { "valor": 7.2, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.8, "unidade": "mg/L" }, "condutividade": { "valor": 144.7, "unidade": "µS/cm" } }, "cidade": "Porto Velho", "estado": "Rondônia"
+    },
+    {
+      "id": "LEIT-AMB-000062", "estacao_id": "AMB-001", "timestamp": "2026-09-22T08:21:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 21.4, "unidade": "°C" }, "ph": { "valor": 7.1, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 7.0, "unidade": "mg/L" }, "condutividade": { "valor": 149.2, "unidade": "µS/cm" } }, "cidade": "Porto Velho", "estado": "Rondônia"
+    },
+    {
+      "id": "LEIT-AMB-000063", "estacao_id": "AMB-001", "timestamp": "2026-09-23T08:29:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 22.0, "unidade": "°C" }, "ph": { "valor": 7.3, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.6, "unidade": "mg/L" }, "condutividade": { "valor": 146.4, "unidade": "µS/cm" } }, "cidade": "Porto Velho", "estado": "Rondônia"
+    },
+    {
+      "id": "LEIT-AMB-000064", "estacao_id": "AMB-001", "timestamp": "2026-09-24T08:23:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 21.2, "unidade": "°C" }, "ph": { "valor": 7.2, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.9, "unidade": "mg/L" }, "condutividade": { "valor": 148.1, "unidade": "µS/cm" } }, "cidade": "Porto Velho", "estado": "Rondônia"
+    },
+    {
+      "id": "LEIT-AMB-000065", "estacao_id": "AMB-001", "timestamp": "2026-09-25T08:31:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 21.7, "unidade": "°C" }, "ph": { "valor": 7.1, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.7, "unidade": "mg/L" }, "condutividade": { "valor": 145.9, "unidade": "µS/cm" } }, "cidade": "Porto Velho", "estado": "Rondônia"
+    },
+    {
+      "id": "LEIT-AMB-000066", "estacao_id": "AMB-001", "timestamp": "2026-09-26T08:25:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 21.5, "unidade": "°C" }, "ph": { "valor": 7.2, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.8, "unidade": "mg/L" }, "condutividade": { "valor": 147.0, "unidade": "µS/cm" } }, "cidade": "Porto Velho", "estado": "Rondônia"
+    },
+    {
+      "id": "LEIT-AMB-000067", "estacao_id": "AMB-002", "timestamp": "2026-09-21T08:31:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 24.1, "unidade": "°C" }, "ph": { "valor": 7.4, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.4, "unidade": "mg/L" }, "condutividade": { "valor": 180.6, "unidade": "µS/cm" } }, "cidade": "Rio Branco", "estado": "Acre"
+    },
+    {
+      "id": "LEIT-AMB-000068", "estacao_id": "AMB-002", "timestamp": "2026-09-22T08:19:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 24.6, "unidade": "°C" }, "ph": { "valor": 7.5, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.1, "unidade": "mg/L" }, "condutividade": { "valor": 182.3, "unidade": "µS/cm" } }, "cidade": "Rio Branco", "estado": "Acre"
+    },
+    {
+      "id": "LEIT-AMB-000069", "estacao_id": "AMB-002", "timestamp": "2026-09-23T08:28:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 24.2, "unidade": "°C" }, "ph": { "valor": 7.6, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.3, "unidade": "mg/L" }, "condutividade": { "valor": 179.5, "unidade": "µS/cm" } }, "cidade": "Rio Branco", "estado": "Acre"
+    },
+    {
+      "id": "LEIT-AMB-000070", "estacao_id": "AMB-002", "timestamp": "2026-09-24T08:34:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 24.8, "unidade": "°C" }, "ph": { "valor": 7.5, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.2, "unidade": "mg/L" }, "condutividade": { "valor": 181.8, "unidade": "µS/cm" } }, "cidade": "Rio Branco", "estado": "Acre"
+    },
+    {
+      "id": "LEIT-AMB-000071", "estacao_id": "AMB-002", "timestamp": "2026-09-25T08:22:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 24.0, "unidade": "°C" }, "ph": { "valor": 7.4, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.5, "unidade": "mg/L" }, "condutividade": { "valor": 178.9, "unidade": "µS/cm" } }, "cidade": "Rio Branco", "estado": "Acre"
+    },
+    {
+      "id": "LEIT-AMB-000072", "estacao_id": "AMB-002", "timestamp": "2026-09-26T08:30:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 24.5, "unidade": "°C" }, "ph": { "valor": 7.5, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.2, "unidade": "mg/L" }, "condutividade": { "valor": 180.9, "unidade": "µS/cm" } }, "cidade": "Rio Branco", "estado": "Acre"
+    },
+    {
+      "id": "LEIT-AMB-000073", "estacao_id": "AMB-003", "timestamp": "2026-09-21T08:40:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 19.8, "unidade": "°C" }, "ph": { "valor": 7.1, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 7.2, "unidade": "mg/L" }, "condutividade": { "valor": 128.9, "unidade": "µS/cm" } }, "cidade": "Manaus", "estado": "Amazonas"
+    },
+    {
+      "id": "LEIT-AMB-000074", "estacao_id": "AMB-003", "timestamp": "2026-09-22T08:37:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 20.3, "unidade": "°C" }, "ph": { "valor": 7.0, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 7.5, "unidade": "mg/L" }, "condutividade": { "valor": 132.2, "unidade": "µS/cm" } }, "cidade": "Manaus", "estado": "Amazonas"
+    },
+    {
+      "id": "LEIT-AMB-000075", "estacao_id": "AMB-003", "timestamp": "2026-09-23T08:43:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 20.1, "unidade": "°C" }, "ph": { "valor": 7.2, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 7.3, "unidade": "mg/L" }, "condutividade": { "valor": 130.7, "unidade": "µS/cm" } }, "cidade": "Manaus", "estado": "Amazonas"
+    },
+    {
+      "id": "LEIT-AMB-000076", "estacao_id": "AMB-003", "timestamp": "2026-09-24T08:38:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 20.5, "unidade": "°C" }, "ph": { "valor": 7.1, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 7.1, "unidade": "mg/L" }, "condutividade": { "valor": 131.5, "unidade": "µS/cm" } }, "cidade": "Manaus", "estado": "Amazonas"
+    },
+    {
+      "id": "LEIT-AMB-000077", "estacao_id": "AMB-003", "timestamp": "2026-09-25T08:45:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 19.9, "unidade": "°C" }, "ph": { "valor": 7.0, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 7.4, "unidade": "mg/L" }, "condutividade": { "valor": 129.6, "unidade": "µS/cm" } }, "cidade": "Manaus", "estado": "Amazonas"
+    },
+    {
+      "id": "LEIT-AMB-000078", "estacao_id": "AMB-003", "timestamp": "2026-09-26T08:41:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 20.2, "unidade": "°C" }, "ph": { "valor": 7.1, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 7.2, "unidade": "mg/L" }, "condutividade": { "valor": 130.2, "unidade": "µS/cm" } }, "cidade": "Manaus", "estado": "Amazonas"
+    },
+    {
+      "id": "LEIT-AMB-000079", "estacao_id": "AMB-004", "timestamp": "2026-09-21T08:13:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 16.5, "unidade": "°C" }, "ph": { "valor": 6.9, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 7.8, "unidade": "mg/L" }, "condutividade": { "valor": 110.7, "unidade": "µS/cm" } }, "cidade": "Boa Vista", "estado": "Roraima"
+    },
+    {
+      "id": "LEIT-AMB-000080", "estacao_id": "AMB-004", "timestamp": "2026-09-22T08:18:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 16.0, "unidade": "°C" }, "ph": { "valor": 6.8, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 8.1, "unidade": "mg/L" }, "condutividade": { "valor": 108.9, "unidade": "µS/cm" } }, "cidade": "Boa Vista", "estado": "Roraima"
+    },
+    {
+      "id": "LEIT-AMB-000081", "estacao_id": "AMB-004", "timestamp": "2026-09-23T08:10:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 16.7, "unidade": "°C" }, "ph": { "valor": 7.0, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 7.7, "unidade": "mg/L" }, "condutividade": { "valor": 111.5, "unidade": "µS/cm" } }, "cidade": "Boa Vista", "estado": "Roraima"
+    },
+    {
+      "id": "LEIT-AMB-000082", "estacao_id": "AMB-004", "timestamp": "2026-09-24T08:15:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 16.3, "unidade": "°C" }, "ph": { "valor": 6.9, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 7.9, "unidade": "mg/L" }, "condutividade": { "valor": 109.8, "unidade": "µS/cm" } }, "cidade": "Boa Vista", "estado": "Roraima"
+    },
+    {
+      "id": "LEIT-AMB-000083", "estacao_id": "AMB-004", "timestamp": "2026-09-25T08:12:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 16.9, "unidade": "°C" }, "ph": { "valor": 7.0, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 7.6, "unidade": "mg/L" }, "condutividade": { "valor": 112.0, "unidade": "µS/cm" } }, "cidade": "Boa Vista", "estado": "Roraima"
+    },
+    {
+      "id": "LEIT-AMB-000084", "estacao_id": "AMB-004", "timestamp": "2026-09-26T08:17:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 16.2, "unidade": "°C" }, "ph": { "valor": 6.8, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 8.0, "unidade": "mg/L" }, "condutividade": { "valor": 110.2, "unidade": "µS/cm" } }, "cidade": "Boa Vista", "estado": "Roraima"
+    },
+    {
+      "id": "LEIT-AMB-000085", "estacao_id": "AMB-005", "timestamp": "2026-09-21T08:30:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 26.0, "unidade": "°C" }, "ph": { "valor": 7.7, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.0, "unidade": "mg/L" }, "condutividade": { "valor": 193.6, "unidade": "µS/cm" } }, "cidade": "Belém", "estado": "Pará"
+    },
+    {
+      "id": "LEIT-AMB-000086", "estacao_id": "AMB-005", "timestamp": "2026-09-22T08:38:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 26.2, "unidade": "°C" }, "ph": { "valor": 7.6, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.2, "unidade": "mg/L" }, "condutividade": { "valor": 198.3, "unidade": "µS/cm" } }, "cidade": "Belém", "estado": "Pará"
+    },
+    {
+      "id": "LEIT-AMB-000087", "estacao_id": "AMB-005", "timestamp": "2026-09-23T08:34:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 26.4, "unidade": "°C" }, "ph": { "valor": 7.8, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 5.9, "unidade": "mg/L" }, "condutividade": { "valor": 196.1, "unidade": "µS/cm" } }, "cidade": "Belém", "estado": "Pará"
+    },
+    {
+      "id": "LEIT-AMB-000088", "estacao_id": "AMB-005", "timestamp": "2026-09-24T08:29:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 25.9, "unidade": "°C" }, "ph": { "valor": 7.6, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.1, "unidade": "mg/L" }, "condutividade": { "valor": 194.5, "unidade": "µS/cm" } }, "cidade": "Belém", "estado": "Pará"
+    },
+    {
+      "id": "LEIT-AMB-000089", "estacao_id": "AMB-005", "timestamp": "2026-09-25T08:36:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 26.5, "unidade": "°C" }, "ph": { "valor": 7.7, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 5.8, "unidade": "mg/L" }, "condutividade": { "valor": 197.7, "unidade": "µS/cm" } }, "cidade": "Belém", "estado": "Pará"
+    },
+    {
+      "id": "LEIT-AMB-000090", "estacao_id": "AMB-005", "timestamp": "2026-09-26T08:32:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 26.1, "unidade": "°C" }, "ph": { "valor": 7.7, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.0, "unidade": "mg/L" }, "condutividade": { "valor": 195.3, "unidade": "µS/cm" } }, "cidade": "Belém", "estado": "Pará"
+    },
+    {
+      "id": "LEIT-AMB-000091", "estacao_id": "AMB-006", "timestamp": "2026-09-21T08:45:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 21.8, "unidade": "°C" }, "ph": { "valor": 7.2, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.7, "unidade": "mg/L" }, "condutividade": { "valor": 151.0, "unidade": "µS/cm" } }, "cidade": "Macapá", "estado": "Amapá"
+    },
+    {
+      "id": "LEIT-AMB-000092", "estacao_id": "AMB-006", "timestamp": "2026-09-22T08:49:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 21.6, "unidade": "°C" }, "ph": { "valor": 7.3, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.9, "unidade": "mg/L" }, "condutividade": { "valor": 149.1, "unidade": "µS/cm" } }, "cidade": "Macapá", "estado": "Amapá"
+    },
+    {
+      "id": "LEIT-AMB-000093", "estacao_id": "AMB-006", "timestamp": "2026-09-23T08:42:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 21.3, "unidade": "°C" }, "ph": { "valor": 7.1, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 7.0, "unidade": "mg/L" }, "condutividade": { "valor": 147.8, "unidade": "µS/cm" } }, "cidade": "Macapá", "estado": "Amapá"
+    },
+    {
+      "id": "LEIT-AMB-000094", "estacao_id": "AMB-006", "timestamp": "2026-09-24T08:47:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 21.9, "unidade": "°C" }, "ph": { "valor": 7.3, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.6, "unidade": "mg/L" }, "condutividade": { "valor": 150.6, "unidade": "µS/cm" } }, "cidade": "Macapá", "estado": "Amapá"
+    },
+    {
+      "id": "LEIT-AMB-000095", "estacao_id": "AMB-006", "timestamp": "2026-09-25T08:44:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 21.5, "unidade": "°C" }, "ph": { "valor": 7.2, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.8, "unidade": "mg/L" }, "condutividade": { "valor": 148.4, "unidade": "µS/cm" } }, "cidade": "Macapá", "estado": "Amapá"
+    },
+    {
+      "id": "LEIT-AMB-000096", "estacao_id": "AMB-006", "timestamp": "2026-09-26T08:48:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 21.7, "unidade": "°C" }, "ph": { "valor": 7.2, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.9, "unidade": "mg/L" }, "condutividade": { "valor": 149.7, "unidade": "µS/cm" } }, "cidade": "Macapá", "estado": "Amapá"
+    },
+    {
+      "id": "LEIT-AMB-000097", "estacao_id": "AMB-007", "timestamp": "2026-09-21T08:25:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 24.1, "unidade": "°C" }, "ph": { "valor": 7.5, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.4, "unidade": "mg/L" }, "condutividade": { "valor": 180.4, "unidade": "µS/cm" } }, "cidade": "Palmas", "estado": "Tocantins"
+    },
+    {
+      "id": "LEIT-AMB-000098", "estacao_id": "AMB-007", "timestamp": "2026-09-22T08:29:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 24.3, "unidade": "°C" }, "ph": { "valor": 7.6, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.2, "unidade": "mg/L" }, "condutividade": { "valor": 182.5, "unidade": "µS/cm" } }, "cidade": "Palmas", "estado": "Tocantins"
+    },
+    {
+      "id": "LEIT-AMB-000099", "estacao_id": "AMB-007", "timestamp": "2026-09-23T08:21:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 23.9, "unidade": "°C" }, "ph": { "valor": 7.4, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.5, "unidade": "mg/L" }, "condutividade": { "valor": 179.8, "unidade": "µS/cm" } }, "cidade": "Palmas", "estado": "Tocantins"
+    },
+    {
+      "id": "LEIT-AMB-000100", "estacao_id": "AMB-007", "timestamp": "2026-09-24T08:27:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 24.5, "unidade": "°C" }, "ph": { "valor": 7.6, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.3, "unidade": "mg/L" }, "condutividade": { "valor": 183.0, "unidade": "µS/cm" } }, "cidade": "Palmas", "estado": "Tocantins"
+    },
+    {
+      "id": "LEIT-AMB-000101", "estacao_id": "AMB-007", "timestamp": "2026-09-25T08:24:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 24.0, "unidade": "°C" }, "ph": { "valor": 7.5, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.4, "unidade": "mg/L" }, "condutividade": { "valor": 181.2, "unidade": "µS/cm" } }, "cidade": "Palmas", "estado": "Tocantins"
+    },
+    {
+      "id": "LEIT-AMB-000102", "estacao_id": "AMB-007", "timestamp": "2026-09-26T08:28:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 24.2, "unidade": "°C" }, "ph": { "valor": 7.5, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.3, "unidade": "mg/L" }, "condutividade": { "valor": 182.1, "unidade": "µS/cm" } }, "cidade": "Palmas", "estado": "Tocantins"
+    },
+    {
+      "id": "LEIT-AMB-000103", "estacao_id": "AMB-008", "timestamp": "2026-09-21T08:39:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 20.4, "unidade": "°C" }, "ph": { "valor": 7.2, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 7.0, "unidade": "mg/L" }, "condutividade": { "valor": 129.0, "unidade": "µS/cm" } }, "cidade": "São Luís", "estado": "Maranhão"
+    },
+    {
+      "id": "LEIT-AMB-000104", "estacao_id": "AMB-008", "timestamp": "2026-09-22T08:36:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 19.9, "unidade": "°C" }, "ph": { "valor": 7.1, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 7.2, "unidade": "mg/L" }, "condutividade": { "valor": 125.7, "unidade": "µS/cm" } }, "cidade": "São Luís", "estado": "Maranhão"
+    },
+    {
+      "id": "LEIT-AMB-000105", "estacao_id": "AMB-008", "timestamp": "2026-09-23T08:41:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 20.2, "unidade": "°C" }, "ph": { "valor": 7.0, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 7.3, "unidade": "mg/L" }, "condutividade": { "valor": 127.6, "unidade": "µS/cm" } }, "cidade": "São Luís", "estado": "Maranhão"
+    },
+    {
+      "id": "LEIT-AMB-000106", "estacao_id": "AMB-008", "timestamp": "2026-09-24T08:35:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 20.0, "unidade": "°C" }, "ph": { "valor": 7.2, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 7.1, "unidade": "mg/L" }, "condutividade": { "valor": 128.8, "unidade": "µS/cm" } }, "cidade": "São Luís", "estado": "Maranhão"
+    },
+    {
+      "id": "LEIT-AMB-000107", "estacao_id": "AMB-008", "timestamp": "2026-09-25T08:43:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 20.3, "unidade": "°C" }, "ph": { "valor": 7.1, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 7.2, "unidade": "mg/L" }, "condutividade": { "valor": 126.5, "unidade": "µS/cm" } }, "cidade": "São Luís", "estado": "Maranhão"
+    },
+    {
+      "id": "LEIT-AMB-000108", "estacao_id": "AMB-008", "timestamp": "2026-09-26T08:38:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 20.1, "unidade": "°C" }, "ph": { "valor": 7.1, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 7.3, "unidade": "mg/L" }, "condutividade": { "valor": 127.9, "unidade": "µS/cm" } }, "cidade": "São Luís", "estado": "Maranhão"
+    },
+    {
+      "id": "LEIT-AMB-000109", "estacao_id": "AMB-009", "timestamp": "2026-09-21T08:20:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 16.4, "unidade": "°C" }, "ph": { "valor": 6.9, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 8.0, "unidade": "mg/L" }, "condutividade": { "valor": 111.8, "unidade": "µS/cm" } }, "cidade": "São Paulo", "estado": "São Paulo"
+    },
+    {
+      "id": "LEIT-AMB-000110", "estacao_id": "AMB-009", "timestamp": "2026-09-22T08:15:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 16.0, "unidade": "°C" }, "ph": { "valor": 6.8, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 8.2, "unidade": "mg/L" }, "condutividade": { "valor": 108.7, "unidade": "µS/cm" } }, "cidade": "São Paulo", "estado": "São Paulo"
+    },
+    {
+      "id": "LEIT-AMB-000111", "estacao_id": "AMB-009", "timestamp": "2026-09-23T08:23:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 16.6, "unidade": "°C" }, "ph": { "valor": 7.0, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 7.8, "unidade": "mg/L" }, "condutividade": { "valor": 110.9, "unidade": "µS/cm" } }, "cidade": "São Paulo", "estado": "São Paulo"
+    },
+    {
+      "id": "LEIT-AMB-000112", "estacao_id": "AMB-009", "timestamp": "2026-09-24T08:18:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 16.2, "unidade": "°C" }, "ph": { "valor": 6.9, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 8.1, "unidade": "mg/L" }, "condutividade": { "valor": 109.6, "unidade": "µS/cm" } }, "cidade": "São Paulo", "estado": "São Paulo"
+    },
+    {
+      "id": "LEIT-AMB-000113", "estacao_id": "AMB-009", "timestamp": "2026-09-25T08:25:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 16.8, "unidade": "°C" }, "ph": { "valor": 7.1, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 7.7, "unidade": "mg/L" }, "condutividade": { "valor": 112.5, "unidade": "µS/cm" } }, "cidade": "São Paulo", "estado": "São Paulo"
+    },
+    {
+      "id": "LEIT-AMB-000114", "estacao_id": "AMB-009", "timestamp": "2026-09-26T08:21:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 16.5, "unidade": "°C" }, "ph": { "valor": 6.9, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 7.9, "unidade": "mg/L" }, "condutividade": { "valor": 111.2, "unidade": "µS/cm" } }, "cidade": "São Paulo", "estado": "São Paulo"
+    },
+    {
+      "id": "LEIT-AMB-000115", "estacao_id": "AMB-010", "timestamp": "2026-09-21T08:32:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 26.3, "unidade": "°C" }, "ph": { "valor": 7.6, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.2, "unidade": "mg/L" }, "condutividade": { "valor": 190.8, "unidade": "µS/cm" } }, "cidade": "Salvador", "estado": "Bahia"
+    },
+    {
+      "id": "LEIT-AMB-000116", "estacao_id": "AMB-010", "timestamp": "2026-09-22T08:26:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 26.0, "unidade": "°C" }, "ph": { "valor": 7.7, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.0, "unidade": "mg/L" }, "condutividade": { "valor": 194.6, "unidade": "µS/cm" } }, "cidade": "Salvador", "estado": "Bahia"
+    },
+    {
+      "id": "LEIT-AMB-000117", "estacao_id": "AMB-010", "timestamp": "2026-09-23T08:30:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 26.4, "unidade": "°C" }, "ph": { "valor": 7.8, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 5.9, "unidade": "mg/L" }, "condutividade": { "valor": 196.2, "unidade": "µS/cm" } }, "cidade": "Salvador", "estado": "Bahia"
+    },
+    {
+      "id": "LEIT-AMB-000118", "estacao_id": "AMB-010", "timestamp": "2026-09-24T08:28:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 26.1, "unidade": "°C" }, "ph": { "valor": 7.7, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.1, "unidade": "mg/L" }, "condutividade": { "valor": 192.7, "unidade": "µS/cm" } }, "cidade": "Salvador", "estado": "Bahia"
+    },
+    {
+      "id": "LEIT-AMB-000119", "estacao_id": "AMB-010", "timestamp": "2026-09-25T08:34:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 26.5, "unidade": "°C" }, "ph": { "valor": 7.8, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 5.8, "unidade": "mg/L" }, "condutividade": { "valor": 195.5, "unidade": "µS/cm" } }, "cidade": "Salvador", "estado": "Bahia"
+    },
+    {
+      "id": "LEIT-AMB-000120", "estacao_id": "AMB-010", "timestamp": "2026-09-26T08:29:00-03:00",
+      "qualidade_agua": { "temperatura": { "valor": 26.2, "unidade": "°C" }, "ph": { "valor": 7.7, "unidade": "pH" }, "oxigenio_dissolvido": { "valor": 6.0, "unidade": "mg/L" }, "condutividade": { "valor": 193.9, "unidade": "µS/cm" } }, "cidade": "Salvador", "estado": "Bahia"
     }
   ]
 }
