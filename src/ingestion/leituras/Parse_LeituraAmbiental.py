@@ -6,15 +6,18 @@ campos aninhados e prepara um DataFrame pronto para inserção no banco.
 
 # 1. Biblioteca para manipulação de arquivos JSON
 import json
+import logging
 # 2. Biblioteca para manipulação de caminhos de arquivos
 from pathlib import Path
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from config.settings import configure_logging, get_path
 
 # 3. Biblioteca para manipulação de dados em formato tabular (DataFrames)
 import pandas as pd
 
 # 4. Diretório para os arquivos JSON
-DIR_JSON_AMBIENTAIS = Path(__file__).resolve().parent / "leituras_ambientais.json"
-
 # 5. criar função e ler o arquivo JSON de leituras meteorológicas
 def ler_json(path_arquivo):
     """Lê um arquivo JSON de leituras ambientais.
@@ -40,7 +43,7 @@ def tabela_ambiental() -> pd.DataFrame:
         pd.DataFrame: DataFrame pronto para inserção no banco de dados.
     """
     # 1. Normalização do JSON e seleção/renomeação das colunas
-    parse_ambiental = ler_json(DIR_JSON_AMBIENTAIS)
+    parse_ambiental = ler_json(get_path("INGESTION_LEITURA_AMBIENTAL"))
 
     df_ambiental = pd.json_normalize(
         parse_ambiental["leituras_ambientais"]
@@ -79,6 +82,9 @@ def tabela_ambiental() -> pd.DataFrame:
     return df_ambiental 
 
 if __name__ == "__main__":
+    import sys
+
+    sys.path.append(str(Path(__file__).resolve().parents[2]))
+    configure_logging(Path(__file__).resolve().parents[3])
     df = tabela_ambiental()
-    print("Preview do DataFrame tratado:")
-    print(df.head())
+    logging.info("Preview do DataFrame tratado:\n%s", df.head())

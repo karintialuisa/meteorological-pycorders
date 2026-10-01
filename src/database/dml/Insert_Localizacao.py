@@ -5,23 +5,19 @@ Este módulo conecta ao SQL Server Express, lê as tabelas de localização
 normalizadas a partir dos arquivos JSON e insere os dados nas tabelas de
 estado, cidade e estação.
 """
-import os
+import logging
 
-import urllib
 import pandas as pd
 # text recebe uma string SQL, como "DELETE FROM estado", e cria um objeto
 # TextClause: uma instrução SQL reconhecida pelo SQLAlchemy. Ele apenas prepara
 # o comando; a alteração só acontece quando connection.execute() o executa.
-from sqlalchemy import create_engine, text
+from sqlalchemy import text
 
 import sys
-import urllib.parse
 from pathlib import Path
 # setamos o caminho para o sys.path, para ao executar o script possamos importar módulos do projeto corretamente.
 sys.path.append(str(Path(__file__).resolve().parents[2]))
-from dotenv import load_dotenv
-import pandas as pd
-from sqlalchemy import create_engine, text
+from config.settings import PROJECT_ROOT, configure_logging, create_db_engine
 from ingestion.localizacao.Parse_localizacao_JSON import (
     tabela_cidade,
     tabela_estacao,
@@ -29,41 +25,9 @@ from ingestion.localizacao.Parse_localizacao_JSON import (
 )
 
 
-# Localiza o diretório raiz do projeto para permitir importações e carregar o .env
-BASE_DIR = Path(__file__).resolve().parents[3]
-load_dotenv(dotenv_path=BASE_DIR / ".env")
-
-def get_env(chave: str) -> str:
-    """Obtém obrigatoriamente a variável do arquivo .env.
-
-    Lança erro se não for encontrada.
-    """
-    valor = os.getenv(chave)
-    if not valor:
-        raise KeyError(
-            f"❌ Configuração ausente: A chave '{chave}' não foi encontrada no arquivo .env"
-        )
-    return valor
-
-
-# Configurações da conexão obtidas estritamente do .env
-servidor = get_env("DB_HOST")
-database = get_env("DB_NAME")
-trusted_connection = get_env("DB_TRUSTED_CONNECTION")
+BASE_DIR = PROJECT_ROOT
 
 modo_carga = "append"  # Use "append" para preservar os dados atuais.
-
-# Codifica a string ODBC para que ela possa ser usada pelo SQLAlchemy.
-params = urllib.parse.quote_plus(
-    f"DRIVER={{ODBC Driver 17 for SQL Server}};"
-    f"SERVER={servidor};"
-    f"DATABASE={database};"
-    f"Trusted_Connection={trusted_connection};"
-)
-
-# Cria a engine reutilizada nas operações de leitura e escrita do banco.
-engine = create_engine(f"mssql+pyodbc:///?odbc_connect={params}")
-
 
 def limpar_localizacao(connection):
     """Remove os registros de localização e reinicia os identificadores.
@@ -106,7 +70,7 @@ def inserir_localizacao(connection):
         ]
 
     if not df_estado.empty:
-        df_estado.rename(
+        df_estado = df_estado.rename(
             columns={
                 "codigo_ibge_estado": "codigo_ibge",
                 "sigla_estado": "sigla",
@@ -229,9 +193,10 @@ def inserir_estacoes(connection, estado_ids):
 
 
 if __name__ == "__main__":
-    with engine.begin() as connection:
+    configure_logging(BASE_DIR)
+    with create_db_engine().begin() as connection:
         limpar_localizacao(connection)
         estado_ids = inserir_localizacao(connection)
         inserir_estacoes(connection, estado_ids)
 
-    print("Dados inseridos com sucesso!")
+    logging.info("Dados de localização inseridos com sucesso!")

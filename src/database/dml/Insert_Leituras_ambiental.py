@@ -4,18 +4,17 @@
 Este módulo lê os dados de qualidade da água tratados em JSON, resolve os IDs
 de estação no banco e insere os registros na tabela qualidade_agua.
 """
-import os
+import logging
 
 import sys
-import urllib.parse
 from pathlib import Path
 
-from dotenv import load_dotenv
 import pandas as pd
-from sqlalchemy import create_engine, text
+from sqlalchemy import text
 
 
 sys.path.append(str(Path(__file__).resolve().parents[2]))
+from config.settings import PROJECT_ROOT, configure_logging, create_db_engine
 
 from ingestion.leituras.Parse_LeituraAmbiental import tabela_ambiental
 from ingestion.localizacao.Parse_localizacao_JSON import (
@@ -24,40 +23,11 @@ from ingestion.localizacao.Parse_localizacao_JSON import (
     tabela_estado,
 )
 
-# Localiza a raiz do projeto para o .env e sys.path
-BASE_DIR = Path(__file__).resolve().parents[3]
-
-# Carrega as variáveis de ambiente do arquivo .env localizado na raiz do projeto
-load_dotenv(dotenv_path=BASE_DIR / ".env")
-
-
-def get_env(chave: str) -> str:
-    valor = os.getenv(chave)
-    if not valor:
-        raise KeyError(
-            f"❌ Configuração ausente: A chave '{chave}' não foi encontrada no arquivo .env"
-        )
-    return valor
-
-
-# Leitura direta das variáveis do .env
-servidor = get_env("DB_HOST")
-database = get_env("DB_NAME")
-trusted_connection = get_env("DB_TRUSTED_CONNECTION")
+BASE_DIR = PROJECT_ROOT
 
 tabela_destino = "qualidade_agua"
 modo_carga = "append"
 
-
-
-params = urllib.parse.quote_plus(
-    f"DRIVER={{ODBC Driver 17 for SQL Server}};"
-    f"SERVER={servidor};"
-    f"DATABASE={database};"
-    f"Trusted_Connection={trusted_connection};"
-)
-
-engine = create_engine(f"mssql+pyodbc:///?odbc_connect={params}")
 
 
 def resolver_id_estacao(df_leituras: pd.DataFrame, connection) -> pd.DataFrame:
@@ -109,16 +79,20 @@ def inserir_dados():
     gravação dos registros e confirmação final da operação.
     """
     try:
-        print("Obtendo dados tratados do Parse JSON...")
+        logging.info("Obtendo dados tratados do Parse JSON...")
         df_dados = tabela_ambiental()
 
         if df_dados.empty:
-            print("Nenhum dado encontrado para inserir.")
+            logging.info("Nenhum dado encontrado para inserir.")
             return
 
-        with engine.begin() as connection:
+        with create_db_engine().begin() as connection:
             df_dados = resolver_id_estacao(df_dados, connection)
-            print(f"Inserindo {len(df_dados)} registros na tabela '{tabela_destino}'...")
+            logging.info(
+                "Inserindo %s registros na tabela '%s'...",
+                len(df_dados),
+                tabela_destino,
+            )
 
             df_dados.to_sql(
                 name=tabela_destino,
@@ -127,11 +101,12 @@ def inserir_dados():
                 index=False,
             )
 
-        print("Carga realizada com sucesso!")
+        logging.info("Carga realizada com sucesso!")
 
     except Exception as e:
-        print(f"Erro durante a inserção dos dados: {e}")
+        logging.exception("Erro durante a inserção dos dados: %s", e)
 
 
 if __name__ == "__main__":
+    configure_logging(BASE_DIR)
     inserir_dados()
