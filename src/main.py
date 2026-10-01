@@ -6,44 +6,15 @@ aplicação e orquestra a execução de scripts de ETL (Extração, Transformaç
 """
 
 import logging
-import os
 from pathlib import Path
 import subprocess
 import sys
-from dotenv import load_dotenv
 
-# Carrega o .env localizado na raiz do projeto
-BASE_DIR = Path(__file__).resolve().parents[1]
-load_dotenv(dotenv_path=BASE_DIR / ".env")
+from .config.settings import PROJECT_ROOT, configure_logging, get_env
 
+BASE_DIR = PROJECT_ROOT
+configure_logging(BASE_DIR)
 
-def get_env(chave: str) -> str:
-    """Busca uma variável no .env e lança exceção se ela não estiver configurada."""
-    valor = os.getenv(chave)
-    if not valor:
-        raise KeyError(
-            f"❌ Configuração ausente: A chave '{chave}' não foi encontrada no arquivo .env"
-        )
-    return valor
-
-
-# Diretório de logs vindo estritamente do .env
-LOGS_FOLDER = get_env("LOGS_DIR")
-LOGS_DIR = BASE_DIR / LOGS_FOLDER
-LOGS_DIR.mkdir(parents=True, exist_ok=True)
-
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    datefmt="%d-%m-%Y %H:%M",
-    handlers=[
-        logging.FileHandler(
-            LOGS_DIR / "execucao_relatorio.log", encoding="utf-8"
-        ),
-        logging.StreamHandler(sys.stdout),
-    ],
-)
 
 MENU = {
     "1": "ETL JSON -> BD",
@@ -58,11 +29,10 @@ def exibir_menu() -> str:
     Returns:
         str: Valor digitado pelo usuário, sem espaços extras.
     """
-    print("\n" + "=" * 40)
-    print("Menu de opções:")
-    for key, value in MENU.items():
-        print(f" {key}. {value}")
-    print("=" * 40)
+    opcoes = "\n".join(
+        f" {key}. {value}" for key, value in MENU.items()
+    )
+    logging.info("\n%s\nMenu de opções:\n%s\n%s", "=" * 40, opcoes, "=" * 40)
     return input("Escolha uma opção: ").strip()
 
 
@@ -90,9 +60,7 @@ def executar_script(
     )
 
     if resultado.stdout.strip():
-        logging.info(
-            f"[{caminho_script.name}] Saída: {resultado.stdout.strip()}"
-        )
+        sys.stdout.write(resultado.stdout)
 
     if resultado.returncode != 0:
         erro_msg = (
@@ -137,7 +105,7 @@ def main():
             )
 
         else:
-            print("\n ⚠️ Opção inválida! Digite 1, 2 ou 3.")
+            logging.warning("Opção inválida. Digite 1, 2 ou 3.")
 
 
 if __name__ == "__main__":

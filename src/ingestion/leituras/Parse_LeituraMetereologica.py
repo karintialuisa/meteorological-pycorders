@@ -7,9 +7,14 @@ banco de dados.
 
 # 1. Biblioteca para manipulação de arquivos JSON
 import json
+import logging
 
 # 2. Biblioteca para manipulação de caminhos de arquivos
 from pathlib import Path
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from config.settings import configure_logging, get_path
 
 # 3. Biblioteca para manipulação de dados em formato tabular (DataFrames)
 import pandas as pd
@@ -19,8 +24,6 @@ from sqlalchemy.engine import Connection
 from sqlalchemy import create_engine, text
 
 # 4. Diretório para os arquivos JSON
-DIR_LEITURA_METEREOLOGICA = Path(__file__).resolve().parent / "leituras_meteorologicas.json"
-
 # 5. criar função e ler o arquivo JSON de leituras meteorológicas
 def ler_json(path_arquivo):
     """Lê um arquivo JSON de leituras meteorológicas.
@@ -46,7 +49,7 @@ def tabela_metereologica() -> pd.DataFrame:
         pd.DataFrame: DataFrame pronto para persistência no banco de dados.
     """
     # 1. Normalização do JSON e seleção/renomeação das colunas
-    parse_metereologica = ler_json(DIR_LEITURA_METEREOLOGICA)
+    parse_metereologica = ler_json(get_path("INGESTION_LEITURA_METEOROLOGICA"))
 
     df_metereologica = pd.json_normalize(
         parse_metereologica["leituras_meteorologicas"]
@@ -94,6 +97,9 @@ def tabela_metereologica() -> pd.DataFrame:
 
 
 if __name__ == "__main__":
+    import sys
+
+    sys.path.append(str(Path(__file__).resolve().parents[2]))
+    configure_logging(Path(__file__).resolve().parents[3])
     df = tabela_metereologica()
-    print("Preview do DataFrame tratado:")
-    print(df.head())
+    logging.info("Preview do DataFrame tratado:\n%s", df.head())

@@ -7,21 +7,19 @@ no banco de dados.
 
 # 1 . Biblioteca para manipulação de arquivos JSON
 import json
+import logging
 
 # 2. Biblioteca para manipulação de caminhos de arquivos
 from pathlib import Path
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from config.settings import configure_logging, get_path
 
 # 3. Biblioteca para manipulação de dados em formato tabular (DataFrames)
 import pandas as pd
 
 # 4. Diretório base para arquivos de parsing JSON
-DIR_PARSE = Path(__file__).resolve().parent
-
-# 5. Diretório para o arquivo JSON de cidade e estado
-DIR_CIDADE = DIR_PARSE / "municipio.json"
-DIR_ESTADO = DIR_PARSE / "estado.json"
-DIR_ESTACAO = DIR_PARSE / "estacoes.json"
-
 # 6. Função para ler arquivo JSON
 def ler_json(path_arquivo):
     """Lê um arquivo JSON e retorna o conteúdo em memória.
@@ -43,7 +41,7 @@ def tabela_estado() -> pd.DataFrame:
     Returns:
         pd.DataFrame: Tabela contendo código IBGE, sigla e nome dos estados.
     """
-    parse_estado = ler_json(DIR_ESTADO)
+    parse_estado = ler_json(get_path("INGESTION_LOCALIZACAO_ESTADOS"))
     df_estado = pd.json_normalize(parse_estado)[
         ["ibge", "sigla", "nome"]
     ].rename(columns={
@@ -61,7 +59,7 @@ def tabela_cidade() -> pd.DataFrame:
     Returns:
         pd.DataFrame: Tabela contendo código IBGE, nome da cidade e sigla do estado.
     """
-    parse_cidade = ler_json(DIR_CIDADE)
+    parse_cidade = ler_json(get_path("INGESTION_LOCALIZACAO_MUNICIPIOS"))
     df_cidade = pd.json_normalize(parse_cidade)[
         ["ibge", 
          "cidade", 
@@ -87,7 +85,7 @@ def tabela_estacao(df_cidade: pd.DataFrame, df_estado: pd.DataFrame) -> pd.DataF
         pd.DataFrame: Tabela preparada com os códigos IBGE de cidade e estado e
             os metadados da estação.
     """
-    parse_estacao = ler_json(DIR_ESTACAO)
+    parse_estacao = ler_json(get_path("INGESTION_LOCALIZACAO_ESTACOES"))
     
     df_estacao = pd.json_normalize(parse_estacao['estacoes_ambientais'])[
         [
@@ -164,13 +162,20 @@ def tabela_estacao(df_cidade: pd.DataFrame, df_estado: pd.DataFrame) -> pd.DataF
 
 # Execução principal
 if __name__ == "__main__":
-    print(30*"=", "LISTA DE TABELAS", 30*"=", "\n")
+    import sys
+
+    sys.path.append(str(Path(__file__).resolve().parents[2]))
+    configure_logging(Path(__file__).resolve().parents[3])
+    logging.info("%s LISTA DE TABELAS %s", "=" * 30, "=" * 30)
     
     df_est = tabela_estado()
     df_cid = tabela_cidade()
     
-    print("Tabela de Cidade:\n", df_cid.head())
-    print("\nTabela de Estado:\n", df_est.head())
+    logging.info("Tabela de Cidade:\n%s", df_cid.head())
+    logging.info("Tabela de Estado:\n%s", df_est.head())
     
     df_estacao_final = tabela_estacao(df_cid, df_est)
-    print("\nTabela final Estação com códigos IBGE de Cidade e Estado:\n", df_estacao_final.to_string(index=False))
+    logging.info(
+        "Tabela final Estação com códigos IBGE de Cidade e Estado:\n%s",
+        df_estacao_final.to_string(index=False),
+    )
