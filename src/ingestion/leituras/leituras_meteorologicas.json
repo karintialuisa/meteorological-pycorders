@@ -1080,6 +1080,3246 @@
       },
       "cidade": "Salvador",
       "estado": "Bahia"
+    },
+    {
+      "id": "LEIT-MET-000031",
+      "estacao_id": "MET-001",
+      "timestamp": "2026-09-18T08:30:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 21,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 75,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 18,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 7.3,
+          "unidade": "km/h",
+          "direcao": 90,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Porto Velho",
+      "estado": "Rondônia"
+    },
+    {
+      "id": "LEIT-MET-000032",
+      "estacao_id": "MET-001",
+      "timestamp": "2026-09-19T08:30:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 22,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 78,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 45,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 8.5,
+          "unidade": "km/h",
+          "direcao": 90,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Porto Velho",
+      "estado": "Rondônia"
+    },
+    {
+      "id": "LEIT-MET-000033",
+      "estacao_id": "MET-001",
+      "timestamp": "2026-09-20T08:30:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 43,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Chuvas esparsas",
+          "condition_code": "40",
+          "condition_slug": "rain"
+        },
+        "umidade": {
+          "valor": 81,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 78,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 4.2,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 9.7,
+          "unidade": "km/h",
+          "direcao": 90,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Porto Velho",
+      "estado": "Rondônia"
+    },
+    {
+      "id": "LEIT-MET-000034",
+      "estacao_id": "MET-001",
+      "timestamp": "2026-09-21T08:30:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 21,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 75,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 18,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 7.3,
+          "unidade": "km/h",
+          "direcao": 90,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Porto Velho",
+      "estado": "Rondônia"
+    },
+    {
+      "id": "LEIT-MET-000035",
+      "estacao_id": "MET-001",
+      "timestamp": "2026-09-22T08:30:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 22,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 78,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 45,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 8.5,
+          "unidade": "km/h",
+          "direcao": 90,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Porto Velho",
+      "estado": "Rondônia"
+    },
+    {
+      "id": "LEIT-MET-000036",
+      "estacao_id": "MET-001",
+      "timestamp": "2026-09-23T08:30:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 23,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Chuvas esparsas",
+          "condition_code": "40",
+          "condition_slug": "rain"
+        },
+        "umidade": {
+          "valor": 81,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 78,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 4.2,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 9.7,
+          "unidade": "km/h",
+          "direcao": 90,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Porto Velho",
+      "estado": "Rondônia"
+    },
+    {
+      "id": "LEIT-MET-000037",
+      "estacao_id": "MET-001",
+      "timestamp": "2026-09-24T08:30:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 21,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 75,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 18,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 7.3,
+          "unidade": "km/h",
+          "direcao": 90,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Porto Velho",
+      "estado": "Rondônia"
+    },
+    {
+      "id": "LEIT-MET-000038",
+      "estacao_id": "MET-001",
+      "timestamp": "2026-09-25T08:30:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 22,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 78,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 45,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 8.5,
+          "unidade": "km/h",
+          "direcao": 90,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Porto Velho",
+      "estado": "Rondônia"
+    },
+    {
+      "id": "LEIT-MET-000039",
+      "estacao_id": "MET-001",
+      "timestamp": "2026-09-26T08:30:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 23,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Chuvas esparsas",
+          "condition_code": "40",
+          "condition_slug": "rain"
+        },
+        "umidade": {
+          "valor": 81,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 78,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 4.2,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 9.7,
+          "unidade": "km/h",
+          "direcao": 90,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Porto Velho",
+      "estado": "Rondônia"
+    },
+    {
+      "id": "LEIT-MET-000040",
+      "estacao_id": "MET-002",
+      "timestamp": "2026-09-18T08:20:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 26,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 69,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 18,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 9.3,
+          "unidade": "km/h",
+          "direcao": 210,
+          "direcao_cardinal": "SW"
+        }
+      },
+      "cidade": "Rio Branco",
+      "estado": "Acre"
+    },
+    {
+      "id": "LEIT-MET-000041",
+      "estacao_id": "MET-002",
+      "timestamp": "2026-09-19T08:20:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 27,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 72,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 45,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 10.5,
+          "unidade": "km/h",
+          "direcao": 210,
+          "direcao_cardinal": "SW"
+        }
+      },
+      "cidade": "Rio Branco",
+      "estado": "Acre"
+    },
+    {
+      "id": "LEIT-MET-000042",
+      "estacao_id": "MET-002",
+      "timestamp": "2026-09-20T08:20:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 28,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Chuvas esparsas",
+          "condition_code": "40",
+          "condition_slug": "rain"
+        },
+        "umidade": {
+          "valor": 12,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 78,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 4.2,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 11.7,
+          "unidade": "km/h",
+          "direcao": 210,
+          "direcao_cardinal": "SW"
+        }
+      },
+      "cidade": "Rio Branco",
+      "estado": "Acre"
+    },
+    {
+      "id": "LEIT-MET-000043",
+      "estacao_id": "MET-002",
+      "timestamp": "2026-09-21T08:20:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 26,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 69,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 18,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 9.3,
+          "unidade": "km/h",
+          "direcao": 210,
+          "direcao_cardinal": "SW"
+        }
+      },
+      "cidade": "Rio Branco",
+      "estado": "Acre"
+    },
+    {
+      "id": "LEIT-MET-000044",
+      "estacao_id": "MET-002",
+      "timestamp": "2026-09-22T08:20:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 27,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 72,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 45,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 10.5,
+          "unidade": "km/h",
+          "direcao": 210,
+          "direcao_cardinal": "SW"
+        }
+      },
+      "cidade": "Rio Branco",
+      "estado": "Acre"
+    },
+    {
+      "id": "LEIT-MET-000045",
+      "estacao_id": "MET-002",
+      "timestamp": "2026-09-23T08:20:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 28,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Chuvas esparsas",
+          "condition_code": "40",
+          "condition_slug": "rain"
+        },
+        "umidade": {
+          "valor": 75,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 78,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 4.2,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 11.7,
+          "unidade": "km/h",
+          "direcao": 210,
+          "direcao_cardinal": "SW"
+        }
+      },
+      "cidade": "Rio Branco",
+      "estado": "Acre"
+    },
+    {
+      "id": "LEIT-MET-000046",
+      "estacao_id": "MET-002",
+      "timestamp": "2026-09-24T08:20:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 26,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 69,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 18,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 9.3,
+          "unidade": "km/h",
+          "direcao": 210,
+          "direcao_cardinal": "SW"
+        }
+      },
+      "cidade": "Rio Branco",
+      "estado": "Acre"
+    },
+    {
+      "id": "LEIT-MET-000047",
+      "estacao_id": "MET-002",
+      "timestamp": "2026-09-25T08:20:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 27,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 72,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 45,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 10.5,
+          "unidade": "km/h",
+          "direcao": 210,
+          "direcao_cardinal": "SW"
+        }
+      },
+      "cidade": "Rio Branco",
+      "estado": "Acre"
+    },
+    {
+      "id": "LEIT-MET-000048",
+      "estacao_id": "MET-002",
+      "timestamp": "2026-09-26T08:20:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 28,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Chuvas esparsas",
+          "condition_code": "40",
+          "condition_slug": "rain"
+        },
+        "umidade": {
+          "valor": 75,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 78,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 4.2,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 11.7,
+          "unidade": "km/h",
+          "direcao": 210,
+          "direcao_cardinal": "SW"
+        }
+      },
+      "cidade": "Rio Branco",
+      "estado": "Acre"
+    },
+    {
+      "id": "LEIT-MET-000049",
+      "estacao_id": "MET-003",
+      "timestamp": "2026-09-18T08:45:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 22,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 65,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 18,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 5.6,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Manaus",
+      "estado": "Amazonas"
+    },
+    {
+      "id": "LEIT-MET-000050",
+      "estacao_id": "MET-003",
+      "timestamp": "2026-09-19T08:45:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 23,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 68,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 45,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 6.8,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Manaus",
+      "estado": "Amazonas"
+    },
+    {
+      "id": "LEIT-MET-000051",
+      "estacao_id": "MET-003",
+      "timestamp": "2026-09-20T08:45:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 24,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Tempestade",
+          "condition_code": "04",
+          "condition_slug": "storm"
+        },
+        "umidade": {
+          "valor": 71,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 98,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 185.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 8.0,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Manaus",
+      "estado": "Amazonas"
+    },
+    {
+      "id": "LEIT-MET-000052",
+      "estacao_id": "MET-003",
+      "timestamp": "2026-09-21T08:45:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 22,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 65,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 18,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 5.6,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Manaus",
+      "estado": "Amazonas"
+    },
+    {
+      "id": "LEIT-MET-000053",
+      "estacao_id": "MET-003",
+      "timestamp": "2026-09-22T08:45:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 23,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 68,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 45,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 6.8,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Manaus",
+      "estado": "Amazonas"
+    },
+    {
+      "id": "LEIT-MET-000054",
+      "estacao_id": "MET-003",
+      "timestamp": "2026-09-23T08:45:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 24,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Chuvas esparsas",
+          "condition_code": "40",
+          "condition_slug": "rain"
+        },
+        "umidade": {
+          "valor": 71,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 78,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 4.2,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 8.0,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Manaus",
+      "estado": "Amazonas"
+    },
+    {
+      "id": "LEIT-MET-000055",
+      "estacao_id": "MET-003",
+      "timestamp": "2026-09-24T08:45:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 22,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 65,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 18,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 5.6,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Manaus",
+      "estado": "Amazonas"
+    },
+    {
+      "id": "LEIT-MET-000056",
+      "estacao_id": "MET-003",
+      "timestamp": "2026-09-25T08:45:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 23,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 68,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 45,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 6.8,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Manaus",
+      "estado": "Amazonas"
+    },
+    {
+      "id": "LEIT-MET-000057",
+      "estacao_id": "MET-003",
+      "timestamp": "2026-09-26T08:45:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 24,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Chuvas esparsas",
+          "condition_code": "40",
+          "condition_slug": "rain"
+        },
+        "umidade": {
+          "valor": 71,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 78,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 4.2,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 8.0,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Manaus",
+      "estado": "Amazonas"
+    },
+    {
+      "id": "LEIT-MET-000058",
+      "estacao_id": "MET-004",
+      "timestamp": "2026-09-18T08:18:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 15,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 82,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 18,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 10.8,
+          "unidade": "km/h",
+          "direcao": 160,
+          "direcao_cardinal": "SE"
+        }
+      },
+      "cidade": "Boa Vista",
+      "estado": "Roraima"
+    },
+    {
+      "id": "LEIT-MET-000059",
+      "estacao_id": "MET-004",
+      "timestamp": "2026-09-19T08:18:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 16,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 85,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 45,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 12.0,
+          "unidade": "km/h",
+          "direcao": 160,
+          "direcao_cardinal": "SE"
+        }
+      },
+      "cidade": "Boa Vista",
+      "estado": "Roraima"
+    },
+    {
+      "id": "LEIT-MET-000060",
+      "estacao_id": "MET-004",
+      "timestamp": "2026-09-20T08:18:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 17,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Tempestade",
+          "condition_code": "04",
+          "condition_slug": "storm"
+        },
+        "umidade": {
+          "valor": 88,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 98,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 4.2,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 135.0,
+          "unidade": "km/h",
+          "direcao": 160,
+          "direcao_cardinal": "SE"
+        }
+      },
+      "cidade": "Boa Vista",
+      "estado": "Roraima"
+    },
+    {
+      "id": "LEIT-MET-000061",
+      "estacao_id": "MET-004",
+      "timestamp": "2026-09-21T08:18:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 15,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 82,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 18,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 10.8,
+          "unidade": "km/h",
+          "direcao": 160,
+          "direcao_cardinal": "SE"
+        }
+      },
+      "cidade": "Boa Vista",
+      "estado": "Roraima"
+    },
+    {
+      "id": "LEIT-MET-000062",
+      "estacao_id": "MET-004",
+      "timestamp": "2026-09-22T08:18:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 16,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 85,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 45,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 12.0,
+          "unidade": "km/h",
+          "direcao": 160,
+          "direcao_cardinal": "SE"
+        }
+      },
+      "cidade": "Boa Vista",
+      "estado": "Roraima"
+    },
+    {
+      "id": "LEIT-MET-000063",
+      "estacao_id": "MET-004",
+      "timestamp": "2026-09-23T08:18:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 17,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Chuvas esparsas",
+          "condition_code": "40",
+          "condition_slug": "rain"
+        },
+        "umidade": {
+          "valor": 88,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 78,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 4.2,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 13.2,
+          "unidade": "km/h",
+          "direcao": 160,
+          "direcao_cardinal": "SE"
+        }
+      },
+      "cidade": "Boa Vista",
+      "estado": "Roraima"
+    },
+    {
+      "id": "LEIT-MET-000064",
+      "estacao_id": "MET-004",
+      "timestamp": "2026-09-24T08:18:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 15,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 82,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 18,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 10.8,
+          "unidade": "km/h",
+          "direcao": 160,
+          "direcao_cardinal": "SE"
+        }
+      },
+      "cidade": "Boa Vista",
+      "estado": "Roraima"
+    },
+    {
+      "id": "LEIT-MET-000065",
+      "estacao_id": "MET-004",
+      "timestamp": "2026-09-25T08:18:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 16,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 85,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 45,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 12.0,
+          "unidade": "km/h",
+          "direcao": 160,
+          "direcao_cardinal": "SE"
+        }
+      },
+      "cidade": "Boa Vista",
+      "estado": "Roraima"
+    },
+    {
+      "id": "LEIT-MET-000066",
+      "estacao_id": "MET-004",
+      "timestamp": "2026-09-26T08:18:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 17,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Chuvas esparsas",
+          "condition_code": "40",
+          "condition_slug": "rain"
+        },
+        "umidade": {
+          "valor": 88,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 78,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 4.2,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 13.2,
+          "unidade": "km/h",
+          "direcao": 160,
+          "direcao_cardinal": "SE"
+        }
+      },
+      "cidade": "Boa Vista",
+      "estado": "Roraima"
+    },
+    {
+      "id": "LEIT-MET-000067",
+      "estacao_id": "MET-005",
+      "timestamp": "2026-09-18T08:08:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 27,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 70,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 18,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 13.0,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Belém",
+      "estado": "Pará"
+    },
+    {
+      "id": "LEIT-MET-000068",
+      "estacao_id": "MET-005",
+      "timestamp": "2026-09-19T08:08:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 28,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 73,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 45,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 14.2,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Belém",
+      "estado": "Pará"
+    },
+    {
+      "id": "LEIT-MET-000069",
+      "estacao_id": "MET-005",
+      "timestamp": "2026-09-20T08:08:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 29,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Chuvas esparsas",
+          "condition_code": "40",
+          "condition_slug": "rain"
+        },
+        "umidade": {
+          "valor": 76,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 78,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 4.2,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 15.4,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Belém",
+      "estado": "Pará"
+    },
+    {
+      "id": "LEIT-MET-000070",
+      "estacao_id": "MET-005",
+      "timestamp": "2026-09-21T08:08:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 27,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 70,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 18,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 13.0,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Belém",
+      "estado": "Pará"
+    },
+    {
+      "id": "LEIT-MET-000071",
+      "estacao_id": "MET-005",
+      "timestamp": "2026-09-22T08:08:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 28,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 73,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 45,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 14.2,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Belém",
+      "estado": "Pará"
+    },
+    {
+      "id": "LEIT-MET-000072",
+      "estacao_id": "MET-005",
+      "timestamp": "2026-09-23T08:08:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 29,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Chuvas esparsas",
+          "condition_code": "40",
+          "condition_slug": "rain"
+        },
+        "umidade": {
+          "valor": 76,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 78,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 4.2,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 15.4,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Belém",
+      "estado": "Pará"
+    },
+    {
+      "id": "LEIT-MET-000073",
+      "estacao_id": "MET-005",
+      "timestamp": "2026-09-24T08:08:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 27,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 70,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 18,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 13.0,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Belém",
+      "estado": "Pará"
+    },
+    {
+      "id": "LEIT-MET-000074",
+      "estacao_id": "MET-005",
+      "timestamp": "2026-09-25T08:08:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 28,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 73,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 45,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 14.2,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Belém",
+      "estado": "Pará"
+    },
+    {
+      "id": "LEIT-MET-000075",
+      "estacao_id": "MET-005",
+      "timestamp": "2026-09-26T08:08:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 29,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Chuvas esparsas",
+          "condition_code": "40",
+          "condition_slug": "rain"
+        },
+        "umidade": {
+          "valor": 76,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 78,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 4.2,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 15.4,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Belém",
+      "estado": "Pará"
+    },
+    {
+      "id": "LEIT-MET-000076",
+      "estacao_id": "MET-006",
+      "timestamp": "2026-09-18T08:30:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 20,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 77,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 18,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 7.6,
+          "unidade": "km/h",
+          "direcao": 90,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Macapá",
+      "estado": "Amapá"
+    },
+    {
+      "id": "LEIT-MET-000077",
+      "estacao_id": "MET-006",
+      "timestamp": "2026-09-19T08:30:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 21,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 80,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 45,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 8.8,
+          "unidade": "km/h",
+          "direcao": 90,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Macapá",
+      "estado": "Amapá"
+    },
+    {
+      "id": "LEIT-MET-000078",
+      "estacao_id": "MET-006",
+      "timestamp": "2026-09-20T08:30:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 22,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Chuvas esparsas",
+          "condition_code": "40",
+          "condition_slug": "rain"
+        },
+        "umidade": {
+          "valor": 83,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 78,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 4.2,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 10.0,
+          "unidade": "km/h",
+          "direcao": 90,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Macapá",
+      "estado": "Amapá"
+    },
+    {
+      "id": "LEIT-MET-000079",
+      "estacao_id": "MET-006",
+      "timestamp": "2026-09-21T08:30:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 20,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 77,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 18,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 7.6,
+          "unidade": "km/h",
+          "direcao": 90,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Macapá",
+      "estado": "Amapá"
+    },
+    {
+      "id": "LEIT-MET-000080",
+      "estacao_id": "MET-006",
+      "timestamp": "2026-09-22T08:30:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 21,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 80,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 45,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 8.8,
+          "unidade": "km/h",
+          "direcao": 90,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Macapá",
+      "estado": "Amapá"
+    },
+    {
+      "id": "LEIT-MET-000081",
+      "estacao_id": "MET-006",
+      "timestamp": "2026-09-23T08:30:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 22,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Chuvas esparsas",
+          "condition_code": "40",
+          "condition_slug": "rain"
+        },
+        "umidade": {
+          "valor": 83,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 78,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 4.2,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 10.0,
+          "unidade": "km/h",
+          "direcao": 90,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Macapá",
+      "estado": "Amapá"
+    },
+    {
+      "id": "LEIT-MET-000082",
+      "estacao_id": "MET-006",
+      "timestamp": "2026-09-24T08:30:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 20,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 77,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 18,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 7.6,
+          "unidade": "km/h",
+          "direcao": 90,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Macapá",
+      "estado": "Amapá"
+    },
+    {
+      "id": "LEIT-MET-000083",
+      "estacao_id": "MET-006",
+      "timestamp": "2026-09-25T08:30:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 21,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 80,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 45,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 8.8,
+          "unidade": "km/h",
+          "direcao": 90,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Macapá",
+      "estado": "Amapá"
+    },
+    {
+      "id": "LEIT-MET-000084",
+      "estacao_id": "MET-006",
+      "timestamp": "2026-09-26T08:30:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 22,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Chuvas esparsas",
+          "condition_code": "40",
+          "condition_slug": "rain"
+        },
+        "umidade": {
+          "valor": 83,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 78,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 4.2,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 10.0,
+          "unidade": "km/h",
+          "direcao": 90,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Macapá",
+      "estado": "Amapá"
+    },
+    {
+      "id": "LEIT-MET-000085",
+      "estacao_id": "MET-007",
+      "timestamp": "2026-09-18T08:20:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 26,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 66,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 18,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 9.1,
+          "unidade": "km/h",
+          "direcao": 210,
+          "direcao_cardinal": "SW"
+        }
+      },
+      "cidade": "Palmas",
+      "estado": "Tocantins"
+    },
+    {
+      "id": "LEIT-MET-000086",
+      "estacao_id": "MET-007",
+      "timestamp": "2026-09-19T08:20:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 27,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 69,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 45,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 10.3,
+          "unidade": "km/h",
+          "direcao": 210,
+          "direcao_cardinal": "SW"
+        }
+      },
+      "cidade": "Palmas",
+      "estado": "Tocantins"
+    },
+    {
+      "id": "LEIT-MET-000087",
+      "estacao_id": "MET-007",
+      "timestamp": "2026-09-20T08:20:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 28,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Tempestade",
+          "condition_code": "04",
+          "condition_slug": "storm"
+        },
+        "umidade": {
+          "valor": 72,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 98,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 210.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 11.5,
+          "unidade": "km/h",
+          "direcao": 210,
+          "direcao_cardinal": "SW"
+        }
+      },
+      "cidade": "Palmas",
+      "estado": "Tocantins"
+    },
+    {
+      "id": "LEIT-MET-000088",
+      "estacao_id": "MET-007",
+      "timestamp": "2026-09-21T08:20:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 26,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 66,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 18,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 9.1,
+          "unidade": "km/h",
+          "direcao": 210,
+          "direcao_cardinal": "SW"
+        }
+      },
+      "cidade": "Palmas",
+      "estado": "Tocantins"
+    },
+    {
+      "id": "LEIT-MET-000089",
+      "estacao_id": "MET-007",
+      "timestamp": "2026-09-22T08:20:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 27,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 69,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 45,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 10.3,
+          "unidade": "km/h",
+          "direcao": 210,
+          "direcao_cardinal": "SW"
+        }
+      },
+      "cidade": "Palmas",
+      "estado": "Tocantins"
+    },
+    {
+      "id": "LEIT-MET-000090",
+      "estacao_id": "MET-007",
+      "timestamp": "2026-09-23T08:20:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 28,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Chuvas esparsas",
+          "condition_code": "40",
+          "condition_slug": "rain"
+        },
+        "umidade": {
+          "valor": 72,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 78,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 4.2,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 11.5,
+          "unidade": "km/h",
+          "direcao": 210,
+          "direcao_cardinal": "SW"
+        }
+      },
+      "cidade": "Palmas",
+      "estado": "Tocantins"
+    },
+    {
+      "id": "LEIT-MET-000091",
+      "estacao_id": "MET-007",
+      "timestamp": "2026-09-24T08:20:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 26,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 66,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 18,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 9.1,
+          "unidade": "km/h",
+          "direcao": 210,
+          "direcao_cardinal": "SW"
+        }
+      },
+      "cidade": "Palmas",
+      "estado": "Tocantins"
+    },
+    {
+      "id": "LEIT-MET-000092",
+      "estacao_id": "MET-007",
+      "timestamp": "2026-09-25T08:20:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 27,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 69,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 45,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 10.3,
+          "unidade": "km/h",
+          "direcao": 210,
+          "direcao_cardinal": "SW"
+        }
+      },
+      "cidade": "Palmas",
+      "estado": "Tocantins"
+    },
+    {
+      "id": "LEIT-MET-000093",
+      "estacao_id": "MET-007",
+      "timestamp": "2026-09-26T08:20:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 28,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Chuvas esparsas",
+          "condition_code": "40",
+          "condition_slug": "rain"
+        },
+        "umidade": {
+          "valor": 72,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 78,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 4.2,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 11.5,
+          "unidade": "km/h",
+          "direcao": 210,
+          "direcao_cardinal": "SW"
+        }
+      },
+      "cidade": "Palmas",
+      "estado": "Tocantins"
+    },
+    {
+      "id": "LEIT-MET-000094",
+      "estacao_id": "MET-008",
+      "timestamp": "2026-09-18T08:45:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 21,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 63,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 18,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 5.6,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "São Luís",
+      "estado": "Maranhão"
+    },
+    {
+      "id": "LEIT-MET-000095",
+      "estacao_id": "MET-008",
+      "timestamp": "2026-09-19T08:45:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 22,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 66,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 45,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 6.8,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "São Luís",
+      "estado": "Maranhão"
+    },
+    {
+      "id": "LEIT-MET-000096",
+      "estacao_id": "MET-008",
+      "timestamp": "2026-09-20T08:45:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 23,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Chuvas esparsas",
+          "condition_code": "40",
+          "condition_slug": "rain"
+        },
+        "umidade": {
+          "valor": 69,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 78,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 4.2,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 8.0,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "São Luís",
+      "estado": "Maranhão"
+    },
+    {
+      "id": "LEIT-MET-000097",
+      "estacao_id": "MET-008",
+      "timestamp": "2026-09-21T08:45:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 21,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 63,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 18,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 5.6,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "São Luís",
+      "estado": "Maranhão"
+    },
+    {
+      "id": "LEIT-MET-000098",
+      "estacao_id": "MET-008",
+      "timestamp": "2026-09-22T08:45:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 22,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 66,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 45,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 6.8,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "São Luís",
+      "estado": "Maranhão"
+    },
+    {
+      "id": "LEIT-MET-000099",
+      "estacao_id": "MET-008",
+      "timestamp": "2026-09-23T08:45:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 23,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Chuvas esparsas",
+          "condition_code": "40",
+          "condition_slug": "rain"
+        },
+        "umidade": {
+          "valor": 69,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 78,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 4.2,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 8.0,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "São Luís",
+      "estado": "Maranhão"
+    },
+    {
+      "id": "LEIT-MET-000100",
+      "estacao_id": "MET-008",
+      "timestamp": "2026-09-24T08:45:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 21,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 63,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 18,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 5.6,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "São Luís",
+      "estado": "Maranhão"
+    },
+    {
+      "id": "LEIT-MET-000101",
+      "estacao_id": "MET-008",
+      "timestamp": "2026-09-25T08:45:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 22,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 66,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 45,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 6.8,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "São Luís",
+      "estado": "Maranhão"
+    },
+    {
+      "id": "LEIT-MET-000102",
+      "estacao_id": "MET-008",
+      "timestamp": "2026-09-26T08:45:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 23,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Chuvas esparsas",
+          "condition_code": "40",
+          "condition_slug": "rain"
+        },
+        "umidade": {
+          "valor": 69,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 78,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 4.2,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 8.0,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "São Luís",
+      "estado": "Maranhão"
+    },
+    {
+      "id": "LEIT-MET-000103",
+      "estacao_id": "MET-009",
+      "timestamp": "2026-09-18T08:18:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 16,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 80,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 18,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 12.3,
+          "unidade": "km/h",
+          "direcao": 160,
+          "direcao_cardinal": "SE"
+        }
+      },
+      "cidade": "São Paulo",
+      "estado": "São Paulo"
+    },
+    {
+      "id": "LEIT-MET-000104",
+      "estacao_id": "MET-009",
+      "timestamp": "2026-09-19T08:18:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 17,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 83,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 45,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 13.5,
+          "unidade": "km/h",
+          "direcao": 160,
+          "direcao_cardinal": "SE"
+        }
+      },
+      "cidade": "São Paulo",
+      "estado": "São Paulo"
+    },
+    {
+      "id": "LEIT-MET-000105",
+      "estacao_id": "MET-009",
+      "timestamp": "2026-09-20T08:18:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 18,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Chuvas esparsas",
+          "condition_code": "40",
+          "condition_slug": "rain"
+        },
+        "umidade": {
+          "valor": 9,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 78,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 4.2,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 14.7,
+          "unidade": "km/h",
+          "direcao": 160,
+          "direcao_cardinal": "SE"
+        }
+      },
+      "cidade": "São Paulo",
+      "estado": "São Paulo"
+    },
+    {
+      "id": "LEIT-MET-000106",
+      "estacao_id": "MET-009",
+      "timestamp": "2026-09-21T08:18:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 16,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 80,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 18,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 12.3,
+          "unidade": "km/h",
+          "direcao": 160,
+          "direcao_cardinal": "SE"
+        }
+      },
+      "cidade": "São Paulo",
+      "estado": "São Paulo"
+    },
+    {
+      "id": "LEIT-MET-000107",
+      "estacao_id": "MET-009",
+      "timestamp": "2026-09-22T08:18:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 17,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 83,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 45,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 13.5,
+          "unidade": "km/h",
+          "direcao": 160,
+          "direcao_cardinal": "SE"
+        }
+      },
+      "cidade": "São Paulo",
+      "estado": "São Paulo"
+    },
+    {
+      "id": "LEIT-MET-000108",
+      "estacao_id": "MET-009",
+      "timestamp": "2026-09-23T08:18:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 18,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Chuvas esparsas",
+          "condition_code": "40",
+          "condition_slug": "rain"
+        },
+        "umidade": {
+          "valor": 86,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 78,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 4.2,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 14.7,
+          "unidade": "km/h",
+          "direcao": 160,
+          "direcao_cardinal": "SE"
+        }
+      },
+      "cidade": "São Paulo",
+      "estado": "São Paulo"
+    },
+    {
+      "id": "LEIT-MET-000109",
+      "estacao_id": "MET-009",
+      "timestamp": "2026-09-24T08:18:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 16,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 80,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 18,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 12.3,
+          "unidade": "km/h",
+          "direcao": 160,
+          "direcao_cardinal": "SE"
+        }
+      },
+      "cidade": "São Paulo",
+      "estado": "São Paulo"
+    },
+    {
+      "id": "LEIT-MET-000110",
+      "estacao_id": "MET-009",
+      "timestamp": "2026-09-25T08:18:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 17,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 83,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 45,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 13.5,
+          "unidade": "km/h",
+          "direcao": 160,
+          "direcao_cardinal": "SE"
+        }
+      },
+      "cidade": "São Paulo",
+      "estado": "São Paulo"
+    },
+    {
+      "id": "LEIT-MET-000111",
+      "estacao_id": "MET-009",
+      "timestamp": "2026-09-26T08:18:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 18,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Chuvas esparsas",
+          "condition_code": "40",
+          "condition_slug": "rain"
+        },
+        "umidade": {
+          "valor": 86,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 78,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 4.2,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 14.7,
+          "unidade": "km/h",
+          "direcao": 160,
+          "direcao_cardinal": "SE"
+        }
+      },
+      "cidade": "São Paulo",
+      "estado": "São Paulo"
+    },
+    {
+      "id": "LEIT-MET-000112",
+      "estacao_id": "MET-010",
+      "timestamp": "2026-09-18T08:08:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 28,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 67,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 18,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 13.8,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Salvador",
+      "estado": "Bahia"
+    },
+    {
+      "id": "LEIT-MET-000113",
+      "estacao_id": "MET-010",
+      "timestamp": "2026-09-19T08:08:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 29,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 70,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 45,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 15.0,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Salvador",
+      "estado": "Bahia"
+    },
+    {
+      "id": "LEIT-MET-000114",
+      "estacao_id": "MET-010",
+      "timestamp": "2026-09-20T08:08:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 30,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Tempestade",
+          "condition_code": "04",
+          "condition_slug": "storm"
+        },
+        "umidade": {
+          "valor": 73,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 98,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 4.2,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 125.0,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Salvador",
+      "estado": "Bahia"
+    },
+    {
+      "id": "LEIT-MET-000115",
+      "estacao_id": "MET-010",
+      "timestamp": "2026-09-21T08:08:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 28,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 67,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 18,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 13.8,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Salvador",
+      "estado": "Bahia"
+    },
+    {
+      "id": "LEIT-MET-000116",
+      "estacao_id": "MET-010",
+      "timestamp": "2026-09-22T08:08:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 29,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 70,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 45,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 15.0,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Salvador",
+      "estado": "Bahia"
+    },
+    {
+      "id": "LEIT-MET-000117",
+      "estacao_id": "MET-010",
+      "timestamp": "2026-09-23T08:08:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 30,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Chuvas esparsas",
+          "condition_code": "40",
+          "condition_slug": "rain"
+        },
+        "umidade": {
+          "valor": 73,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 78,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 4.2,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 16.2,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Salvador",
+      "estado": "Bahia"
+    },
+    {
+      "id": "LEIT-MET-000118",
+      "estacao_id": "MET-010",
+      "timestamp": "2026-09-24T08:08:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 28,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Ensolarado",
+          "condition_code": "32",
+          "condition_slug": "clear_day"
+        },
+        "umidade": {
+          "valor": 67,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 18,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 13.8,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Salvador",
+      "estado": "Bahia"
+    },
+    {
+      "id": "LEIT-MET-000119",
+      "estacao_id": "MET-010",
+      "timestamp": "2026-09-25T08:08:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 29,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Parcialmente nublado",
+          "condition_code": "30",
+          "condition_slug": "cloudly_day"
+        },
+        "umidade": {
+          "valor": 70,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 45,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 0.0,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 15.0,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Salvador",
+      "estado": "Bahia"
+    },
+    {
+      "id": "LEIT-MET-000120",
+      "estacao_id": "MET-010",
+      "timestamp": "2026-09-26T08:08:00-03:00",
+      "dados_meteorologicos": {
+        "temperatura_ar": {
+          "valor": 30,
+          "unidade": "°C"
+        },
+        "condicao": {
+          "description": "Chuvas esparsas",
+          "condition_code": "40",
+          "condition_slug": "rain"
+        },
+        "umidade": {
+          "valor": 73,
+          "unidade": "%"
+        },
+        "nebulosidade": {
+          "valor": 78,
+          "unidade": "%"
+        },
+        "chuva": {
+          "valor": 4.2,
+          "unidade": "mm"
+        },
+        "vento": {
+          "velocidade": 16.2,
+          "unidade": "km/h",
+          "direcao": 110,
+          "direcao_cardinal": "E"
+        }
+      },
+      "cidade": "Salvador",
+      "estado": "Bahia"
     }
   ]
 }
