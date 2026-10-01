@@ -10,7 +10,7 @@ from pathlib import Path
 import subprocess
 import sys
 
-from .config.settings import PROJECT_ROOT, configure_logging, get_env
+from config.settings import PROJECT_ROOT, configure_logging, get_env
 
 BASE_DIR = PROJECT_ROOT
 configure_logging(BASE_DIR)
@@ -36,9 +36,7 @@ def exibir_menu() -> str:
     return input("Escolha uma opção: ").strip()
 
 
-def executar_script(
-    caminho_relativo: str, interativo: bool = False
-) -> bool:
+def executar_script(caminho_relativo: str, interativo: bool = False) -> bool:
     caminho_script = BASE_DIR / caminho_relativo
 
     if not caminho_script.exists():

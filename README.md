@@ -6,64 +6,89 @@ Projeto Prático Integrador desenvolvido pela equipe PyCorders para capturar, tr
 
 ## Sobre o projeto
 
-A aplicação implementa um pipeline completo em Python para ingestão de dados provenientes de API REST ou arquivo JSON, validação e limpeza dos registros, armazenamento em SQL Server e cálculo de métricas estatísticas. O projeto prioriza modularidade, segurança, governança, testes automatizados e rastreabilidade por meio do Git e do GitHub.
+A aplicação trata arquivos JSON de leituras ambientais, meteorológicas e de localização, persiste os dados em SQL Server, calcula estatísticas e disponibiliza consultas por API REST e dashboard. O fluxo principal de carga é executado por scripts Python independentes, orquestrados por um menu de terminal.
 
 ## Funcionalidades
 
 O pipeline contempla:
 
-- Consumo de API REST pública ou leitura de arquivo JSON simulado.
-- Conversão do JSON em listas e dicionários Python.
-- Validação de campos ausentes, nulos, inválidos ou duplicados.
-- Persistência das estações e leituras em banco relacional.
-- Consultas SQL com JOINs, agregações por estação e filtros por período.
-- Cálculo de média, mediana, desvio padrão e intervalo interquartil.
-- Detecção de outliers pela regra de 1,5 × IQR.
-- Exibição dos resultados no terminal ou em relatório textual.
-- Proteção de credenciais por variáveis de ambiente e tratamento de dados conforme a LGPD.
+- Leitura e normalização de JSONs de estados, municípios, estações e leituras.
+- Carga incremental de estados, cidades, estações, qualidade da água e meteorologia.
+- Resolução e validação de chaves entre os arquivos JSON e o SQL Server.
+- Relatórios interativos por cidade e estação, com média, mediana, desvio padrão, IQR e contagem de outliers.
+- API FastAPI para listar cidades e consultar leituras carregadas dos JSONs.
+- Dashboard Streamlit para consultar no SQL Server e visualizar indicadores, tabelas e séries temporais.
+- Registro de eventos no console e em `logs/execucao_relatorio.log`.
 
 ## Tecnologias
 
 - Python 3.10 ou superior
 - SQL Server
-- Biblioteca de acesso a API HTTP definida pelo projeto
-- Biblioteca de conexão com SQL Server definida pelo projeto
-- python-dotenv
-- pytest
-- Git e GitHub
-- GitHub Copilot como apoio à documentação, testes e otimização
+- SQL Server e Microsoft ODBC Driver 17 for SQL Server
+- pandas, SQLAlchemy, pyodbc e python-dotenv
+- FastAPI e Uvicorn (API)
+- Streamlit (dashboard)
+- tabulate (relatórios no terminal) e pytest (testes)
 
 ## Arquitetura do projeto
 
 ```text
-PyCordersMeteorological/
-├── data/
-│   ├── input/
-│   └── output/
-├── database/
-│   ├── ddl/
-│   └── dml/
-├── reports/
+meteorological-pycorders/
 ├── src/
-│   ├── ingestion/
-│   ├── database/
+│   ├── config/
+│   │   ├── .env                     # Configuração local, não versionar
+│   │   ├── requirements.txt
+│   │   └── settings.py              # Ambiente, logs, caminhos JSON e conexão SQL
 │   ├── analytics/
-│   └── main.py
-├── tests/
-├── .env.example
+│   │   └── Relatorios_estatisticos.py
+│   ├── api/
+│   │   └── main.py                  # API FastAPI sobre os JSONs
+│   ├── database/
+│   │   ├── ddl/
+│   │   │   ├── create-database.sql
+│   │   │   ├── create-tables.sql
+│   │   │   ├── delete-data-table.sql
+│   │   │   └── schema.sql
+│   │   ├── dml/
+│   │   │   ├── Insert_Localizacao.py
+│   │   │   ├── Insert_Leituras_ambiental.py
+│   │   │   ├── Insert_Leituras_Meteorologica.py
+│   │   │   └── seed.sql
+│   │   └── dql/
+│   │       └── consultas-essenciais.sql
+│   ├── ingestion/
+│   │   ├── leituras/
+│   │   │   ├── Parse_LeituraAmbiental.py
+│   │   │   ├── Parse_LeituraMetereologica.py
+│   │   │   ├── leituras_ambientais.json
+│   │   │   └── leituras_meteorologicas.json
+│   │   └── localizacao/
+│   │       ├── Parse_localizacao_JSON.py
+│   │       ├── estacoes.json
+│   │       ├── estado.json
+│   │       └── municipio.json
+│   ├── dashboard.py                 # Dashboard Streamlit
+│   ├── main.py                      # Menu e orquestração das cargas
+│   └── __init__.py
 ├── .gitignore
-├── requirements.txt
-└── README.md
+├── README.md
+├── tests/
+│   └── test_database_insertions.py  # Testes de inserção com SQLite em memória
+└── TESTE.PY                         # Script auxiliar de demonstração
 ```
 
 ## Responsabilidades dos módulos
 
-- `src/ingestion`: captura, leitura, parsing e validação dos dados.
-- `src/database`: conexão, criação das estruturas e persistência.
-- `src/analytics`: consultas, métricas estatísticas e identificação de outliers.
-- `tests`: testes unitários das regras de validação e dos cálculos.
-- `database`: scripts DDL e DML para reprodução do banco.
-- `reports`: resultados textuais e materiais da demonstração.
+- `src/ingestion/leituras`: transforma os JSONs ambientais e meteorológicos em DataFrames.
+- `src/ingestion/localizacao`: normaliza estados, municípios e estações.
+- `src/database/ddl`: contém `create-database.sql`, `create-tables.sql`, `schema.sql` e `delete-data-table.sql`.
+- `src/database/dml`: carrega localização e leituras; `seed.sql` contém dados SQL auxiliares.
+- `src/database/dql`: reúne consultas de inspeção e análise.
+- `src/analytics`: gera relatórios estatísticos interativos a partir dos JSONs.
+- `src/api`: expõe cidades e leituras dos arquivos JSON pelos endpoints HTTP.
+- `src/dashboard.py`: apresenta dados persistidos no SQL Server em tabelas, métricas e gráficos.
+- `src/config/settings.py`: concentra leitura do `.env`, caminhos JSON, conexão SQL Server e configuração de logs.
+- `tests/test_database_insertions.py`: exercita inserções de localização e leituras sem conectar ao SQL Server.
 
 ## Pré-requisitos
 
@@ -79,7 +104,7 @@ PyCordersMeteorological/
 
    ```bash
    git clone <URL_DO_REPOSITORIO>
-   cd PyCordersMeteorological
+   cd meteorological-pycorders
    ```
 
 2. Crie e ative um ambiente virtual:
@@ -94,60 +119,77 @@ PyCordersMeteorological/
 3. Instale as dependências:
 
    ```bash
-   pip install -r requirements.txt
+   pip install -r src/config/requirements.txt
    ```
 
 ## Configuração
 
-1. Copie o arquivo de exemplo:
-
-   ```bash
-   copy .env.example .env
-   ```
-
-   No Linux ou macOS, use `cp .env.example .env`.
-
-2. Preencha as variáveis conforme o ambiente:
+Configure `src/config/.env` com as variáveis abaixo. Esse arquivo é local e ignorado pelo Git; não compartilhe nem versione credenciais:
 
    ```env
-   DATA_SOURCE=api
-   API_URL=<ENDERECO_DA_API>
-   API_KEY=<CHAVE_SE_NECESSARIA>
-   DB_SERVER=<SERVIDOR>
-   DB_NAME=<BANCO>
-   DB_USER=<USUARIO>
-   DB_PASSWORD=<SENHA>
-   DB_DRIVER=<DRIVER_ODBC>
+   LOGS_DIR=logs
+   DB_HOST=.\SQLEXPRESS
+   DB_PORT=1433
+   DB_NAME=monitoramento
+   DB_TRUSTED_CONNECTION=yes
+   INSERT_LOCALIZACAO=src/database/dml/Insert_Localizacao.py
+   INSERT_LEITURA_AMBIENTAL=src/database/dml/Insert_Leituras_ambiental.py
+   INSERT_LEITURA_METEOROLOGICA=src/database/dml/Insert_Leituras_Meteorologica.py
+   RELATORIO_ESTATISTICO=src/analytics/Relatorios_estatisticos.py
+   INGESTION_LEITURA_AMBIENTAL=src/ingestion/leituras/leituras_ambientais.json
+   INGESTION_LEITURA_METEOROLOGICA=src/ingestion/leituras/leituras_meteorologicas.json
+   INGESTION_LOCALIZACAO_ESTADOS=src/ingestion/localizacao/estado.json
+   INGESTION_LOCALIZACAO_MUNICIPIOS=src/ingestion/localizacao/municipio.json
+   INGESTION_LOCALIZACAO_ESTACOES=src/ingestion/localizacao/estacoes.json
    ```
 
 ## Execução
 
-1. Prepare o banco executando os scripts DDL e DML disponíveis na pasta `database`.
-2. Execute o pipeline principal:
+Prepare o banco no SQL Server executando `src/database/ddl/create-database.sql` e, em seguida, `src/database/ddl/create-tables.sql`. Atenção: o script de criação das tabelas remove tabelas existentes antes de recriá-las.
+
+Para abrir o menu e executar as cargas ou relatórios:
 
    ```bash
    python -m src.main
    ```
 
-3. Consulte no terminal ou na pasta `reports` os resultados produzidos.
+No menu, a opção de carga executa as inserções de localização, leituras ambientais e leituras meteorológicas. A opção de relatório permite selecionar cidade e estação. A carga depende de uma conexão SQL Server configurada em `src/config/.env`.
+
+Para iniciar a API que lê os JSONs (não consulta o banco):
+
+```bash
+uvicorn src.api.main:app --reload
+```
+
+A documentação interativa da API ficará disponível em `http://127.0.0.1:8000/docs`. Os endpoints incluem `/cidades`, `/leituras/ambientais` e `/leituras/meteorologicas`.
+
+Para iniciar o dashboard Streamlit, em outro terminal:
+
+```bash
+streamlit run src/dashboard.py
+```
+
+O dashboard consulta o SQL Server usando servidor, porta, banco e autenticação definidos em `src/config/.env`.
+
+Os logs são gravados em `logs/execucao_relatorio.log`. `LOGS_DIR` pode apontar para outro caminho; caminhos relativos são resolvidos a partir da raiz do projeto. O arquivo de log é gerado localmente e ignorado pelo Git. O único parâmetro de conexão fixo no código é `ODBC Driver 17 for SQL Server`; servidor, porta, banco e autenticação vêm do `.env`.
 
 ## Fluxo de processamento
 
-1. Coleta das leituras ambientais.
-2. Conversão e normalização do JSON.
-3. Validação e descarte ou correção de registros inconsistentes.
-4. Anonimização ou remoção de identificadores sensíveis.
-5. Persistência nas tabelas `estacoes` e `leituras`.
-6. Consulta dos dados persistidos.
-7. Cálculo das métricas estatísticas e identificação de outliers.
-8. Exibição ou geração do relatório textual.
+1. Os parsers leem os JSONs versionados em `src/ingestion` e normalizam os dados com pandas.
+2. A carga de localização insere estados, cidades e estações ainda não cadastrados.
+3. As cargas ambientais e meteorológicas associam leituras às entidades do banco e inserem os registros.
+4. O relatório estatístico lê os arquivos de leituras, permite filtrar cidade/estação e calcula estatísticas por variável.
+5. A API consulta os JSONs diretamente; o dashboard consulta as tabelas SQL Server.
 
 ## Modelo de dados simplificado
 
-| Tabela   | Finalidade                                  | Dados principais                                                            |
-| -------- | ------------------------------------------- | --------------------------------------------------------------------------- |
-| estacoes | Armazenar metadados das estações            | Identificador anonimizado, nome ou código, localização permitida e tipo    |
-| leituras | Armazenar séries temporais ambientais       | Estação, data e hora, parâmetro, valor e unidade                           |
+| Tabela                  | Finalidade                                      |
+| ----------------------- | ----------------------------------------------- |
+| `estado`                | Unidades federativas e código IBGE              |
+| `cidade`                | Municípios vinculados a um estado               |
+| `estacao`               | Estações vinculadas a cidade e estado           |
+| `qualidade_agua`        | Leituras de água vinculadas à estação           |
+| `leitura_meteorologica` | Leituras meteorológicas vinculadas à cidade     |
 
 ## Análises estatísticas
 
@@ -155,21 +197,18 @@ Para cada parâmetro ambiental, o sistema calcula média, mediana, desvio padrã
 
 ## Testes
 
-Execute a suíte de testes com:
+Os testes usam dados manuais e SQLite em memória para exercitar `estado`, `cidade`, `estacao`, `qualidade_agua` e `leitura_meteorologica`, sem alterar o SQL Server. Execute-os com:
 
 ```bash
-pytest -v
+python -m pytest tests -v
 ```
-
-Os testes devem cobrir os cálculos estatísticos, a regra de outliers, as validações da entrada e os principais cenários de erro.
 
 ## Segurança e governança
 
-- Credenciais e endereços de API são carregados pelo arquivo `.env`.
-- O arquivo `.env` não deve ser versionado; somente `.env.example` deve ficar no repositório.
-- Identificadores pessoais de operadores ou estações devem ser removidos ou anonimizados.
-- Logs e relatórios não devem expor segredos ou dados pessoais.
-- As decisões relacionadas à retenção, minimização e tratamento de dados devem observar os princípios da LGPD.
+- `src/config/.env` contém configurações locais e não deve ser versionado.
+- O arquivo `logs/execucao_relatorio.log` é local e está coberto pelo `.gitignore`.
+- Revise mensagens e dados registrados antes de incluir logs em chamados ou compartilhá-los.
+- O dashboard e os scripts de carga compartilham a conexão definida em `src/config/.env`.
 
 ## Equipe
 
@@ -216,12 +255,9 @@ Cada integrante trabalha em branch própria, mantém commits objetivos e partici
 
 ## Critérios de conclusão
 
-- Pipeline executado de ponta a ponta.
-- Banco criado e populado por processo reproduzível.
-- Consultas SQL e análises estatísticas disponíveis.
-- Testes unitários executados com sucesso.
-- Configuração segura e documentação atualizada.
-- Pull Request final revisada e aprovada.
+- Estrutura do banco criada e cargas executadas em SQL Server configurado.
+- Relatórios, API e dashboard iniciados conforme as instruções deste README.
+- Configurações locais e logs mantidos fora do controle de versão.
 
 ## Licença
 
