@@ -207,10 +207,10 @@ query_meteo = """
         c.nome AS [Cidade],
         e.sigla AS [UF],
         FORMAT(m.data_leitura, 'dd/MM/yyyy HH:mm') AS [Data/Hora],
-        CAST(m.temperatura_ar AS FLOAT) AS [Temp. Ar (°C)],
-        CAST(m.umidade AS FLOAT) AS [Umidade (%)],
-        CAST(m.chuva AS FLOAT) AS [Chuva (mm)],
-        CAST(m.vento AS FLOAT) AS [Vento (km/h)],
+        CAST(m.temperatura_ar AS FLOAT) AS [Temperatura],
+        CAST(m.umidade AS FLOAT) AS [Umidade],
+        CAST(m.chuva AS FLOAT) AS [Chuva],
+        CAST(m.vento AS FLOAT) AS [Vento],
         m.condicao AS [Condição do Tempo]
     FROM leitura_meteorologica m
     JOIN cidade c ON m.id_cidade = c.id
@@ -291,10 +291,10 @@ with aba2:
     st.subheader("Leituras Meteorológicas")
     if not df_meteo.empty:
         # Métricas Estatísticas para Clima
-        temp_ar = df_meteo['Temp. Ar (°C)'].dropna()
-        umidade = df_meteo['Umidade (%)'].dropna()
-        chuva = df_meteo['Chuva (mm)'].dropna()
-        vento = df_meteo['Vento (km/h)'].dropna()
+        temp_ar = df_meteo['Temperatura'].dropna()
+        umidade = df_meteo['Umidade'].dropna()
+        chuva = df_meteo['Chuva'].dropna()
+        vento = df_meteo['Vento'].dropna()
 
         # Cálculo de IQR
         iqr_temp_ar = temp_ar.quantile(0.75) - temp_ar.quantile(0.25) if not temp_ar.empty else 0
@@ -323,9 +323,10 @@ with aba2:
 
         st.markdown("---")
 
+        st.caption("*Temperatura: °C | Umidade: % | Chuva: mm | Vento: Km/h")
         # Formatação para exibição na Tabela (2 casas decimais)
         df_meteo_exibicao = df_meteo.copy()
-        colunas_float_meteo = ["Temp. Ar (°C)", "Umidade (%)", "Chuva (mm)", "Vento (km/h)"]
+        colunas_float_meteo = ["Temperatura", "Umidade", "Chuva", "Vento"]
         for col in colunas_float_meteo:
             df_meteo_exibicao[col] = df_meteo_exibicao[col].map(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
 
@@ -337,10 +338,10 @@ with aba2:
         metrica_meteo = st.selectbox(
             "Métrica para o Gráfico (Clima):",
             [
-                "Temp. Ar (°C)",
-                "Umidade (%)",
-                "Chuva (mm)",
-                "Vento (km/h)",
+                "Temperatura",
+                "Umidade",
+                "Chuva",
+                "Vento",
             ],
         )
         st.line_chart(df_meteo, x="Data/Hora", y=metrica_meteo)
