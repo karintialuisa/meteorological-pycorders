@@ -7,35 +7,16 @@ como mediana, quartis e IQR para cada variável monitorada.
 
 import json
 import logging
-import os
 import sys
 from pathlib import Path
-from dotenv import load_dotenv
 import pandas as pd
 from tabulate import tabulate
 
-# Localiza o diretório raiz do projeto para permitir importações e carregar o .env
-BASE_DIR = Path(__file__).resolve().parents[2]
-sys.path.append(str(BASE_DIR))
-load_dotenv(dotenv_path=BASE_DIR / ".env")
+SRC_DIR = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(SRC_DIR))
+from config.settings import PROJECT_ROOT, configure_logging, get_path
 
-
-def get_env(chave: str) -> str:
-    """Obtém obrigatoriamente a variável do arquivo .env.
-
-    Lança erro se não for encontrada.
-    """
-    valor = os.getenv(chave)
-    if not valor:
-        raise KeyError(
-            f"❌ Configuração ausente: A chave '{chave}' não foi encontrada no arquivo .env"
-        )
-    return valor
-
-
-# Caminhos dos arquivos lidos estritamente do .env
-DIR_JSON_AGUA = BASE_DIR / get_env("INGESTION_LEITURA_AMBIENTAL")
-DIR_JSON_METEO = BASE_DIR / get_env("INGESTION_LEITURA_METEOROLOGICA")
+BASE_DIR = PROJECT_ROOT
 
 # Mapeamento dos caminhos achatados (colunas no Pandas) para nomes amigáveis no relatório
 COLUNAS_AGUA = {
@@ -169,7 +150,7 @@ def selecionar_cidade_e_estacao(
     todas_cidades = sorted(list(cidades_agua.union(cidades_meteo)))
 
     if not todas_cidades:
-        print("⚠️ Nenhuma coluna de cidade foi identificada nos dados.")
+        logging.warning("Nenhuma coluna de cidade foi identificada nos dados.")
         return (
             df_agua,
             df_meteo,
@@ -177,13 +158,18 @@ def selecionar_cidade_e_estacao(
             "Todas as Estações",
         )
 
-    print("\n" + "=" * 50)
-    print("      1. SELEÇÃO DE CIDADE")
-    print("=" * 50)
-    print(" [0] TODAS AS CIDADES (Visão Geral)")
-    for idx, cidade in enumerate(todas_cidades, start=1):
-        print(f" [{idx}] {cidade}")
-    print("=" * 50)
+    opcoes_cidade = "\n".join(
+        f" [{idx}] {cidade}"
+        for idx, cidade in enumerate(todas_cidades, start=1)
+    )
+    logging.info(
+        "\n%s\n      1. SELEÇÃO DE CIDADE\n%s\n"
+        " [0] TODAS AS CIDADES (Visão Geral)\n%s\n%s",
+        "=" * 50,
+        "=" * 50,
+        opcoes_cidade,
+        "=" * 50,
+    )
 
     cidade_escolhida = "Todas as Cidades"
     while True:
@@ -200,7 +186,7 @@ def selecionar_cidade_e_estacao(
                 df_meteo = df_meteo[df_meteo[col_cidade] == cidade_escolhida]
             break
         else:
-            print("⚠️ Opção inválida! Digite um número da lista acima.")
+            logging.warning("Opção inválida. Digite um número da lista acima.")
 
     # --- 2. FILTRO DE ESTAÇÕES DA CIDADE SELECIONADA ---
     estacoes_agua = (
@@ -217,13 +203,19 @@ def selecionar_cidade_e_estacao(
 
     estacao_escolhida = "Todas as Estações"
     if todas_estacoes:
-        print("\n" + "=" * 50)
-        print(f"      2. SELEÇÃO DE ESTAÇÃO ({cidade_escolhida})")
-        print("=" * 50)
-        print(" [0] TODAS AS ESTAÇÕES DESSA CIDADE")
-        for idx, estacao in enumerate(todas_estacoes, start=1):
-            print(f" [{idx}] {estacao}")
-        print("=" * 50)
+        opcoes_estacao = "\n".join(
+            f" [{idx}] {estacao}"
+            for idx, estacao in enumerate(todas_estacoes, start=1)
+        )
+        logging.info(
+            "\n%s\n      2. SELEÇÃO DE ESTAÇÃO (%s)\n%s\n"
+            " [0] TODAS AS ESTAÇÕES DESSA CIDADE\n%s\n%s",
+            "=" * 50,
+            cidade_escolhida,
+            "=" * 50,
+            opcoes_estacao,
+            "=" * 50,
+        )
 
         while True:
             opcao_estacao = input(
@@ -245,7 +237,7 @@ def selecionar_cidade_e_estacao(
                     ]
                 break
             else:
-                print("⚠️ Opção inválida! Digite um número da lista acima.")
+                logging.warning("Opção inválida. Digite um número da lista acima.")
 
     return df_agua, df_meteo, cidade_escolhida, estacao_escolhida
 
@@ -257,12 +249,17 @@ def main():
     cálculo das estatísticas por variável e impressão dos resultados em tabela.
     """
 
+    configure_logging(BASE_DIR)
     logging.info("Iniciando a geração dos Relatórios Estatísticos...")
 
     # 1. CARREGA OS DATAFRAMES
-    df_agua = carregar_json(DIR_JSON_AGUA, chave_lista="leituras_ambientais")
+    df_agua = carregar_json(
+        get_path("INGESTION_LEITURA_AMBIENTAL"),
+        chave_lista="leituras_ambientais",
+    )
     df_meteo = carregar_json(
-        DIR_JSON_METEO, chave_lista="leituras_meteorologicas"
+        get_path("INGESTION_LEITURA_METEOROLOGICA"),
+        chave_lista="leituras_meteorologicas",
     )
 
     if df_agua.empty and df_meteo.empty:
@@ -274,8 +271,10 @@ def main():
         selecionar_cidade_e_estacao(df_agua, df_meteo)
     )
 
-    print(
-        f"\n📌 Exibindo estatísticas para Cidade: [ {nome_cidade} ] | Estação: [ {nome_estacao} ]\n"
+    logging.info(
+        "Exibindo estatísticas para Cidade: [ %s ] | Estação: [ %s ]",
+        nome_cidade,
+        nome_estacao,
     )
 
     # 3. PROCESSA E IMPRIME LEITURAS AMBIENTAIS
@@ -284,20 +283,17 @@ def main():
             df_agua, COLUNAS_AGUA, "Qualidade da Água"
         )
         if not relatorio_agua.empty:
-            print("=" * 90)
-            print(
-                f"📊 RELATÓRIO: LEITURAS AMBIENTAIS - Cidade: {nome_cidade} | Estação: {nome_estacao}"
-            )
-            print("=" * 90)
-            print(
+            logging.info(
+                "RELATÓRIO: LEITURAS AMBIENTAIS - Cidade: %s | Estação: %s\n%s",
+                nome_cidade,
+                nome_estacao,
                 tabulate(
                     relatorio_agua,
                     headers="keys",
                     tablefmt="fancy_grid",
                     showindex=False,
-                )
+                ),
             )
-            print("\n")
             logging.info(
                 f"--- RELATÓRIO AMBIENTAL ({nome_cidade} - {nome_estacao}) ---\n{relatorio_agua.to_string(index=False)}\n"
             )
@@ -308,20 +304,17 @@ def main():
             df_meteo, COLUNAS_METEOROLOGICAS, "Meteorologia"
         )
         if not relatorio_meteo.empty:
-            print("=" * 90)
-            print(
-                f"🌤️️  RELATÓRIO: LEITURAS METEOROLÓGICAS - Cidade: {nome_cidade} | Estação: {nome_estacao}"
-            )
-            print("=" * 90)
-            print(
+            logging.info(
+                "RELATÓRIO: LEITURAS METEOROLÓGICAS - Cidade: %s | Estação: %s\n%s",
+                nome_cidade,
+                nome_estacao,
                 tabulate(
                     relatorio_meteo,
                     headers="keys",
                     tablefmt="fancy_grid",
                     showindex=False,
-                )
+                ),
             )
-            print("\n")
             logging.info(
                 f"--- RELATÓRIO METEOROLÓGICO ({nome_cidade} - {nome_estacao}) ---\n{relatorio_meteo.to_string(index=False)}\n"
             )

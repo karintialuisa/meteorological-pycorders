@@ -1,8 +1,8 @@
-import urllib
 import pandas as pd
 import streamlit as st
 from datetime import datetime, date
-from sqlalchemy import create_engine
+
+from config.settings import create_db_engine
 
 # --- CONFIGURAÇÃO DA PÁGINA ---
 st.set_page_config(
@@ -56,18 +56,7 @@ st.header("📊 Dashboard de Leituras Ambientais e Meteorológicas")
 # --- CONEXÃO COM O SQL SERVER EXPRESS ---
 @st.cache_resource
 def get_database_engine():
-    server = r".\SQLEXPRESS"
-    database = "monitoramento"
-
-    params = urllib.parse.quote_plus(
-        f"DRIVER={{ODBC Driver 17 for SQL Server}};"
-        f"SERVER={server};"
-        f"DATABASE={database};"
-        f"Trusted_Connection=yes;"
-    )
-
-    engine = create_engine(f"mssql+pyodbc:///?odbc_connect={params}")
-    return engine
+    return create_db_engine()
 
 
 engine = get_database_engine()
@@ -141,11 +130,12 @@ filtro_estacao = estacao_selecionada if estacao_selecionada != "Todas" else None
 # 3. FILTRO DE PERÍODO DE DATAS
 st.sidebar.subheader("📅 Período")
 hoje = date.today()
-data_padrao_inicio = date(2024, 1, 1)
+data_padrao_inicio = date(2026, 09, 15)
+data_padrao_fim = date(2026, 09, 26)
 
 periodo_selecionado = st.sidebar.date_input(
     "Selecione o Intervalo",
-    value=(data_padrao_inicio, hoje),
+    value=(data_padrao_inicio, data_padrao_fim),
     format="DD/MM/YYYY"
 )
 
@@ -153,7 +143,7 @@ if isinstance(periodo_selecionado, tuple) and len(periodo_selecionado) == 2:
     data_inicio, data_fim = periodo_selecionado
 else:
     data_inicio = periodo_selecionado[0] if isinstance(periodo_selecionado, tuple) else periodo_selecionado
-    data_fim = hoje
+    data_fim = data_padrao_fim
 
 
 # --- MONTAGEM DAS QUERIES SQL DINÂMICAS ---

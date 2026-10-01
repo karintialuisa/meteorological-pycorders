@@ -1,4 +1,4 @@
-import os
+import logging
 """Carga das leituras meteorológicas no banco de dados.
 
 Este módulo lê os dados tratados do JSON meteorológico, resolve os IDs de cidade
@@ -7,50 +7,16 @@ leitura_meteorologica.
 """
 
 import sys
-import urllib.parse
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parents[2]))
-from dotenv import load_dotenv
+from config.settings import configure_logging, create_db_engine
 import pandas as pd
-from sqlalchemy import create_engine, text
+from sqlalchemy import text
 from ingestion.leituras.Parse_LeituraMetereologica import tabela_metereologica
 
 
-# Obtenção do arquivo .env que possui as variáveis armazenadas
-BASE_DIR = Path(__file__).resolve().parents[3]
-
-# Carregamento do arquivo .env
-load_dotenv(dotenv_path=BASE_DIR / ".env")
-
-
-def get_env(chave: str) -> str:
-    valor = os.getenv(chave)
-    if not valor:
-        raise KeyError(
-            f"❌ Configuração ausente: A chave '{chave}' não foi encontrada no arquivo .env"
-        )
-    return valor
-
-
-# Leitura direta das variáveis do .env
-servidor = get_env("DB_HOST")
-database = get_env("DB_NAME")
-trusted_connection = get_env("DB_TRUSTED_CONNECTION")
-
 tabeladestino = "leitura_meteorologica"
 modocarga = "append"
-
-
-
-params = urllib.parse.quote_plus(
-    f"DRIVER={{ODBC Driver 17 for SQL Server}};"
-    f"SERVER={servidor};"
-    f"DATABASE={database};"
-    f"Trusted_Connection={trusted_connection};"
-)
-
-engine = create_engine(f"mssql+pyodbc:///?odbc_connect={params}")
-
 
 def resolver_id_cidade(df_leituras: pd.DataFrame, connection) -> pd.DataFrame:
     """Resolve o identificador da cidade com base no nome e estado.
@@ -106,16 +72,20 @@ def inserir_dados():
     insere os registros na tabela e imprime o resultado da operação.
     """
     try:
-        print("Obtendo dados do Parse JSON...")
+        logging.info("Obtendo dados do Parse JSON...")
         df_dados = tabela_metereologica()
 
         if df_dados.empty:
-            print("Nenhum dado encontrado para inserir.")
+            logging.info("Nenhum dado encontrado para inserir.")
             return
 
-        with engine.begin() as connection:
+        with create_db_engine().begin() as connection:
             df_dados = resolver_id_cidade(df_dados, connection)
-            print(f"Inserindo {len(df_dados)} registros na tabela '{tabeladestino}'...")
+            logging.info(
+                "Inserindo %s registros na tabela '%s'...",
+                len(df_dados),
+                tabeladestino,
+            )
 
             df_dados.to_sql(
                 name=tabeladestino,
@@ -124,11 +94,12 @@ def inserir_dados():
                 index=False,
             )
 
-        print("Carga realizada com sucesso!")
+        logging.info("Carga realizada com sucesso!")
 
     except Exception as e:
-        print(f"Erro ao inserir dados: {e}")
+        logging.exception("Erro ao inserir dados: %s", e)
 
 
 if __name__ == "__main__":
+    configure_logging(Path(__file__).resolve().parents[3])
     inserir_dados()
