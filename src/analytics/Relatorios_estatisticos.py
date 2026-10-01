@@ -1,3 +1,10 @@
+"""Geração de relatórios estatísticos para leituras ambientais e meteorológicas.
+
+Este módulo carrega os arquivos JSON de leitura, normaliza os dados aninhados,
+permite a seleção de uma cidade pelo terminal e calcula estatísticas descritivas
+como mediana, quartis e IQR para cada variável monitorada.
+"""
+
 import json
 import logging
 import os
@@ -47,7 +54,17 @@ COLUNAS_METEOROLOGICAS = {
 
 
 def carregar_json(caminho_arquivo: Path, chave_lista: str) -> pd.DataFrame:
-    """Lê o arquivo JSON e usa json_normalize para achatar a estrutura aninhada."""
+    """Carrega um arquivo JSON e normaliza a estrutura em um DataFrame.
+
+    Args:
+        caminho_arquivo (Path): Caminho para o arquivo JSON a ser lido.
+        chave_lista (str): Nome da chave que contém a lista de registros dentro
+            do JSON.
+
+    Returns:
+        pd.DataFrame: DataFrame com os dados achatados e prontos para análise.
+    """
+    
     if not caminho_arquivo.exists():
         logging.warning(f"Arquivo não encontrado: {caminho_arquivo}")
         return pd.DataFrame()
@@ -74,10 +91,20 @@ def carregar_json(caminho_arquivo: Path, chave_lista: str) -> pd.DataFrame:
         return pd.DataFrame()
 
 
-def calcular_estatisticas(
-    df: pd.DataFrame, mapa_colunas: dict, nome_relatorio: str
-) -> pd.DataFrame:
-    """Calcula Média, Mediana, Desvio Padrão, IQR e Outliers para os campos mapeados."""
+def calcular_estatisticas(df: pd.DataFrame, mapa_colunas: dict, nome_relatorio: str) -> pd.DataFrame:
+    """Calcula estatísticas descritivas para as colunas informadas.
+
+    Args:
+        df (pd.DataFrame): DataFrame com os dados a serem avaliados.
+        mapa_colunas (dict): Dicionário mapeando nomes originais das colunas para
+            rótulos amigáveis exibidos no relatório.
+        nome_relatorio (str): Nome do tipo de relatório, como "Qualidade da Água"
+            ou "Meteorologia".
+
+    Returns:
+        pd.DataFrame: Tabela com mediana, quartis e IQR para cada variável.
+    """
+
     relatorio = []
 
     for coluna_json, nome_amigavel in mapa_colunas.items():
@@ -224,6 +251,12 @@ def selecionar_cidade_e_estacao(
 
 
 def main():
+    """Executa o fluxo principal de geração dos relatórios estatísticos.
+
+    O processo inclui carregamento dos dados, seleção interativa da cidade,
+    cálculo das estatísticas por variável e impressão dos resultados em tabela.
+    """
+
     logging.info("Iniciando a geração dos Relatórios Estatísticos...")
 
     # 1. CARREGA OS DATAFRAMES

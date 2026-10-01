@@ -1,8 +1,9 @@
-# ======================================================================================================
-# ASSUNTO: Conexão com o banco de dados SQL Server Express
-# Preparação e criação do DataFrame para as tabelas leituras meteorológicas
-# ======================================================================================================
+"""Parsing e normalização das leituras meteorológicas.
 
+Este módulo lê o arquivo JSON de registros meteorológicos, achata os campos
+aninhados, converte os tipos necessários e prepara o DataFrame para a carga no
+banco de dados.
+"""
 
 # 1. Biblioteca para manipulação de arquivos JSON
 import json
@@ -22,14 +23,27 @@ DIR_LEITURA_METEREOLOGICA = Path(__file__).resolve().parent / "leituras_meteorol
 
 # 5. criar função e ler o arquivo JSON de leituras meteorológicas
 def ler_json(path_arquivo):
+    """Lê um arquivo JSON de leituras meteorológicas.
+
+    Args:
+        path_arquivo: Caminho do arquivo JSON a ser lido.
+
+    Returns:
+        object: Conteúdo carregado do arquivo JSON.
+    """
     with open(path_arquivo, "r", encoding="utf-8") as arquivo:
         conteudo = json.load(arquivo)
     return conteudo
 
 # 6. Função para criar o DataFrame a partir do JSON de leituras meteorológicas
 def tabela_metereologica() -> pd.DataFrame:
-    """Carrega o arquivo JSON meteorológico, realiza todo o parse, limpeza e
-    tratamento de tipos dos dados para corresponder à tabela leiturameteorologica.
+    """Cria e trata o DataFrame com as leituras meteorológicas.
+
+    O processo inclui normalização dos dados aninhados, remoção de duplicatas,
+    ordenação por data mais recente e conversão dos campos numéricos.
+
+    Returns:
+        pd.DataFrame: DataFrame pronto para persistência no banco de dados.
     """
     # 1. Normalização do JSON e seleção/renomeação das colunas
     parse_metereologica = ler_json(DIR_LEITURA_METEREOLOGICA)

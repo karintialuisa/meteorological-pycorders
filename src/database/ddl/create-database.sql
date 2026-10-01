@@ -2,7 +2,8 @@
 CREATE DATABASE monitoramento;
 
 use monitoramento;
-select * from cidade;
 
+-- As consultas ao final deste arquivo servem apenas para inspeção dos dados.
+select * from cidade;
 select * from leitura_meteorologica;
 
