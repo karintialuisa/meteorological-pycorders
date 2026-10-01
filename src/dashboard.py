@@ -239,14 +239,16 @@ with aba1:
         temp_agua = df_agua['Temperatura'].dropna()
         ph_agua = df_agua['pH'].dropna()
         ox_agua = df_agua['Oxigênio'].dropna()
+        cond_agua = df_agua['Condutividade'].dropna()
 
         # Cálculo de IQR (Q3 - Q1)
         iqr_temp = temp_agua.quantile(0.75) - temp_agua.quantile(0.25) if not temp_agua.empty else 0
         iqr_ph = ph_agua.quantile(0.75) - ph_agua.quantile(0.25) if not ph_agua.empty else 0
         iqr_ox = ox_agua.quantile(0.75) - ox_agua.quantile(0.25) if not ox_agua.empty else 0
+        iqr_cond = cond_agua.quantile(0.75) - cond_agua.quantile(0.25) if not cond_agua.empty else 0
 
         # Exibição dos cards
-        col1, col2, col3 = st.columns(3)
+        col1, col2, col3, col4 = st.columns(4)
         
         with col1:
             st.metric("Média Temp. Água", f"{temp_agua.mean():.2f} °C")
@@ -259,6 +261,10 @@ with aba1:
         with col3:
             st.metric("Média Oxigênio", f"{ox_agua.mean():.2f} mg/L")
             st.caption(f"**Mediana:** {ox_agua.median():.2f} mg/L | **Desv. Padrão:** {ox_agua.std():.2f} | **IQR:** {iqr_ox:.2f}")
+
+        with col4:
+            st.metric("Média Condutividade", f"{cond_agua.mean():.2f} µS/cm")
+            st.caption(f"**Mediana:** {cond_agua.median():.2f} µS/cm | **Desv. Padrão:** {cond_agua.std():.2f} | **IQR:** {iqr_cond:.2f}")
 
         st.markdown("---")
         st.caption("*Temperatura: °C | Chuva: mm | Vento: Km/h | Condutividade: µS/cm | Oxigênio: mg/L")

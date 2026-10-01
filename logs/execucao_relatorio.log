@@ -1,0 +1,16 @@
+01-10-2026 15:29 - INFO - ==================== Iniciando: Insert_localizacao.py ====================
+01-10-2026 15:31 - INFO - [Insert_localizacao.py] Saída: Dados inseridos com sucesso!
+01-10-2026 15:31 - INFO - ✅ Sucesso em Insert_localizacao.py
+01-10-2026 15:31 - INFO - ==================== Iniciando: Insert_leituras_ambiental.py ====================
+01-10-2026 15:31 - INFO - [Insert_leituras_ambiental.py] Saída: Obtendo dados tratados do Parse JSON...
+Inserindo 120 registros na tabela 'qualidade_agua'...
+Carga realizada com sucesso!
+01-10-2026 15:31 - INFO - ✅ Sucesso em Insert_leituras_ambiental.py
+01-10-2026 15:31 - INFO - ==================== Iniciando: Insert_leituras_meteorologica.py ====================
+01-10-2026 15:31 - INFO - [Insert_leituras_meteorologica.py] Saída: Obtendo dados do Parse JSON...
+Inserindo 120 registros na tabela 'leitura_meteorologica'...
+Carga realizada com sucesso!
+01-10-2026 15:31 - INFO - ✅ Sucesso em Insert_leituras_meteorologica.py
+01-10-2026 15:32 - INFO - ==================== Iniciando: Relatorios_estatisticos.py ====================
+01-10-2026 15:32 - INFO - ✅ Sucesso em Relatorios_estatisticos.py
+01-10-2026 15:33 - INFO - Aplicação encerrada pelo usuário ao selecionar a opção '3'.
