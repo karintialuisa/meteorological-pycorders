@@ -1,11 +1,14 @@
 """Testa leitura de JSON, estatísticas, outliers e filtros dos relatórios."""
 
 import json
-
+import sys
+from pathlib import Path
 import pandas as pd
+import pytest
 
+path = Path(__file__).resolve().parents[1] 
+sys.path.append(str(path))  
 from src.analytics import Relatorios_estatisticos as relatorios
-
 
 def test_carregar_json_accepts_object_and_list_shapes(tmp_path):
     object_file = tmp_path / "object.json"
@@ -43,8 +46,24 @@ def test_calcular_estatisticas_counts_outliers_and_ignores_invalid_values():
     assert result.loc[0, "Total Registros"] == 5
     assert result.loc[0, "Média"] == 22
     assert result.loc[0, "Mediana"] == 3
+    assert result.loc[0, "Desvio Padrão"] == 43.62
     assert result.loc[0, "IQR"] == 2
     assert result.loc[0, "Outliers"] == 1
+    assert result.loc[0, "Relatório"] == "Teste"
+    assert result.loc[0, "Leituras"] == "Indicador"
+
+
+def test_calcular_estatisticas_uses_zero_standard_deviation_for_one_reading():
+    result = relatorios.calcular_estatisticas(
+        pd.DataFrame({"value": [7]}), {"value": "Indicador"}, "Teste"
+    )
+
+    assert result.loc[0, "Total Registros"] == 1
+    assert result.loc[0, "Média"] == 7
+    assert result.loc[0, "Mediana"] == 7
+    assert result.loc[0, "Desvio Padrão"] == 0.0
+    assert result.loc[0, "IQR"] == 0
+    assert result.loc[0, "Outliers"] == 0
 
 
 def test_calcular_estatisticas_returns_empty_when_columns_have_no_values():
@@ -52,6 +71,37 @@ def test_calcular_estatisticas_returns_empty_when_columns_have_no_values():
         pd.DataFrame({"value": [None, "invalid"]}),
         {"value": "Indicador", "missing": "Ausente"},
         "Teste",
+    )
+
+    assert result.empty
+
+
+def test_identificar_outliers_iqr_returns_records_and_thresholds():
+    readings = pd.DataFrame(
+        {
+            "ID": [1, 2, 3, 4, 5, 6],
+            "Data/Hora": ["d1", "d2", "d3", "d4", "d5", "d6"],
+            "temperatura": [-50, 1, 2, 3, 4, 100],
+        }
+    )
+
+    result = relatorios.identificar_outliers_iqr(
+        readings, {"temperatura": "Temperatura da água"}
+    )
+
+    assert result["ID"].tolist() == [1, 6]
+    assert result["Indicador"].tolist() == [
+        "Temperatura da água",
+        "Temperatura da água",
+    ]
+    assert result["Valor da leitura"].tolist() == [-50, 100]
+    assert result["Limite inferior"].tolist() == [-2.5, -2.5]
+    assert result["Limite superior"].tolist() == [7.5, 7.5]
+
+
+def test_identificar_outliers_iqr_returns_empty_for_values_inside_limits():
+    result = relatorios.identificar_outliers_iqr(
+        pd.DataFrame({"value": [1, 2, 3, 4]}), {"value": "Indicador"}
     )
 
     assert result.empty
@@ -111,3 +161,7 @@ def test_main_stops_cleanly_when_no_json_data_is_available(monkeypatch):
         ("INGESTION_LEITURA_AMBIENTAL", "leituras_ambientais"),
         ("INGESTION_LEITURA_METEOROLOGICA", "leituras_meteorologicas"),
     ]
+
+
+if __name__ == "__main__":
+    raise SystemExit(pytest.main([__file__, "-v"]))

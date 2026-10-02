@@ -3,7 +3,10 @@
 import pytest
 from sqlalchemy import create_engine, text
 from sqlalchemy.pool import StaticPool
-
+import sys
+from pathlib import Path
+path = Path(__file__).resolve().parents[1] 
+sys.path.append(str(path))
 
 @pytest.fixture
 def banco_teste():
