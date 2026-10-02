@@ -53,6 +53,46 @@ st.markdown("""
 st.header("📊 Dashboard de Leituras Ambientais e Meteorológicas")
 
 
+def exibir_tabela_paginada(df, chave: str) -> None:
+    """Exibe uma tabela HTML com navegação de dez registros por página."""
+    linhas_por_pagina = 10
+    total_linhas = len(df)
+    total_paginas = max(1, (total_linhas + linhas_por_pagina - 1) // linhas_por_pagina)
+    chave_pagina = f"pagina_{chave}"
+    pagina_atual = st.session_state.get(chave_pagina, 1)
+    pagina_atual = min(max(pagina_atual, 1), total_paginas)
+    st.session_state[chave_pagina] = pagina_atual
+
+    coluna_anterior, coluna_status, coluna_proxima = st.columns([1, 2, 1])
+    if coluna_anterior.button(
+        "← Anterior", key=f"{chave}_anterior", disabled=pagina_atual == 1
+    ):
+        st.session_state[chave_pagina] = pagina_atual - 1
+        st.rerun()
+
+    inicio = (pagina_atual - 1) * linhas_por_pagina
+    fim = min(inicio + linhas_por_pagina, total_linhas)
+    coluna_status.caption(
+        f"Página {pagina_atual} de {total_paginas} · linhas "
+        f"{inicio + 1}–{fim} de {total_linhas}"
+    )
+
+    if coluna_proxima.button(
+        "Próxima →",
+        key=f"{chave}_proxima",
+        disabled=pagina_atual == total_paginas,
+    ):
+        st.session_state[chave_pagina] = pagina_atual + 1
+        st.rerun()
+
+    st.markdown(
+        df.iloc[inicio:fim].to_html(
+            classes="tabela-customizada", index=False, escape=False
+        ),
+        unsafe_allow_html=True,
+    )
+
+
 # --- CONEXÃO COM O SQL SERVER EXPRESS ---
 @st.cache_resource
 def get_database_engine():
@@ -264,10 +304,7 @@ with aba1:
         for col in colunas_float_agua:
             df_agua_exibicao[col] = df_agua_exibicao[col].map(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
 
-        st.markdown(
-            df_agua_exibicao.to_html(classes="tabela-customizada", index=False, escape=False),
-            unsafe_allow_html=True
-        )
+        exibir_tabela_paginada(df_agua_exibicao, "agua")
 
         metrica_agua = st.selectbox(
             "Métrica para o Gráfico (Água):",
@@ -325,10 +362,7 @@ with aba2:
         for col in colunas_float_meteo:
             df_meteo_exibicao[col] = df_meteo_exibicao[col].map(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
 
-        st.markdown(
-            df_meteo_exibicao.to_html(classes="tabela-customizada", index=False, escape=False),
-            unsafe_allow_html=True
-        )
+        exibir_tabela_paginada(df_meteo_exibicao, "meteorologia")
 
         metrica_meteo = st.selectbox(
             "Métrica para o Gráfico (Clima):",
