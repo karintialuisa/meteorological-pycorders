@@ -1,0 +1,209 @@
+"""Testa parsing, normalização, deduplicação e validação dos dados JSON."""
+
+import json
+import sys
+from pathlib import Path
+path = Path(__file__).resolve().parents[1] 
+sys.path.append(str(path))  
+
+import pandas as pd
+import pytest
+
+from src.ingestion.localizacao import Parse_localizacao_JSON as localizacao
+from src.ingestion.leituras import Parse_LeituraAmbiental as ambiental
+from src.ingestion.leituras import Parse_LeituraMetereologica as meteorologica
+
+
+def save_json(tmp_path, filename, content):
+    path = tmp_path / filename
+    path.write_text(json.dumps(content), encoding="utf-8")
+    return path
+
+
+def test_tabela_estado_and_cidade_normalize_and_remove_duplicates(
+    monkeypatch, tmp_path
+):
+    state_path = save_json(
+        tmp_path,
+        "states.json",
+        [
+            {"ibge": 35, "sigla": "SP", "nome": "Sao Paulo"},
+            {"ibge": 35, "sigla": "SP", "nome": "Sao Paulo"},
+        ],
+    )
+    city_path = save_json(
+        tmp_path,
+        "cities.json",
+        [
+            {"ibge": 3550308, "cidade": "Sao Paulo", "sigla_estado": "SP"},
+            {"ibge": 3550308, "cidade": "Sao Paulo", "sigla_estado": "SP"},
+        ],
+    )
+    paths = {
+        "INGESTION_LOCALIZACAO_ESTADOS": state_path,
+        "INGESTION_LOCALIZACAO_MUNICIPIOS": city_path,
+    }
+    monkeypatch.setattr(localizacao, "get_path", paths.__getitem__)
+
+    states = localizacao.tabela_estado()
+    cities = localizacao.tabela_cidade()
+
+    assert states.to_dict("records") == [
+        {"codigo_ibge_estado": 35, "sigla_estado": "SP", "nome_estado": "Sao Paulo"}
+    ]
+    assert cities.to_dict("records") == [
+        {"codigo_ibge_cidade": 3550308, "nome_cidade": "Sao Paulo", "sigla_estado": "SP"}
+    ]
+
+
+def test_tabela_estacao_resolves_geography_and_status(monkeypatch, tmp_path):
+    station_path = save_json(
+        tmp_path,
+        "stations.json",
+        {
+            "estacoes_ambientais": [
+                {
+                    "id": 7,
+                    "nome": "Rio",
+                    "descricao": "Centro",
+                    "status": "ativa",
+                    "localizacao": {"estado": "SP", "city_name": "Sao Paulo"},
+                },
+                {
+                    "id": 8,
+                    "nome": "Lago",
+                    "descricao": "Sul",
+                    "status": "inativa",
+                    "localizacao": {"estado": "SP", "city_name": "Sao Paulo"},
+                },
+            ]
+        },
+    )
+    monkeypatch.setattr(localizacao, "get_path", lambda key: station_path)
+    cities = pd.DataFrame(
+        [{"nome_cidade": "Sao Paulo", "sigla_estado": "SP", "codigo_ibge_cidade": 3550308}]
+    )
+    states = pd.DataFrame(
+        [{"sigla_estado": "SP", "codigo_ibge_estado": 35, "nome_estado": "Sao Paulo"}]
+    )
+
+    result = localizacao.tabela_estacao(cities, states)
+
+    assert result["nome"].tolist() == ["Rio - Centro", "[Desativado] Lago - Sul"]
+    assert result["status_estacao"].tolist() == [1, 0]
+    assert result["codigo_ibge_cidade"].tolist() == [3550308, 3550308]
+
+
+def test_tabela_estacao_rejects_unmatched_location(monkeypatch, tmp_path):
+    station_path = save_json(
+        tmp_path,
+        "stations.json",
+        {
+            "estacoes_ambientais": [
+                {
+                    "id": 7,
+                    "nome": "Rio",
+                    "descricao": "Centro",
+                    "status": "ativa",
+                    "localizacao": {"estado": "RJ", "city_name": "Niteroi"},
+                }
+            ]
+        },
+    )
+    monkeypatch.setattr(localizacao, "get_path", lambda key: station_path)
+
+    with pytest.raises(ValueError, match="cidade ou estado"):
+        localizacao.tabela_estacao(
+            pd.DataFrame(columns=["nome_cidade", "sigla_estado", "codigo_ibge_cidade"]),
+            pd.DataFrame(columns=["sigla_estado", "codigo_ibge_estado", "nome_estado"]),
+        )
+
+
+def test_tabela_ambiental_normalizes_deduplicates_and_parses_dates(
+    monkeypatch, tmp_path
+):
+    records = [
+        {
+            "estacao_id": 7,
+            "timestamp": "2026-01-01T10:00:00Z",
+            "qualidade_agua": {
+                "temperatura": {"valor": 20},
+                "ph": {"valor": 7},
+                "oxigenio_dissolvido": {"valor": 8},
+                "condutividade": {"valor": 100},
+            },
+        },
+        {
+            "estacao_id": 7,
+            "timestamp": "2026-01-02T10:00:00Z",
+            "qualidade_agua": {
+                "temperatura": {"valor": 21},
+                "ph": {"valor": 7.1},
+                "oxigenio_dissolvido": {"valor": 8.2},
+                "condutividade": {"valor": 101},
+            },
+        },
+        {
+            "estacao_id": 7,
+            "timestamp": "2026-01-02T10:00:00Z",
+            "qualidade_agua": {
+                "temperatura": {"valor": 21},
+                "ph": {"valor": 7.1},
+                "oxigenio_dissolvido": {"valor": 8.2},
+                "condutividade": {"valor": 101},
+            },
+        },
+    ]
+    path = save_json(tmp_path, "water.json", {"leituras_ambientais": records})
+    monkeypatch.setattr(ambiental, "get_path", lambda key: path)
+
+    result = ambiental.tabela_ambiental()
+
+    assert len(result) == 2
+    assert str(result.loc[0, "data_leitura"].tz) == "UTC"
+    assert result.loc[0, "temperatura_agua"] == 21
+    assert {"ph", "oxigenio", "condutividade"}.issubset(result.columns)
+
+
+def test_tabela_metereologica_normalizes_numeric_fields_and_deduplicates(
+    monkeypatch, tmp_path
+):
+    def record(timestamp, temperature):
+        return {
+            "cidade": "Recife",
+            "estado": "Pernambuco",
+            "timestamp": timestamp,
+            "dados_meteorologicos": {
+                "temperatura_ar": {"valor": temperature},
+                "condicao": {"description": "Nublado"},
+                "umidade": {"valor": "70"},
+                "chuva": {"valor": "0"},
+                "vento": {"velocidade": "5.2"},
+            },
+        }
+
+    path = save_json(
+        tmp_path,
+        "weather.json",
+        {
+            "leituras_meteorologicas": [
+                record("2026-01-01T10:00:00", "bad"),
+                record("2026-01-02T10:00:00", "25"),
+                record("2026-01-02T10:00:00", "25"),
+            ]
+        },
+    )
+    monkeypatch.setattr(meteorologica, "get_path", lambda key: path)
+
+    result = meteorologica.tabela_metereologica()
+
+    assert len(result) == 2
+    assert pd.isna(result.loc[result["data_leitura"].dt.day == 1, "temperatura_ar"]).all()
+    latest = result.loc[result["data_leitura"].dt.day == 2].iloc[0]
+    assert latest["temperatura_ar"] == 25
+    assert latest["umidade"] == 70
+    assert latest["vento"] == 5.2
+
+
+if __name__ == "__main__":
+    raise SystemExit(pytest.main([__file__, "-v"]))

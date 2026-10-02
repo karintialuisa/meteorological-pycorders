@@ -1,6 +1,7 @@
 .venv/
 __pycache__/
 *.pyc
-.env
 .pytest_cache/
 reports/*.tmp
+logs/*.log
+# src/config/.env
