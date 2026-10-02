@@ -229,22 +229,13 @@ with aba1:
         temp_agua = df_agua['Temperatura'].dropna()
         ph_agua = df_agua['pH'].dropna()
         ox_agua = df_agua['Oxigênio'].dropna()
-<<<<<<< HEAD
-        cond_agua = df_agua['Condutividade'].dropna()
-=======
         condutividade_agua = df_agua['Condutividade'].dropna()
->>>>>>> origin/feature/jorge
 
         # Cálculo de IQR (Q3 - Q1)
         iqr_temp = temp_agua.quantile(0.75) - temp_agua.quantile(0.25) if not temp_agua.empty else 0
         iqr_ph = ph_agua.quantile(0.75) - ph_agua.quantile(0.25) if not ph_agua.empty else 0
         iqr_ox = ox_agua.quantile(0.75) - ox_agua.quantile(0.25) if not ox_agua.empty else 0
-<<<<<<< HEAD
-        iqr_cond = cond_agua.quantile(0.75) - cond_agua.quantile(0.25) if not cond_agua.empty else 0
-
-=======
         iqr_condutividade = condutividade_agua.quantile(0.75) - condutividade_agua.quantile(0.25) if not condutividade_agua.empty else 0
->>>>>>> origin/feature/jorge
         # Exibição dos cards
         col1, col2, col3, col4 = st.columns(4)
         
@@ -261,13 +252,8 @@ with aba1:
             st.caption(f"**Mediana:** {ox_agua.median():.2f} mg/L | **Desv. Padrão:** {ox_agua.std():.2f} | **IQR:** {iqr_ox:.2f}")
 
         with col4:
-<<<<<<< HEAD
-            st.metric("Média Condutividade", f"{cond_agua.mean():.2f} µS/cm")
-            st.caption(f"**Mediana:** {cond_agua.median():.2f} µS/cm | **Desv. Padrão:** {cond_agua.std():.2f} | **IQR:** {iqr_cond:.2f}")
-=======
             st.metric("Média Condutividade", f"{condutividade_agua.mean():.2f} µS/cm")
             st.caption(f"**Mediana:** {condutividade_agua.median():.2f} µS/cm | **Desv. Padrão:** {condutividade_agua.std():.2f} | **IQR:** {iqr_condutividade:.2f}")
->>>>>>> origin/feature/jorge
 
         st.markdown("---")
         st.caption("*Temperatura: °C | Chuva: mm | Vento: Km/h | Condutividade: µS/cm | Oxigênio: mg/L")
