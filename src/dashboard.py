@@ -93,6 +93,17 @@ def exibir_tabela_paginada(df, chave: str) -> None:
     )
 
 
+def preparar_dados_grafico(df, metrica: str):
+    dados_grafico = df[["Data/Hora", metrica]].copy()
+    dados_grafico["Data"] = (
+        dados_grafico["Data/Hora"]
+        .astype("string")
+        .str.slice(0, 10)
+        .str.replace("/", "-", regex=False)
+    )
+    return dados_grafico[["Data", metrica]]
+
+
 # --- CONEXÃO COM O SQL SERVER EXPRESS ---
 @st.cache_resource
 def get_database_engine():
@@ -141,30 +152,54 @@ except Exception as err:
 cidade_selecionada = st.sidebar.selectbox("Selecione a Cidade", options=lista_cidades)
 filtro_cidade = cidade_selecionada.split(" - ")[0] if cidade_selecionada != "Todas" else None
 
+aba1, aba2 = st.tabs(
+    ["💧 Qualidade da Água", "🌤️ Meteorologia"],
+    key="relatorios_tabs",
+    on_change="rerun",
+)
 
 # 2. BUSCAR APENAS AS ESTAÇÕES DA CIDADE SELECIONADA (DEPENDENCIA)
-try:
-    query_estacoes_com_dados = """
-        SELECT DISTINCT est.nome AS estacao
-        FROM estacao est
-        JOIN cidade c ON est.id_cidade = c.id
-        WHERE est.id IN (SELECT DISTINCT id_estacao FROM qualidade_agua)
-    """
-    if filtro_cidade:
-        query_estacoes_com_dados += f" AND c.nome = '{filtro_cidade}'"
-    
-    query_estacoes_com_dados += " ORDER BY est.nome"
-    
-    df_estacoes = carregar_dados(query_estacoes_com_dados)
-    lista_estacoes = ["Todas"] + df_estacoes["estacao"].tolist() if not df_estacoes.empty else ["Todas"]
+filtro_estacao = None
+if not aba2.open:
+    try:
+        query_estacoes_com_dados = """
+            SELECT DISTINCT est.nome AS estacao
+            FROM estacao est
+            JOIN cidade c ON est.id_cidade = c.id
+            WHERE est.id IN (SELECT DISTINCT id_estacao FROM qualidade_agua)
+        """
+        if filtro_cidade:
+            query_estacoes_com_dados += f" AND c.nome = '{filtro_cidade}'"
 
-except Exception as err:
-    st.error(f"Erro ao carregar lista de estações: {err}")
-    lista_estacoes = ["Todas"]
+        query_estacoes_com_dados += " ORDER BY est.nome"
 
-# Renderiza o filtro de Estação dependendo da seleção da Cidade
-estacao_selecionada = st.sidebar.selectbox("Selecione a Estação (Água)", options=lista_estacoes)
-filtro_estacao = estacao_selecionada if estacao_selecionada != "Todas" else None
+        df_estacoes = carregar_dados(query_estacoes_com_dados)
+        nomes_estacoes = (
+            df_estacoes["estacao"]
+            .astype("string")
+            .str.split("-", n=1)
+            .str[0]
+            .str.strip()
+            .dropna()
+            .drop_duplicates()
+            .tolist()
+        )
+        lista_estacoes = (
+            ["Todas"] + nomes_estacoes
+            if nomes_estacoes
+            else ["Todas"]
+        )
+
+    except Exception as err:
+        st.error(f"Erro ao carregar lista de estações: {err}")
+        lista_estacoes = ["Todas"]
+
+    estacao_selecionada = st.sidebar.selectbox(
+        "Selecione a Estação (Água)", options=lista_estacoes
+    )
+    filtro_estacao = (
+        estacao_selecionada if estacao_selecionada != "Todas" else None
+    )
 
 
 # 3. FILTRO DE PERÍODO DE DATAS
@@ -198,7 +233,11 @@ if filtro_cidade:
 
 # Filtro por Estação (apenas para a qualidade da água)
 if filtro_estacao:
-    condicoes_agua.append(f"e.nome = '{filtro_estacao}'")
+    filtro_estacao_sql = filtro_estacao.replace("'", "''")
+    condicoes_agua.append(
+        "LTRIM(RTRIM(LEFT(e.nome, CHARINDEX('-', e.nome + '-') - 1))) = "
+        f"'{filtro_estacao_sql}'"
+    )
 
 # Filtro por Período de Datas
 if data_inicio and data_fim:
@@ -227,7 +266,7 @@ query_agua = """
 """
 if condicoes_agua:
     query_agua += " WHERE " + " AND ".join(condicoes_agua)
-query_agua += " ORDER BY q.data_leitura DESC"
+query_agua += " ORDER BY e.nome ASC, q.data_leitura DESC"
 
 
 # 2. Query Meteorológica
@@ -260,8 +299,6 @@ except Exception as err:
     df_agua, df_meteo = pd.DataFrame(), pd.DataFrame()
 
 # --- ABA DE EXIBIÇÃO ---
-aba1, aba2 = st.tabs(["💧 Qualidade da Água", "🌤️ Meteorologia"])
-
 with aba1:
     st.subheader("Leituras da Qualidade da Água")
     if not df_agua.empty:
@@ -315,7 +352,8 @@ with aba1:
                 "Condutividade",
             ],
         )
-        st.line_chart(df_agua, x="Data/Hora", y=metrica_agua)
+        dados_grafico_agua = preparar_dados_grafico(df_agua, metrica_agua)
+        st.line_chart(dados_grafico_agua, x="Data", y=metrica_agua)
     else:
         st.info("Nenhum registro de qualidade da água encontrado para o filtro selecionado.")
 
@@ -373,6 +411,7 @@ with aba2:
                 "Vento",
             ],
         )
-        st.line_chart(df_meteo, x="Data/Hora", y=metrica_meteo)
+        dados_grafico_meteo = preparar_dados_grafico(df_meteo, metrica_meteo)
+        st.line_chart(dados_grafico_meteo, x="Data", y=metrica_meteo)
     else:
         st.info("Nenhum registro meteorológico encontrado para o filtro selecionado.")
