@@ -2,11 +2,13 @@
 
 import importlib
 import urllib.parse
-
+import sys
+from pathlib import Path
 import pytest
-
+path = Path(__file__).resolve().parents[1] 
+sys.path.append(str(path))  
+sys.path.append(str(path / "src"))
 from src.config import settings
-
 
 def test_get_env_requires_a_configured_value(monkeypatch):
     monkeypatch.delenv("REQUIRED_TEST_SETTING", raising=False)
@@ -153,3 +155,7 @@ def test_main_dispatches_menu_actions_and_exits(main_module, monkeypatch):
         ("weather.py", False),
         ("report.py", True),
     ]
+
+
+if __name__ == "__main__":
+    raise SystemExit(pytest.main([__file__, "-v"]))

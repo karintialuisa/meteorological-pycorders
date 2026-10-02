@@ -1,12 +1,13 @@
 """Testa normalização dos dados e endpoints de consulta da API."""
 
 import json
-
 import pandas as pd
 import pytest
-
+import sys
+from pathlib import Path
+path = Path(__file__).resolve().parents[1] 
+sys.path.append(str(path))  
 from src.api import main as api
-
 
 def write_json(path, content):
     path.write_text(json.dumps(content), encoding="utf-8")
@@ -83,3 +84,7 @@ def test_reading_endpoints_return_empty_when_no_data(monkeypatch, endpoint):
     )
 
     assert endpoint(cidade=None) == []
+
+
+if __name__ == "__main__":
+    raise SystemExit(pytest.main([__file__, "-v"]))
