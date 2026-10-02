@@ -3,11 +3,13 @@
 import pandas as pd
 import pytest
 from sqlalchemy import text
-
+import sys
+from pathlib import Path
+path = Path(__file__).resolve().parents[1] 
+sys.path.append(str(path))  
 from src.database.dml import Insert_Leituras_ambiental as ambiental
 from src.database.dml import Insert_Leituras_Meteorologica as meteorologica
 from src.database.dml import Insert_Localizacao as localizacao
-
 
 def seed_location(engine):
     with engine.begin() as connection:
@@ -223,3 +225,7 @@ def test_limpar_localizacao_preserves_records_in_append_mode(connection):
     localizacao.limpar_localizacao(connection)
 
     assert connection.execute(text("SELECT COUNT(*) FROM estado")).scalar_one() == 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(pytest.main([__file__, "-v"]))

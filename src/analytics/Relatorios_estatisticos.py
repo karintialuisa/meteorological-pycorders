@@ -33,7 +33,6 @@ COLUNAS_METEOROLOGICAS = {
     "dados_meteorologicos.vento.velocidade": "Velocidade do Vento (km/h)",
 }
 
-
 def carregar_json(caminho_arquivo: Path, chave_lista: str) -> pd.DataFrame:
     """Carrega um arquivo JSON e normaliza a estrutura em um DataFrame.
 

@@ -1,11 +1,14 @@
 """Testa leitura de JSON, estatísticas, outliers e filtros dos relatórios."""
 
 import json
-
+import sys
+from pathlib import Path
 import pandas as pd
+import pytest
 
+path = Path(__file__).resolve().parents[1] 
+sys.path.append(str(path))  
 from src.analytics import Relatorios_estatisticos as relatorios
-
 
 def test_carregar_json_accepts_object_and_list_shapes(tmp_path):
     object_file = tmp_path / "object.json"
@@ -43,8 +46,24 @@ def test_calcular_estatisticas_counts_outliers_and_ignores_invalid_values():
     assert result.loc[0, "Total Registros"] == 5
     assert result.loc[0, "Média"] == 22
     assert result.loc[0, "Mediana"] == 3
+    assert result.loc[0, "Desvio Padrão"] == 43.62
     assert result.loc[0, "IQR"] == 2
     assert result.loc[0, "Outliers"] == 1
+    assert result.loc[0, "Relatório"] == "Teste"
+    assert result.loc[0, "Leituras"] == "Indicador"
+
+
+def test_calcular_estatisticas_uses_zero_standard_deviation_for_one_reading():
+    result = relatorios.calcular_estatisticas(
+        pd.DataFrame({"value": [7]}), {"value": "Indicador"}, "Teste"
+    )
+
+    assert result.loc[0, "Total Registros"] == 1
+    assert result.loc[0, "Média"] == 7
+    assert result.loc[0, "Mediana"] == 7
+    assert result.loc[0, "Desvio Padrão"] == 0.0
+    assert result.loc[0, "IQR"] == 0
+    assert result.loc[0, "Outliers"] == 0
 
 
 def test_calcular_estatisticas_returns_empty_when_columns_have_no_values():
@@ -111,3 +130,7 @@ def test_main_stops_cleanly_when_no_json_data_is_available(monkeypatch):
         ("INGESTION_LEITURA_AMBIENTAL", "leituras_ambientais"),
         ("INGESTION_LEITURA_METEOROLOGICA", "leituras_meteorologicas"),
     ]
+
+
+if __name__ == "__main__":
+    raise SystemExit(pytest.main([__file__, "-v"]))
