@@ -76,6 +76,37 @@ def test_calcular_estatisticas_returns_empty_when_columns_have_no_values():
     assert result.empty
 
 
+def test_identificar_outliers_iqr_returns_records_and_thresholds():
+    readings = pd.DataFrame(
+        {
+            "ID": [1, 2, 3, 4, 5, 6],
+            "Data/Hora": ["d1", "d2", "d3", "d4", "d5", "d6"],
+            "temperatura": [-50, 1, 2, 3, 4, 100],
+        }
+    )
+
+    result = relatorios.identificar_outliers_iqr(
+        readings, {"temperatura": "Temperatura da água"}
+    )
+
+    assert result["ID"].tolist() == [1, 6]
+    assert result["Indicador"].tolist() == [
+        "Temperatura da água",
+        "Temperatura da água",
+    ]
+    assert result["Valor da leitura"].tolist() == [-50, 100]
+    assert result["Limite inferior"].tolist() == [-2.5, -2.5]
+    assert result["Limite superior"].tolist() == [7.5, 7.5]
+
+
+def test_identificar_outliers_iqr_returns_empty_for_values_inside_limits():
+    result = relatorios.identificar_outliers_iqr(
+        pd.DataFrame({"value": [1, 2, 3, 4]}), {"value": "Indicador"}
+    )
+
+    assert result.empty
+
+
 def test_selecionar_cidade_e_estacao_filters_both_datasets(monkeypatch):
     water = pd.DataFrame(
         {

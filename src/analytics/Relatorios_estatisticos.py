@@ -128,6 +128,44 @@ def calcular_estatisticas(df: pd.DataFrame, mapa_colunas: dict, nome_relatorio: 
     return pd.DataFrame(relatorio)
 
 
+def identificar_outliers_iqr(
+    df: pd.DataFrame, mapa_colunas: dict
+) -> pd.DataFrame:
+    """Retorna leituras fora de Q1 - 1,5×IQR ou Q3 + 1,5×IQR."""
+    registros_outliers = []
+
+    for coluna, nome_indicador in mapa_colunas.items():
+        if coluna not in df.columns:
+            continue
+
+        valores = pd.to_numeric(df[coluna], errors="coerce")
+        valores_validos = valores.dropna()
+        if valores_validos.empty:
+            continue
+
+        q1 = valores_validos.quantile(0.25)
+        q3 = valores_validos.quantile(0.75)
+        iqr = q3 - q1
+        limite_inferior = q1 - 1.5 * iqr
+        limite_superior = q3 + 1.5 * iqr
+        mascara_outlier = (valores < limite_inferior) | (
+            valores > limite_superior
+        )
+
+        if mascara_outlier.any():
+            registros = df.loc[mascara_outlier].copy()
+            registros["Indicador"] = nome_indicador
+            registros["Valor da leitura"] = valores.loc[mascara_outlier]
+            registros["Limite inferior"] = limite_inferior
+            registros["Limite superior"] = limite_superior
+            registros_outliers.append(registros)
+
+    if not registros_outliers:
+        return pd.DataFrame()
+
+    return pd.concat(registros_outliers, ignore_index=True)
+
+
 def selecionar_cidade_e_estacao(
     df_agua: pd.DataFrame, df_meteo: pd.DataFrame
 ):
