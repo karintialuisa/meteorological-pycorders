@@ -61,8 +61,8 @@ def test_resolver_id_cidade_rejects_city_not_in_database(banco_teste):
             meteorologica.resolver_id_cidade(readings, connection)
 
 
-def test_resolver_id_estacao_rejects_station_not_in_database(
-    banco_teste, monkeypatch
+def test_resolver_id_estacao_filters_station_not_in_database(
+    banco_teste, monkeypatch, caplog
 ):
     monkeypatch.setattr(
         ambiental,
@@ -76,12 +76,17 @@ def test_resolver_id_estacao_rejects_station_not_in_database(
     )
 
     with banco_teste.connect() as connection:
-        with pytest.raises(ValueError, match="sem estação cadastrada"):
-            ambiental.resolver_id_estacao(readings, connection)
+        result = ambiental.resolver_id_estacao(readings, connection)
+
+    assert result.empty
+    assert any(
+        "rejeitada por estação sem correspondência" in record.message
+        for record in caplog.records
+    )
 
 
 def test_ambiental_load_resolves_station_and_persists_reading(
-    banco_teste, monkeypatch
+    banco_teste, monkeypatch, caplog
 ):
     seed_location(banco_teste)
     monkeypatch.setattr(
@@ -95,6 +100,13 @@ def test_ambiental_load_resolves_station_and_persists_reading(
                 "ph": 7.2,
                 "oxigenio": 8.1,
                 "condutividade": 120.0,
+            }, {
+                "estacao_id": 901,
+                "data_leitura": "2026-05-20T12:00:00+00:00",
+                "temperatura_agua": 19.0,
+                "ph": 7.0,
+                "oxigenio": 8.0,
+                "condutividade": 110.0,
             }]
         ),
     )
@@ -120,6 +132,49 @@ def test_ambiental_load_resolves_station_and_persists_reading(
         ).one()
 
     assert reading == (20, 21.5, 7.2)
+    assert any(
+        "rejeitada por estação sem correspondência" in record.message
+        for record in caplog.records
+    )
+
+
+def test_ambiental_load_skips_insert_when_all_stations_are_unresolved(
+    banco_teste, monkeypatch
+):
+    seed_location(banco_teste)
+    monkeypatch.setattr(
+        ambiental,
+        "tabela_ambiental",
+        lambda: pd.DataFrame(
+            [{
+                "estacao_id": 901,
+                "data_leitura": "2026-05-20T12:00:00+00:00",
+                "temperatura_agua": 19.0,
+                "ph": 7.0,
+                "oxigenio": 8.0,
+                "condutividade": 110.0,
+            }]
+        ),
+    )
+    monkeypatch.setattr(
+        ambiental,
+        "tabela_estacao",
+        lambda cidades, estados: pd.DataFrame(
+            [{"id": 901, "nome": "Estação ausente"}]
+        ),
+    )
+    monkeypatch.setattr(ambiental, "tabela_cidade", pd.DataFrame)
+    monkeypatch.setattr(ambiental, "tabela_estado", pd.DataFrame)
+    monkeypatch.setattr(ambiental, "create_db_engine", lambda: banco_teste)
+
+    ambiental.inserir_dados()
+
+    with banco_teste.connect() as connection:
+        total = connection.execute(
+            text("SELECT COUNT(*) FROM qualidade_agua")
+        ).scalar_one()
+
+    assert total == 0
 
 
 def test_meteorological_load_resolves_city_and_persists_reading(

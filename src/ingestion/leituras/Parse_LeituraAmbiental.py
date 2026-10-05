@@ -36,50 +36,105 @@ def ler_json(path_arquivo):
 def tabela_ambiental() -> pd.DataFrame:
     """Cria e trata o DataFrame com as leituras ambientais.
 
-    O processo inclui normalização dos dados aninhados, remoção de registros
-    duplicados por estação e data e conversão da coluna de tempo para datetime.
+    O processo inclui normalização dos dados aninhados, rejeição individual de
+    registros incompletos e deduplicação por estação/data antes da persistência.
 
     Returns:
         pd.DataFrame: DataFrame pronto para inserção no banco de dados.
     """
-    # 1. Normalização do JSON e seleção/renomeação das colunas
     parse_ambiental = ler_json(get_path("INGESTION_LEITURA_AMBIENTAL"))
+    registros = parse_ambiental.get("leituras_ambientais", [])
+    df_origem = pd.json_normalize(registros)
 
-    df_ambiental = pd.json_normalize(
-        parse_ambiental["leituras_ambientais"]
-        )[[
+    if df_origem.empty:
+        logging.warning(
+            "Leitura ambiental rejeitada por incompletude: indice=%s, "
+            "id=%s, estacao_id=%s, timestamp=%s, motivos=%s",
+            0,
+            None,
+            None,
+            None,
+            "estacao_id ausente, timestamp ausente ou inválido",
+        )
+        return pd.DataFrame(columns=[
             "estacao_id",
-            "timestamp", 
-            "qualidade_agua.temperatura.valor",
-            "qualidade_agua.ph.valor",
-            "qualidade_agua.oxigenio_dissolvido.valor",
-            "qualidade_agua.condutividade.valor",
-        ]].rename(
-            columns={
-            # Substitui os caminhos longos das propriedades JSON por nomes curtos e descritivos.
-            "timestamp": "data_leitura",
+            "temperatura_agua",
+            "ph",
+            "oxigenio",
+            "condutividade",
+            "data_leitura",
+        ])
+
+    timestamp_origem = df_origem.get(
+        "timestamp", pd.Series(pd.NA, index=df_origem.index)
+    )
+    estacao_origem = df_origem.get(
+        "estacao_id", pd.Series(pd.NA, index=df_origem.index)
+    )
+
+    estacao_string = estacao_origem.apply(
+        lambda valor: "" if pd.isna(valor) else str(valor).strip()
+    )
+    timestamp_string = timestamp_origem.apply(
+        lambda valor: "" if pd.isna(valor) else str(valor).strip()
+    )
+    datas = pd.to_datetime(timestamp_origem, errors="coerce", utc=True)
+
+    estacao_ausente = estacao_string.eq("")
+    data_ausente = timestamp_string.eq("") | datas.isna()
+    rejeitar = estacao_ausente | data_ausente
+
+    for indice in df_origem.index[rejeitar]:
+        motivos = []
+        if estacao_ausente.loc[indice]:
+            motivos.append("estacao_id ausente")
+        if data_ausente.loc[indice]:
+            motivos.append("timestamp ausente ou inválido")
+        logging.warning(
+            "Leitura ambiental rejeitada por incompletude: indice=%s, "
+            "id=%s, estacao_id=%s, timestamp=%s, motivos=%s",
+            indice,
+            df_origem.at[indice, "id"] if "id" in df_origem else None,
+            estacao_origem.loc[indice],
+            timestamp_origem.loc[indice],
+            ", ".join(motivos),
+        )
+
+    colunas_origem = [
+        "estacao_id",
+        "qualidade_agua.temperatura.valor",
+        "qualidade_agua.ph.valor",
+        "qualidade_agua.oxigenio_dissolvido.valor",
+        "qualidade_agua.condutividade.valor",
+    ]
+    df_ambiental = df_origem.loc[~rejeitar].copy()
+    for coluna in colunas_origem:
+        if coluna not in df_ambiental:
+            df_ambiental[coluna] = pd.NA
+
+    df_ambiental["data_leitura"] = datas.loc[~rejeitar]
+    df_ambiental["estacao_id"] = (
+        df_ambiental["estacao_id"].apply(
+            lambda valor: "" if pd.isna(valor) else str(valor).strip()
+        )
+    )
+    df_ambiental = df_ambiental[colunas_origem + ["data_leitura"]].rename(
+        columns={
             "qualidade_agua.temperatura.valor": "temperatura_agua",
             "qualidade_agua.ph.valor": "ph",
             "qualidade_agua.oxigenio_dissolvido.valor": "oxigenio",
-            "qualidade_agua.condutividade.valor": "condutividade"
-            })
-
-    df_ambiental = df_ambiental.drop_duplicates().reset_index(drop=True)
-
-    # Ordenação para priorizar o registro mais recente em caso de duplicatas
-    df_ambiental = df_ambiental.sort_values(["data_leitura"], ascending=False)
-
-    # Tratamento de duplicatas mantendo apenas o registro mais recente por cidade/data
-    df_ambiental = df_ambiental.drop_duplicates(
-        subset=["estacao_id", "data_leitura"],
-        keep="first"
-    ).reset_index(drop=True)   
-
-    df_ambiental["data_leitura"] = pd.to_datetime(
-        df_ambiental["data_leitura"], utc=True
+            "qualidade_agua.condutividade.valor": "condutividade",
+        }
     )
 
-    return df_ambiental 
+    df_ambiental = df_ambiental.drop_duplicates().reset_index(drop=True)
+    df_ambiental = df_ambiental.sort_values(["data_leitura"], ascending=False)
+    df_ambiental = df_ambiental.drop_duplicates(
+        subset=["estacao_id", "data_leitura"],
+        keep="first",
+    ).reset_index(drop=True)
+
+    return df_ambiental
 
 if __name__ == "__main__":
     import sys

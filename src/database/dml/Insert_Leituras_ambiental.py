@@ -33,6 +33,10 @@ modo_carga = "append"
 def resolver_id_estacao(df_leituras: pd.DataFrame, connection) -> pd.DataFrame:
     """Converte o identificador da estação do JSON para o ID do banco.
 
+    A função rejeita leituras cujo `estacao_id` não encontra correspondência no
+    cadastro da estação e registra o motivo para auditoria. O restante do lote
+    continua em processamento.
+
     Args:
         df_leituras (pd.DataFrame): DataFrame com as leituras ambientais.
         connection: Conexão ativa com o banco de dados.
@@ -40,6 +44,9 @@ def resolver_id_estacao(df_leituras: pd.DataFrame, connection) -> pd.DataFrame:
     Returns:
         pd.DataFrame: DataFrame com a coluna de estação convertida para id_estacao.
     """
+    if df_leituras.empty:
+        return df_leituras.copy()
+
     df_estacao = tabela_estacao(tabela_cidade(), tabela_estado())[["id", "nome"]]
     duplicados = df_estacao[df_estacao["id"].duplicated(keep=False)]
     if not duplicados.empty:
@@ -55,6 +62,12 @@ def resolver_id_estacao(df_leituras: pd.DataFrame, connection) -> pd.DataFrame:
         estacoes_banco, on="nome", how="left", validate="one_to_one"
     )
 
+    df_leituras = df_leituras.copy()
+    df_leituras["estacao_id"] = pd.to_numeric(
+        df_leituras["estacao_id"], errors="coerce"
+    )
+    df_estacao["id"] = pd.to_numeric(df_estacao["id"], errors="coerce")
+
     df_leituras = df_leituras.merge(
         df_estacao[["id", "id_estacao"]],
         left_on="estacao_id",
@@ -62,12 +75,17 @@ def resolver_id_estacao(df_leituras: pd.DataFrame, connection) -> pd.DataFrame:
         how="left",
         validate="many_to_one",
     )
-    sem_estacao = df_leituras.loc[df_leituras["id_estacao"].isna(), "estacao_id"]
-    if not sem_estacao.empty:
-        raise ValueError(
-            f"Leituras sem estação cadastrada no banco: {sorted(sem_estacao.unique())}"
+
+    for indice in df_leituras.index[df_leituras["id_estacao"].isna()]:
+        logging.warning(
+            "Leitura ambiental rejeitada por estação sem correspondência: "
+            "indice=%s, estacao_id=%s, data_leitura=%s",
+            indice,
+            df_leituras.at[indice, "estacao_id"],
+            df_leituras.at[indice, "data_leitura"],
         )
 
+    df_leituras = df_leituras.loc[df_leituras["id_estacao"].notna()].copy()
     df_leituras["id_estacao"] = df_leituras["id_estacao"].astype("int64")
     return df_leituras.drop(columns=["estacao_id", "id"])
 
@@ -88,6 +106,10 @@ def inserir_dados():
 
         with create_db_engine().begin() as connection:
             df_dados = resolver_id_estacao(df_dados, connection)
+            if df_dados.empty:
+                logging.info("Nenhuma leitura com estação cadastrada para inserir.")
+                return
+
             logging.info(
                 "Inserindo %s registros na tabela '%s'...",
                 len(df_dados),
