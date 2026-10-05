@@ -117,6 +117,7 @@ GO
 CREATE TABLE leitura_meteorologica (
     id                      BIGINT IDENTITY(1,1) PRIMARY KEY,
     id_cidade               BIGINT NOT NULL,
+    id_estacao              BIGINT NOT NULL,
     temperatura_ar          NUMERIC(8,3) NOT NULL,
     umidade                 NUMERIC(5,2) NOT NULL,
     chuva                   NUMERIC(10,3) NOT NULL,
@@ -128,6 +129,11 @@ CREATE TABLE leitura_meteorologica (
     CONSTRAINT fk_meteorologica
         FOREIGN KEY (id_cidade)
         REFERENCES cidade(id),
+
+    CONSTRAINT fk_meteorologica_estacao
+        FOREIGN KEY (id_estacao)
+        REFERENCES estacao(id)
+        ON DELETE CASCADE,
 
     CONSTRAINT ck_meteo_umidade
         CHECK (umidade IS NULL OR umidade BETWEEN 0 AND 100),
@@ -144,9 +150,3 @@ GO
 CREATE INDEX idx_leitura_meteorologica_id
     ON leitura_meteorologica (id_cidade);
 GO
- 
-
-
-use monitoramento;
-go
-SELECT * FROM leitura_meteorologica;
