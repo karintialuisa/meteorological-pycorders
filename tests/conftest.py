@@ -63,6 +63,26 @@ def banco_teste():
                 "FOREIGN KEY (id_cidade) REFERENCES cidade(id))"
             )
         )
+        connection.execute(
+            text(
+                "CREATE TABLE operadores ("
+                "id INTEGER PRIMARY KEY, cpf_hash TEXT NOT NULL UNIQUE, "
+                "nome_completo_cifrado TEXT NOT NULL, "
+                "criado_em TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)"
+            )
+        )
+        connection.execute(
+            text(
+                "CREATE TABLE catalogo_dados ("
+                "id INTEGER PRIMARY KEY, schema_name TEXT NOT NULL, "
+                "tabela TEXT NOT NULL, campo_logico TEXT NOT NULL, "
+                "coluna_armazenada TEXT NOT NULL, classificacao TEXT NOT NULL, "
+                "finalidade TEXT NOT NULL, protecao TEXT NOT NULL, "
+                "politica_acesso TEXT NOT NULL, "
+                "criado_em TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                "UNIQUE (schema_name, tabela, campo_logico))"
+            )
+        )
 
     yield engine
     engine.dispose()
