@@ -64,6 +64,7 @@ def test_tabela_estacao_resolves_geography_and_status(monkeypatch, tmp_path):
             "estacoes_ambientais": [
                 {
                     "id": 7,
+                    "tipo": "monitoramento_ambiental",
                     "nome": "Rio",
                     "descricao": "Centro",
                     "status": "ativa",
@@ -71,6 +72,7 @@ def test_tabela_estacao_resolves_geography_and_status(monkeypatch, tmp_path):
                 },
                 {
                     "id": 8,
+                    "tipo": "monitoramento_ambiental",
                     "nome": "Lago",
                     "descricao": "Sul",
                     "status": "inativa",
@@ -90,6 +92,11 @@ def test_tabela_estacao_resolves_geography_and_status(monkeypatch, tmp_path):
     result = localizacao.tabela_estacao(cities, states)
 
     assert result["nome"].tolist() == ["Rio - Centro", "[Desativado] Lago - Sul"]
+    assert result["estacao_id"].tolist() == [7, 8]
+    assert result["tipo"].tolist() == [
+        "monitoramento_ambiental",
+        "monitoramento_ambiental",
+    ]
     assert result["status_estacao"].tolist() == [1, 0]
     assert result["codigo_ibge_cidade"].tolist() == [3550308, 3550308]
 
@@ -102,6 +109,7 @@ def test_tabela_estacao_rejects_unmatched_location(monkeypatch, tmp_path):
             "estacoes_ambientais": [
                 {
                     "id": 7,
+                    "tipo": "monitoramento_ambiental",
                     "nome": "Rio",
                     "descricao": "Centro",
                     "status": "ativa",
@@ -235,6 +243,7 @@ def test_tabela_metereologica_normalizes_numeric_fields_and_deduplicates(
         return {
             "cidade": "Recife",
             "estado": "Pernambuco",
+                "estacao_id": "MET-RECIFE-01",
             "timestamp": timestamp,
             "dados_meteorologicos": {
                 "temperatura_ar": {"valor": temperature},
@@ -250,9 +259,9 @@ def test_tabela_metereologica_normalizes_numeric_fields_and_deduplicates(
         "weather.json",
         {
             "leituras_meteorologicas": [
-                record("2026-01-01T10:00:00", "bad"),
-                record("2026-01-02T10:00:00", "25"),
-                record("2026-01-02T10:00:00", "25"),
+                record("2026-01-01T10:00:00-03:00", "bad"),
+                record("2026-01-02T10:00:00-04:00", "25"),
+                record("2026-01-02T10:00:00-04:00", "25"),
             ]
         },
     )
@@ -261,6 +270,8 @@ def test_tabela_metereologica_normalizes_numeric_fields_and_deduplicates(
     result = meteorologica.tabela_metereologica()
 
     assert len(result) == 2
+    assert result["estacao_id"].tolist() == ["MET-RECIFE-01", "MET-RECIFE-01"]
+    assert str(result["data_leitura"].dt.tz) == "UTC"
     assert pd.isna(result.loc[result["data_leitura"].dt.day == 1, "temperatura_ar"]).all()
     latest = result.loc[result["data_leitura"].dt.day == 2].iloc[0]
     assert latest["temperatura_ar"] == 25

@@ -1547,6 +1547,108 @@
       "descricao": "Estação convencional destinada ao monitoramento meteorológico em ZE DOCA.",
       "data_instalacao": "1970-08-24",
       "codigo_estacao": "82376"
+    },
+    {
+      "id": "MET-RO-ARIQUEMES-AUTOMATICA",
+      "nome": "Estação ARIQUEMES (Automática)",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "RO",
+        "city_name": "Ariquemes",
+        "latitude": -9.9489,
+        "longitude": -62.9619,
+        "altitude": 130
+      },
+      "descricao": "Estação meteorológica automática em Ariquemes, Rondônia.",
+      "data_instalacao": "2011-04-03",
+      "data_termino": "2027-10-03",
+      "codigo_estacao": "ARIQUEMES (Automatica)"
+    },
+    {
+      "id": "MET-RO-CACOAL-AUTOMATICA",
+      "nome": "Estação CACOAL (Automática)",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "RO",
+        "city_name": "Cacoal",
+        "latitude": -11.4458,
+        "longitude": -61.4341,
+        "altitude": 183
+      },
+      "descricao": "Estação meteorológica automática em Cacoal, Rondônia.",
+      "data_instalacao": "2011-04-03",
+      "data_termino": "2027-10-03",
+      "codigo_estacao": "CACOAL (Automatica)"
+    },
+    {
+      "id": "MET-RO-VILHENA-AUTOMATICA",
+      "nome": "Estação VILHENA (Automática)",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "RO",
+        "city_name": "Vilhena",
+        "latitude": -12.7347,
+        "longitude": -60.1578,
+        "altitude": 584
+      },
+      "descricao": "Estação meteorológica automática em Vilhena, Rondônia.",
+      "data_instalacao": "2011-04-03",
+      "data_termino": "2027-10-03",
+      "codigo_estacao": "VILHENA (Automatica)"
+    },
+    {
+      "id": "MET-AC-EPITACIOLANDIA-AUTOMATICA",
+      "nome": "Estação EPITACIOLANDIA (Automática)",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "AC",
+        "city_name": "Epitaciolândia",
+        "latitude": -11.0244,
+        "longitude": -68.735,
+        "altitude": 225
+      },
+      "descricao": "Estação meteorológica automática em Epitaciolândia, Acre.",
+      "data_instalacao": "2011-04-03",
+      "data_termino": "2027-10-03",
+      "codigo_estacao": "EPITACIOLANDIA (Automatica)"
+    },
+    {
+      "id": "MET-AC-FEIJO-AUTOMATICA",
+      "nome": "Estação FEIJO (Automática)",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "AC",
+        "city_name": "Feijó",
+        "latitude": -8.1419,
+        "longitude": -70.3431,
+        "altitude": 157
+      },
+      "descricao": "Estação meteorológica automática em Feijó, Acre.",
+      "data_instalacao": "2011-04-03",
+      "data_termino": "2027-10-03",
+      "codigo_estacao": "FEIJO (Automatica)"
+    },
+    {
+      "id": "MET-AC-RIO-BRANCO-AUTOMATICA",
+      "nome": "Estação RIO BRANCO (Automática)",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "AC",
+        "city_name": "Rio Branco",
+        "latitude": -9.9578,
+        "longitude": -68.165,
+        "altitude": 226
+      },
+      "descricao": "Estação meteorológica automática em Rio Branco, Acre.",
+      "data_instalacao": "2011-04-03",
+      "data_termino": "2027-10-03",
+      "codigo_estacao": "RIO BRANCO (Automatica)"
     }
   ]
 }
