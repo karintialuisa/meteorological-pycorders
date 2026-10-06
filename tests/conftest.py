@@ -57,10 +57,12 @@ def banco_teste():
             text(
                 "CREATE TABLE leitura_meteorologica ("
                 "id INTEGER PRIMARY KEY, id_cidade INTEGER NOT NULL, "
+                "id_estacao INTEGER NOT NULL, "
                 "temperatura_ar REAL NOT NULL, umidade REAL NOT NULL, "
                 "chuva REAL NOT NULL, vento REAL NOT NULL, "
                 "condicao TEXT NOT NULL, data_leitura TEXT NOT NULL, "
-                "FOREIGN KEY (id_cidade) REFERENCES cidade(id))"
+                "FOREIGN KEY (id_cidade) REFERENCES cidade(id), "
+                "FOREIGN KEY (id_estacao) REFERENCES estacao(id))"
             )
         )
         connection.execute(

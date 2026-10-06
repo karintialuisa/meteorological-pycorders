@@ -15,7 +15,7 @@ O pipeline contempla:
 - Leitura e normalização de JSONs de estados, municípios, estações e leituras.
 - Carga incremental de estados, cidades, estações, qualidade da água e meteorologia.
 - Resolução e validação de chaves entre os arquivos JSON e o SQL Server.
-- Relatórios interativos por cidade e estação, com média, mediana, desvio padrão, IQR e contagem de outliers.
+- Relatórios interativos por cidade e estação, com média, mediana, desvio padrão, variância amostral, IQR e contagem de outliers por parâmetro.
 - API FastAPI para listar cidades e consultar leituras carregadas dos JSONs.
 - Dashboard Streamlit para consultar no SQL Server e visualizar indicadores, tabelas e séries temporais.
 - Registro de eventos no console e em `logs/execucao_relatorio.log`.
@@ -84,7 +84,7 @@ meteorological-pycorders/
 - `src/database/ddl`: contém `create-database.sql`, `create-tables.sql`, `schema.sql` e `delete-data-table.sql`.
 - `src/database/dml`: carrega localização e leituras; `seed.sql` contém dados SQL auxiliares.
 - `src/database/dql`: reúne consultas de inspeção e análise.
-- `src/analytics`: gera relatórios estatísticos interativos a partir dos JSONs.
+- `src/analytics`: consulta leituras relacionais e gera relatórios estatísticos por parâmetro e estação.
 - `src/api`: expõe cidades e leituras dos arquivos JSON pelos endpoints HTTP.
 - `src/dashboard.py`: apresenta dados persistidos no SQL Server em tabelas, métricas e gráficos.
 - `src/config/settings.py`: concentra leitura do `.env`, caminhos JSON, conexão SQL Server e configuração de logs.

@@ -12,6 +12,7 @@ sys.path.append(str(Path(__file__).resolve().parents[2]))
 from config.settings import configure_logging, create_db_engine
 import pandas as pd
 from sqlalchemy import text
+from database.dml.Insert_Leituras_ambiental import resolver_id_estacao
 from ingestion.leituras.Parse_LeituraMetereologica import tabela_metereologica
 
 
@@ -80,6 +81,7 @@ def inserir_dados():
             return
 
         with create_db_engine().begin() as connection:
+            df_dados = resolver_id_estacao(df_dados, connection)
             df_dados = resolver_id_cidade(df_dados, connection)
             logging.info(
                 "Inserindo %s registros na tabela '%s'...",

@@ -1,8 +1,7 @@
-"""Geração de relatórios estatísticos para leituras ambientais e meteorológicas.
+"""Geração de relatórios estatísticos a partir das leituras do banco relacional.
 
-Este módulo carrega os arquivos JSON de leitura, normaliza os dados aninhados,
-permite a seleção de uma cidade pelo terminal e calcula estatísticas descritivas
-como mediana, quartis e IQR para cada variável monitorada.
+O módulo carrega os dados de água e meteorologia com o contexto da estação,
+permite a seleção de cidade e estação e calcula estatísticas por parâmetro.
 """
 
 import json
@@ -14,24 +13,62 @@ from tabulate import tabulate
 
 SRC_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(SRC_DIR))
-from config.settings import PROJECT_ROOT, configure_logging, get_path
+from config.settings import PROJECT_ROOT, configure_logging, create_db_engine
+from sqlalchemy import text
 
 BASE_DIR = PROJECT_ROOT
 
-# Mapeamento dos caminhos achatados (colunas no Pandas) para nomes amigáveis no relatório
+# Mapeamento das colunas SQL para nomes amigáveis no relatório.
 COLUNAS_AGUA = {
-    "qualidade_agua.temperatura.valor": "Temperatura da Água (°C)",
-    "qualidade_agua.ph.valor": "pH da Água",
-    "qualidade_agua.oxigenio_dissolvido.valor": "Oxigênio Dissolvido (mg/L)",
-    "qualidade_agua.condutividade.valor": "Condutividade (µS/cm)",
+    "temperatura_agua": "Temperatura da Água (°C)",
+    "ph": "pH da Água",
+    "oxigenio": "Oxigênio Dissolvido (mg/L)",
+    "condutividade": "Condutividade (µS/cm)",
 }
 
 COLUNAS_METEOROLOGICAS = {
-    "dados_meteorologicos.temperatura_ar.valor": "Temperatura (°C)",
-    "dados_meteorologicos.umidade.valor": "Umidade (%)",
-    "dados_meteorologicos.chuva.valor": "Precipitação (mm)",
-    "dados_meteorologicos.vento.velocidade": "Velocidade do Vento (km/h)",
+    "temperatura_ar": "Temperatura (°C)",
+    "umidade": "Umidade (%)",
+    "chuva": "Precipitação (mm)",
+    "vento": "Velocidade do Vento (km/h)",
 }
+
+QUERY_AGUA = """
+    SELECT
+        e.id AS estacao_id,
+        e.nome AS estacao,
+        c.nome AS cidade,
+        q.temperatura_agua,
+        q.ph,
+        q.oxigenio,
+        q.condutividade
+    FROM qualidade_agua AS q
+    INNER JOIN estacao AS e ON e.id = q.id_estacao
+    INNER JOIN cidade AS c ON c.id = e.id_cidade
+"""
+
+QUERY_METEOROLOGIA = """
+    SELECT
+        e.id AS estacao_id,
+        e.nome AS estacao,
+        c.nome AS cidade,
+        m.temperatura_ar,
+        m.umidade,
+        m.chuva,
+        m.vento
+    FROM leitura_meteorologica AS m
+    INNER JOIN estacao AS e ON e.id = m.id_estacao
+    INNER JOIN cidade AS c ON c.id = e.id_cidade
+"""
+
+
+def carregar_dados_sql(engine=None) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Carrega leituras ambientais e meteorológicas do banco relacional."""
+    engine = engine or create_db_engine()
+    with engine.connect() as connection:
+        df_agua = pd.read_sql(text(QUERY_AGUA), connection)
+        df_meteo = pd.read_sql(text(QUERY_METEOROLOGIA), connection)
+    return df_agua, df_meteo
 
 def carregar_json(caminho_arquivo: Path, chave_lista: str) -> pd.DataFrame:
     """Carrega um arquivo JSON e normaliza a estrutura em um DataFrame.
@@ -72,7 +109,7 @@ def carregar_json(caminho_arquivo: Path, chave_lista: str) -> pd.DataFrame:
 
 
 def calcular_estatisticas(df: pd.DataFrame, mapa_colunas: dict, nome_relatorio: str) -> pd.DataFrame:
-    """Calcula estatísticas descritivas para as colunas informadas.
+    """Calcula estatísticas descritivas por parâmetro e estação.
 
     Args:
         df (pd.DataFrame): DataFrame com os dados a serem avaliados.
@@ -82,32 +119,44 @@ def calcular_estatisticas(df: pd.DataFrame, mapa_colunas: dict, nome_relatorio: 
             ou "Meteorologia".
 
     Returns:
-        pd.DataFrame: Tabela com mediana, quartis e IQR para cada variável.
+        pd.DataFrame: Tabela de estatísticas por parâmetro e estação.
     """
 
     relatorio = []
+    colunas_estacao = [
+        coluna for coluna in ("estacao_id", "estacao") if coluna in df.columns
+    ]
+    grupos = (
+        df.groupby(colunas_estacao, sort=True)
+        if colunas_estacao
+        else [((), df)]
+    )
 
-    for coluna_json, nome_amigavel in mapa_colunas.items():
-        if coluna_json in df.columns:
-            serie = pd.to_numeric(df[coluna_json], errors="coerce").dropna()
+    for chave_grupo, grupo in grupos:
+        if not isinstance(chave_grupo, tuple):
+            chave_grupo = (chave_grupo,)
+        identificacao_estacao = dict(zip(colunas_estacao, chave_grupo))
 
-            if not serie.empty:
-                media = serie.mean()
-                mediana = serie.median()
-                std = serie.std()
-                q1 = serie.quantile(0.25)
-                q3 = serie.quantile(0.75)
-                iqr = q3 - q1
+        for coluna, nome_amigavel in mapa_colunas.items():
+            if coluna in grupo.columns:
+                serie = pd.to_numeric(grupo[coluna], errors="coerce").dropna()
 
-                # Cálculo de Outliers via Regra do IQR (Limite Inferior e Superior)
-                limite_inf = q1 - 1.5 * iqr
-                limite_sup = q3 + 1.5 * iqr
-                outliers = serie[
-                    (serie < limite_inf) | (serie > limite_sup)
-                ].count()
+                if not serie.empty:
+                    media = serie.mean()
+                    mediana = serie.median()
+                    std = serie.std()
+                    variancia = serie.var()
+                    q1 = serie.quantile(0.25)
+                    q3 = serie.quantile(0.75)
+                    iqr = q3 - q1
 
-                relatorio.append(
-                    {
+                    limite_inf = q1 - 1.5 * iqr
+                    limite_sup = q3 + 1.5 * iqr
+                    outliers = serie[
+                        (serie < limite_inf) | (serie > limite_sup)
+                    ].count()
+
+                    linha = {
                         "Relatório": nome_relatorio,
                         "Leituras": nome_amigavel,
                         "Total Registros": len(serie),
@@ -116,14 +165,19 @@ def calcular_estatisticas(df: pd.DataFrame, mapa_colunas: dict, nome_relatorio: 
                         "Desvio Padrão": round(std, 2)
                         if pd.notna(std)
                         else 0.0,
+                        "Variância": round(variancia, 2)
+                        if pd.notna(variancia)
+                        else 0.0,
                         "IQR": round(iqr, 2),
                         "Outliers": int(outliers),
                     }
-                )
-        else:
-            logging.warning(
-                f"Campo '{coluna_json}' não encontrado no DataFrame."
-            )
+                    if "estacao_id" in identificacao_estacao:
+                        linha["Estação ID"] = identificacao_estacao["estacao_id"]
+                    if "estacao" in identificacao_estacao:
+                        linha["Estação"] = identificacao_estacao["estacao"]
+                    relatorio.append(linha)
+            else:
+                logging.warning(f"Campo '{coluna}' não encontrado no DataFrame.")
 
     return pd.DataFrame(relatorio)
 
@@ -289,18 +343,15 @@ def main():
     configure_logging(BASE_DIR)
     logging.info("Iniciando a geração dos Relatórios Estatísticos...")
 
-    # 1. CARREGA OS DATAFRAMES
-    df_agua = carregar_json(
-        get_path("INGESTION_LEITURA_AMBIENTAL"),
-        chave_lista="leituras_ambientais",
-    )
-    df_meteo = carregar_json(
-        get_path("INGESTION_LEITURA_METEOROLOGICA"),
-        chave_lista="leituras_meteorologicas",
-    )
+    # 1. CARREGA OS DATAFRAMES DO BANCO RELACIONAL
+    try:
+        df_agua, df_meteo = carregar_dados_sql()
+    except Exception:
+        logging.exception("Erro ao consultar as leituras no banco de dados.")
+        return
 
     if df_agua.empty and df_meteo.empty:
-        logging.warning("Nenhum dado pôde ser carregado dos arquivos JSON.")
+        logging.warning("Nenhuma leitura foi encontrada no banco de dados.")
         return
 
     # 2. SELEÇÃO DINÂMICA DE CIDADE E ESTAÇÃO

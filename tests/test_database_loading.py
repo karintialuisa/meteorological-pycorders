@@ -186,6 +186,7 @@ def test_meteorological_load_resolves_city_and_persists_reading(
         "tabela_metereologica",
         lambda: pd.DataFrame(
             [{
+                "estacao_id": 900,
                 "cidade": "Sao Paulo",
                 "estado": "Sao Paulo",
                 "data_leitura": "2026-05-20T12:00:00",
@@ -198,6 +199,13 @@ def test_meteorological_load_resolves_city_and_persists_reading(
         ),
     )
     monkeypatch.setattr(
+        meteorologica,
+        "resolver_id_estacao",
+        lambda readings, connection: readings.assign(id_estacao=20).drop(
+            columns=["estacao_id"]
+        ),
+    )
+    monkeypatch.setattr(
         meteorologica, "create_db_engine", lambda: banco_teste
     )
 
@@ -206,12 +214,12 @@ def test_meteorological_load_resolves_city_and_persists_reading(
     with banco_teste.connect() as connection:
         reading = connection.execute(
             text(
-                "SELECT id_cidade, temperatura_ar, condicao "
+                "SELECT id_cidade, id_estacao, temperatura_ar, condicao "
                 "FROM leitura_meteorologica"
             )
         ).one()
 
-    assert reading == (10, 24.0, "Nublado")
+    assert reading == (10, 20, 24.0, "Nublado")
 
 
 def test_location_loading_is_idempotent_for_existing_records(
