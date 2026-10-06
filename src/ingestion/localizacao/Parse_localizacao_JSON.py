@@ -102,6 +102,7 @@ def tabela_estacao(df_cidade: pd.DataFrame, df_estado: pd.DataFrame) -> pd.DataF
         "localizacao.estado": "sigla_estado",
         "localizacao.city_name": "cidade_estacao"
     })
+    df_estacao["estacao_id"] = df_estacao["id"]
 
     # Conversão de status (1 = ativa, 0 = inativa)
     df_estacao["status_estacao"] = df_estacao["status_estacao"].apply(lambda x: 1 if x == "ativa" else 0)
@@ -146,6 +147,7 @@ def tabela_estacao(df_cidade: pd.DataFrame, df_estado: pd.DataFrame) -> pd.DataF
     # Códigos IBGE identificam os registros; IDs de FK vêm do banco na inserção.
     colunas_finais = [
         "id",
+        "estacao_id",
         "tipo",
         "nome",
         "status_estacao",

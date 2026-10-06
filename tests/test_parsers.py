@@ -92,6 +92,7 @@ def test_tabela_estacao_resolves_geography_and_status(monkeypatch, tmp_path):
     result = localizacao.tabela_estacao(cities, states)
 
     assert result["nome"].tolist() == ["Rio - Centro", "[Desativado] Lago - Sul"]
+    assert result["estacao_id"].tolist() == [7, 8]
     assert result["tipo"].tolist() == [
         "monitoramento_ambiental",
         "monitoramento_ambiental",
@@ -242,6 +243,7 @@ def test_tabela_metereologica_normalizes_numeric_fields_and_deduplicates(
         return {
             "cidade": "Recife",
             "estado": "Pernambuco",
+            "estacao_id": "MET-RECIFE-01",
             "timestamp": timestamp,
             "dados_meteorologicos": {
                 "temperatura_ar": {"valor": temperature},
@@ -268,6 +270,7 @@ def test_tabela_metereologica_normalizes_numeric_fields_and_deduplicates(
     result = meteorologica.tabela_metereologica()
 
     assert len(result) == 2
+    assert result["estacao_id"].tolist() == ["MET-RECIFE-01", "MET-RECIFE-01"]
     assert pd.isna(result.loc[result["data_leitura"].dt.day == 1, "temperatura_ar"]).all()
     latest = result.loc[result["data_leitura"].dt.day == 2].iloc[0]
     assert latest["temperatura_ar"] == 25
