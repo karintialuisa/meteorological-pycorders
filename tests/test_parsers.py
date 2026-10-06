@@ -165,6 +165,69 @@ def test_tabela_ambiental_normalizes_deduplicates_and_parses_dates(
     assert {"ph", "oxigenio", "condutividade"}.issubset(result.columns)
 
 
+def test_tabela_ambiental_rejects_incomplete_readings_and_logs_reasons(
+    monkeypatch, tmp_path, caplog
+):
+    def record(station_id=7, timestamp="2026-01-01T10:00:00Z"):
+        return {
+            "estacao_id": station_id,
+            "timestamp": timestamp,
+            "qualidade_agua": {
+                "temperatura": {"valor": 20},
+                "ph": {"valor": 7},
+                "oxigenio_dissolvido": {"valor": 8},
+                "condutividade": {"valor": 100},
+            },
+        }
+
+    records = [
+        record(),
+        record(station_id=None),
+        record(station_id="  "),
+        record(timestamp=None),
+        record(timestamp="data-invalida"),
+    ]
+    path = save_json(tmp_path, "water.json", {"leituras_ambientais": records})
+    monkeypatch.setattr(ambiental, "get_path", lambda key: path)
+
+    result = ambiental.tabela_ambiental()
+
+    assert len(result) == 1
+    assert result["estacao_id"].notna().all()
+    assert result["estacao_id"].astype(str).str.strip().ne("").all()
+    assert result["data_leitura"].notna().all()
+    assert str(result.loc[0, "data_leitura"].tz) == "UTC"
+    rejected = [
+        record
+        for record in caplog.records
+        if "rejeitada por incompletude" in record.message
+    ]
+    assert len(rejected) == 4
+    assert any("estacao_id ausente" in record.message for record in rejected)
+    assert any(
+        "timestamp ausente ou inválido" in record.message
+        for record in rejected
+    )
+
+
+def test_tabela_ambiental_rejects_records_without_required_keys(
+    monkeypatch, tmp_path, caplog
+):
+    path = save_json(
+        tmp_path,
+        "water.json",
+        {"leituras_ambientais": [{"qualidade_agua": {}}]},
+    )
+    monkeypatch.setattr(ambiental, "get_path", lambda key: path)
+
+    result = ambiental.tabela_ambiental()
+
+    assert result.empty
+    assert len(caplog.records) == 1
+    assert "estacao_id ausente" in caplog.records[0].message
+    assert "timestamp ausente ou inválido" in caplog.records[0].message
+
+
 def test_tabela_metereologica_normalizes_numeric_fields_and_deduplicates(
     monkeypatch, tmp_path
 ):

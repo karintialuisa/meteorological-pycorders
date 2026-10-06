@@ -311,9 +311,9 @@ try:
             SELECT DISTINCT est.id_cidade 
             FROM qualidade_agua q
             JOIN estacao est ON q.id_estacao = est.id
-            
+
             UNION
-            
+
             SELECT DISTINCT id_cidade 
             FROM leitura_meteorologica
         )
@@ -527,7 +527,7 @@ with aba1:
         iqr_condutividade = condutividade_agua.quantile(0.75) - condutividade_agua.quantile(0.25) if not condutividade_agua.empty else 0
         # Exibição dos cards
         col1, col2, col3, col4 = st.columns(4)
-        
+
         with col1:
             st.metric("Média Temp. Água", f"{temp_agua.mean():.2f} °C")
             st.caption(f"**Mediana:** {temp_agua.median():.2f} °C | **Desv. Padrão:** {temp_agua.std():.2f} | **IQR:** {iqr_temp:.2f}")
@@ -558,7 +558,7 @@ with aba1:
 
         st.markdown("---")
         st.caption("*Temperatura: °C | Chuva: mm | Vento: Km/h | Condutividade: µS/cm | Oxigênio: mg/L")
-        
+
         # Formatação para exibição na Tabela (2 casas decimais)
         df_agua_exibicao = df_agua.copy()
         colunas_float_agua = ["Temperatura", "pH", "Oxigênio", "Condutividade"]
