@@ -88,7 +88,9 @@ def tabela_metereologica() -> pd.DataFrame:
     # =========================================================================
     # TRATAMENTO E CONVERSÃO DE TIPOS (DTYPES)
     # =========================================================================
-    df_metereologica["data_leitura"] = pd.to_datetime(df_metereologica["data_leitura"])
+    df_metereologica["data_leitura"] = pd.to_datetime(
+        df_metereologica["data_leitura"], utc=True
+    )
 
     colunas_numericas = ["temperatura_ar", "umidade", "chuva", "vento"]
     for col in colunas_numericas:
