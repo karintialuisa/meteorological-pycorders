@@ -64,6 +64,7 @@ def test_tabela_estacao_resolves_geography_and_status(monkeypatch, tmp_path):
             "estacoes_ambientais": [
                 {
                     "id": 7,
+                    "tipo": "monitoramento_ambiental",
                     "nome": "Rio",
                     "descricao": "Centro",
                     "status": "ativa",
@@ -71,6 +72,7 @@ def test_tabela_estacao_resolves_geography_and_status(monkeypatch, tmp_path):
                 },
                 {
                     "id": 8,
+                    "tipo": "monitoramento_ambiental",
                     "nome": "Lago",
                     "descricao": "Sul",
                     "status": "inativa",
@@ -90,6 +92,10 @@ def test_tabela_estacao_resolves_geography_and_status(monkeypatch, tmp_path):
     result = localizacao.tabela_estacao(cities, states)
 
     assert result["nome"].tolist() == ["Rio - Centro", "[Desativado] Lago - Sul"]
+    assert result["tipo"].tolist() == [
+        "monitoramento_ambiental",
+        "monitoramento_ambiental",
+    ]
     assert result["status_estacao"].tolist() == [1, 0]
     assert result["codigo_ibge_cidade"].tolist() == [3550308, 3550308]
 
@@ -102,6 +108,7 @@ def test_tabela_estacao_rejects_unmatched_location(monkeypatch, tmp_path):
             "estacoes_ambientais": [
                 {
                     "id": 7,
+                    "tipo": "monitoramento_ambiental",
                     "nome": "Rio",
                     "descricao": "Centro",
                     "status": "ativa",

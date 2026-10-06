@@ -90,14 +90,14 @@ def tabela_estacao(df_cidade: pd.DataFrame, df_estado: pd.DataFrame) -> pd.DataF
     df_estacao = pd.json_normalize(parse_estacao['estacoes_ambientais'])[
         [
             "id",
+            "tipo",
             "nome", 
             "descricao",
             "status", 
             "localizacao.estado",
             "localizacao.city_name"
         ]
-    ].rename(columns={
-        
+    ].rename(columns={        
         "status": "status_estacao",
         "localizacao.estado": "sigla_estado",
         "localizacao.city_name": "cidade_estacao"
@@ -146,6 +146,7 @@ def tabela_estacao(df_cidade: pd.DataFrame, df_estado: pd.DataFrame) -> pd.DataF
     # Códigos IBGE identificam os registros; IDs de FK vêm do banco na inserção.
     colunas_finais = [
         "id",
+        "tipo",
         "nome",
         "status_estacao",
         "cidade_estacao",
