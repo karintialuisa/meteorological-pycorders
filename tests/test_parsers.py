@@ -128,10 +128,11 @@ def test_tabela_estacao_rejects_unmatched_location(monkeypatch, tmp_path):
 
 
 def test_tabela_ambiental_normalizes_deduplicates_and_parses_dates(
-    monkeypatch, tmp_path
+    monkeypatch, tmp_path, caplog
 ):
     records = [
         {
+            "id": "LEIT-AMB-000001",
             "estacao_id": 7,
             "timestamp": "2026-01-01T10:00:00Z",
             "qualidade_agua": {
@@ -142,6 +143,7 @@ def test_tabela_ambiental_normalizes_deduplicates_and_parses_dates(
             },
         },
         {
+            "id": "LEIT-AMB-000002",
             "estacao_id": 7,
             "timestamp": "2026-01-02T10:00:00Z",
             "qualidade_agua": {
@@ -152,13 +154,25 @@ def test_tabela_ambiental_normalizes_deduplicates_and_parses_dates(
             },
         },
         {
+            "id": "LEIT-AMB-000002",
             "estacao_id": 7,
             "timestamp": "2026-01-02T10:00:00Z",
             "qualidade_agua": {
-                "temperatura": {"valor": 21},
+                "temperatura": {"valor": 22},
                 "ph": {"valor": 7.1},
                 "oxigenio_dissolvido": {"valor": 8.2},
                 "condutividade": {"valor": 101},
+            },
+        },
+        {
+            "id": "LEIT-AMB-000003",
+            "estacao_id": 7,
+            "timestamp": "2026-01-02T10:00:00Z",
+            "qualidade_agua": {
+                "temperatura": {"valor": 19},
+                "ph": {"valor": 7.0},
+                "oxigenio_dissolvido": {"valor": 8.0},
+                "condutividade": {"valor": 99},
             },
         },
     ]
@@ -167,17 +181,25 @@ def test_tabela_ambiental_normalizes_deduplicates_and_parses_dates(
 
     result = ambiental.tabela_ambiental()
 
-    assert len(result) == 2
+    assert len(result) == 3
     assert str(result.loc[0, "data_leitura"].tz) == "UTC"
     assert result.loc[0, "temperatura_agua"] == 21
+    assert set(result["id_leitura_origem"]) == {
+        "LEIT-AMB-000001",
+        "LEIT-AMB-000002",
+        "LEIT-AMB-000003",
+    }
+    assert result["temperatura_agua"].tolist().count(21) == 1
     assert {"ph", "oxigenio", "condutividade"}.issubset(result.columns)
+    assert any("Retransmissão conflitante no lote" in rec.message for rec in caplog.records)
 
 
 def test_tabela_ambiental_rejects_incomplete_readings_and_logs_reasons(
     monkeypatch, tmp_path, caplog
 ):
-    def record(station_id=7, timestamp="2026-01-01T10:00:00Z"):
+    def record(reading_id, station_id=7, timestamp="2026-01-01T10:00:00Z"):
         return {
+            "id": reading_id,
             "estacao_id": station_id,
             "timestamp": timestamp,
             "qualidade_agua": {
@@ -189,11 +211,11 @@ def test_tabela_ambiental_rejects_incomplete_readings_and_logs_reasons(
         }
 
     records = [
-        record(),
-        record(station_id=None),
-        record(station_id="  "),
-        record(timestamp=None),
-        record(timestamp="data-invalida"),
+        record("valid"),
+        record("no-station", station_id=None),
+        record("blank-station", station_id="  "),
+        record("no-timestamp", timestamp=None),
+        record("invalid-timestamp", timestamp="data-invalida"),
     ]
     path = save_json(tmp_path, "water.json", {"leituras_ambientais": records})
     monkeypatch.setattr(ambiental, "get_path", lambda key: path)
@@ -234,6 +256,7 @@ def test_tabela_ambiental_rejects_records_without_required_keys(
     assert len(caplog.records) == 1
     assert "estacao_id ausente" in caplog.records[0].message
     assert "timestamp ausente ou inválido" in caplog.records[0].message
+    assert "id de origem ausente" in caplog.records[0].message
 
 
 def test_tabela_metereologica_normalizes_numeric_fields_and_deduplicates(

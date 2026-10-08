@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 import pandas as pd
-from sqlalchemy import text
+from sqlalchemy import bindparam, text
 
 
 sys.path.append(str(Path(__file__).resolve().parents[2]))
@@ -27,6 +27,128 @@ BASE_DIR = PROJECT_ROOT
 
 tabela_destino = "qualidade_agua"
 modo_carga = "append"
+TAMANHO_LOTE_CONSULTA = 1000
+
+
+def filtrar_retransmissoes(
+    df_leituras: pd.DataFrame, connection
+) -> pd.DataFrame:
+    """Remove IDs já persistidos e audita retransmissões conflitantes."""
+    df_leituras = df_leituras.copy()
+    quantidade_recebida = len(df_leituras)
+    if "id_leitura_origem" not in df_leituras:
+        logging.error("Carga ambiental rejeitada: coluna id_leitura_origem ausente.")
+        return df_leituras.iloc[0:0].copy()
+
+    ids = df_leituras["id_leitura_origem"].apply(
+        lambda valor: "" if pd.isna(valor) else str(valor).strip()
+    )
+    sem_id = ids.eq("")
+    for leitura in df_leituras.loc[sem_id].to_dict("records"):
+        logging.warning(
+            "Leitura ambiental rejeitada por falta de identidade idempotente: "
+            "estacao_id=%s, data_leitura=%s",
+            leitura.get("estacao_id"),
+            leitura.get("data_leitura"),
+        )
+    df_leituras = df_leituras.loc[~sem_id].copy()
+    df_leituras["id_leitura_origem"] = ids.loc[~sem_id]
+    if df_leituras.empty:
+        logging.info(
+            "Deduplicação ambiental: recebidos=%s, novos=0, "
+            "retransmissoes_ignoradas=0, rejeitadas_sem_id=%s",
+            quantidade_recebida,
+            int(sem_id.sum()),
+        )
+        return df_leituras
+
+    duplicados_lote = df_leituras["id_leitura_origem"].duplicated(keep="first")
+    retransmissoes_lote = int(duplicados_lote.sum())
+    if duplicados_lote.any():
+        for leitura_id in df_leituras.loc[
+            duplicados_lote, "id_leitura_origem"
+        ].unique():
+            grupo = df_leituras.loc[
+                df_leituras["id_leitura_origem"].eq(leitura_id)
+            ]
+            if len(grupo.drop(columns="id_leitura_origem").drop_duplicates()) > 1:
+                logging.warning(
+                    "Retransmissão conflitante no lote; mantendo primeira leitura: "
+                    "id_leitura_origem=%s",
+                    leitura_id,
+                )
+        df_leituras = df_leituras.drop_duplicates(
+            subset=["id_leitura_origem"], keep="first"
+        )
+
+    consulta = text(
+        "SELECT id_leitura_origem, id_estacao, data_leitura, "
+        "temperatura_agua, ph, oxigenio, condutividade "
+        "FROM qualidade_agua WHERE id_leitura_origem IN :ids"
+    ).bindparams(bindparam("ids", expanding=True))
+    existentes = {}
+    leitura_ids = df_leituras["id_leitura_origem"].tolist()
+    for inicio in range(0, len(leitura_ids), TAMANHO_LOTE_CONSULTA):
+        lote_ids = leitura_ids[inicio : inicio + TAMANHO_LOTE_CONSULTA]
+        for row in connection.execute(consulta, {"ids": lote_ids}):
+            existentes[row.id_leitura_origem] = row._mapping
+
+    colunas_comparacao = [
+        "id_estacao",
+        "data_leitura",
+        "temperatura_agua",
+        "ph",
+        "oxigenio",
+        "condutividade",
+    ]
+
+    def normalizar(coluna, valor):
+        if pd.isna(valor):
+            return None
+        if coluna == "data_leitura":
+            data = pd.to_datetime(valor, errors="coerce", utc=True)
+            return None if pd.isna(data) else data.isoformat()
+        if coluna == "id_estacao":
+            return int(valor)
+        return round(float(valor), 3)
+
+    inserir = []
+    retransmissoes = 0
+    for leitura in df_leituras.to_dict("records"):
+        existente = existentes.get(leitura["id_leitura_origem"])
+        if existente is None:
+            inserir.append(leitura)
+            continue
+
+        retransmissoes += 1
+        conflitante = any(
+            normalizar(coluna, leitura.get(coluna))
+            != normalizar(coluna, existente[coluna])
+            for coluna in colunas_comparacao
+        )
+        if conflitante:
+            logging.warning(
+                "Retransmissão conflitante ignorada; mantendo registro existente: "
+                "id_leitura_origem=%s",
+                leitura["id_leitura_origem"],
+            )
+        else:
+            logging.info(
+                "Retransmissão ignorada: id_leitura_origem=%s",
+                leitura["id_leitura_origem"],
+            )
+
+    logging.info(
+        "Deduplicação ambiental: recebidos=%s, novos=%s, "
+        "retransmissoes_ignoradas=%s, rejeitadas_sem_id=%s",
+        quantidade_recebida,
+        len(inserir),
+        retransmissoes + retransmissoes_lote,
+        int(sem_id.sum()),
+    )
+    if not inserir:
+        return df_leituras.iloc[0:0].copy()
+    return pd.DataFrame(inserir, columns=df_leituras.columns).reset_index(drop=True)
 
 
 
@@ -76,13 +198,14 @@ def resolver_id_estacao(df_leituras: pd.DataFrame, connection) -> pd.DataFrame:
         validate="many_to_one",
     )
 
-    for indice in df_leituras.index[df_leituras["id_estacao"].isna()]:
+    sem_estacao = df_leituras.loc[df_leituras["id_estacao"].isna()]
+    for leitura in sem_estacao.to_dict("records"):
         logging.warning(
             "Leitura ambiental rejeitada por estação sem correspondência: "
-            "indice=%s, estacao_id=%s, data_leitura=%s",
-            indice,
-            df_leituras.at[indice, "estacao_id"],
-            df_leituras.at[indice, "data_leitura"],
+            "id_leitura_origem=%s, estacao_id=%s, data_leitura=%s",
+            leitura.get("id_leitura_origem"),
+            leitura.get("estacao_id"),
+            leitura.get("data_leitura"),
         )
 
     df_leituras = df_leituras.loc[df_leituras["id_estacao"].notna()].copy()
@@ -108,6 +231,10 @@ def inserir_dados():
             df_dados = resolver_id_estacao(df_dados, connection)
             if df_dados.empty:
                 logging.info("Nenhuma leitura com estação cadastrada para inserir.")
+                return
+
+            df_dados = filtrar_retransmissoes(df_dados, connection)
+            if df_dados.empty:
                 return
 
             logging.info(

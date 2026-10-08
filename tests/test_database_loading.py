@@ -94,6 +94,7 @@ def test_ambiental_load_resolves_station_and_persists_reading(
         "tabela_ambiental",
         lambda: pd.DataFrame(
             [{
+                "id_leitura_origem": "LEIT-AMB-LOAD-001",
                 "estacao_id": 900,
                 "data_leitura": "2026-05-20T12:00:00+00:00",
                 "temperatura_agua": 21.5,
@@ -101,6 +102,7 @@ def test_ambiental_load_resolves_station_and_persists_reading(
                 "oxigenio": 8.1,
                 "condutividade": 120.0,
             }, {
+                "id_leitura_origem": "LEIT-AMB-LOAD-002",
                 "estacao_id": 901,
                 "data_leitura": "2026-05-20T12:00:00+00:00",
                 "temperatura_agua": 19.0,
@@ -134,6 +136,80 @@ def test_ambiental_load_resolves_station_and_persists_reading(
     assert reading == (20, 21.5, 7.2)
     assert any(
         "rejeitada por estação sem correspondência" in record.message
+        for record in caplog.records
+    )
+
+
+def test_ambiental_load_is_idempotent_and_keeps_first_conflicting_reading(
+    banco_teste, monkeypatch, caplog
+):
+    caplog.set_level("INFO")
+    seed_location(banco_teste)
+    readings = iter(
+        [
+            pd.DataFrame(
+                [{
+                    "id_leitura_origem": "LEIT-AMB-IDEMPOTENT-001",
+                    "estacao_id": 900,
+                    "data_leitura": "2026-05-20T12:00:00+00:00",
+                    "temperatura_agua": 21.5,
+                    "ph": 7.2,
+                    "oxigenio": 8.1,
+                    "condutividade": 120.0,
+                }]
+            ),
+            pd.DataFrame(
+                [{
+                    "id_leitura_origem": "LEIT-AMB-IDEMPOTENT-001",
+                    "estacao_id": 900,
+                    "data_leitura": "2026-05-20T12:00:00+00:00",
+                    "temperatura_agua": 21.5,
+                    "ph": 7.2,
+                    "oxigenio": 8.1,
+                    "condutividade": 120.0,
+                }]
+            ),
+            pd.DataFrame(
+                [{
+                    "id_leitura_origem": "LEIT-AMB-IDEMPOTENT-001",
+                    "estacao_id": 900,
+                    "data_leitura": "2026-05-20T12:00:00+00:00",
+                    "temperatura_agua": 28.0,
+                    "ph": 8.2,
+                    "oxigenio": 4.1,
+                    "condutividade": 220.0,
+                }]
+            ),
+        ]
+    )
+    monkeypatch.setattr(ambiental, "tabela_ambiental", lambda: next(readings))
+    monkeypatch.setattr(
+        ambiental,
+        "tabela_estacao",
+        lambda cidades, estados: pd.DataFrame(
+            [{"id": 900, "nome": "Estacao Centro"}]
+        ),
+    )
+    monkeypatch.setattr(ambiental, "tabela_cidade", pd.DataFrame)
+    monkeypatch.setattr(ambiental, "tabela_estado", pd.DataFrame)
+    monkeypatch.setattr(ambiental, "create_db_engine", lambda: banco_teste)
+
+    ambiental.inserir_dados()
+    ambiental.inserir_dados()
+    ambiental.inserir_dados()
+
+    with banco_teste.connect() as connection:
+        readings_in_database = connection.execute(
+            text(
+                "SELECT id_leitura_origem, temperatura_agua "
+                "FROM qualidade_agua"
+            )
+        ).all()
+
+    assert readings_in_database == [("LEIT-AMB-IDEMPOTENT-001", 21.5)]
+    assert any("Retransmissão ignorada" in record.message for record in caplog.records)
+    assert any(
+        "Retransmissão conflitante ignorada" in record.message
         for record in caplog.records
     )
 

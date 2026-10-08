@@ -93,6 +93,7 @@ IF OBJECT_ID('dbo.qualidade_agua', 'U') IS NULL
 BEGIN
     CREATE TABLE dbo.qualidade_agua (
         id                      BIGINT IDENTITY(1,1) PRIMARY KEY,
+        id_leitura_origem       VARCHAR(100) NULL,
         id_estacao              BIGINT NOT NULL,
         data_leitura            DATETIMEOFFSET NOT NULL,
         temperatura_agua        NUMERIC(8,3),

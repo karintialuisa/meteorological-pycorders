@@ -54,9 +54,11 @@ def tabela_ambiental() -> pd.DataFrame:
             None,
             None,
             None,
-            "estacao_id ausente, timestamp ausente ou inválido",
+            "id de origem ausente, estacao_id ausente, "
+            "timestamp ausente ou inválido",
         )
         return pd.DataFrame(columns=[
+            "id_leitura_origem",
             "estacao_id",
             "temperatura_agua",
             "ph",
@@ -71,8 +73,12 @@ def tabela_ambiental() -> pd.DataFrame:
     estacao_origem = df_origem.get(
         "estacao_id", pd.Series(pd.NA, index=df_origem.index)
     )
+    id_origem = df_origem.get("id", pd.Series(pd.NA, index=df_origem.index))
 
     estacao_string = estacao_origem.apply(
+        lambda valor: "" if pd.isna(valor) else str(valor).strip()
+    )
+    id_string = id_origem.apply(
         lambda valor: "" if pd.isna(valor) else str(valor).strip()
     )
     timestamp_string = timestamp_origem.apply(
@@ -81,11 +87,14 @@ def tabela_ambiental() -> pd.DataFrame:
     datas = pd.to_datetime(timestamp_origem, errors="coerce", utc=True)
 
     estacao_ausente = estacao_string.eq("")
+    id_ausente = id_string.eq("")
     data_ausente = timestamp_string.eq("") | datas.isna()
-    rejeitar = estacao_ausente | data_ausente
+    rejeitar = id_ausente | estacao_ausente | data_ausente
 
     for indice in df_origem.index[rejeitar]:
         motivos = []
+        if id_ausente.loc[indice]:
+            motivos.append("id de origem ausente")
         if estacao_ausente.loc[indice]:
             motivos.append("estacao_id ausente")
         if data_ausente.loc[indice]:
@@ -108,6 +117,7 @@ def tabela_ambiental() -> pd.DataFrame:
         "qualidade_agua.condutividade.valor",
     ]
     df_ambiental = df_origem.loc[~rejeitar].copy()
+    df_ambiental["id_leitura_origem"] = id_string.loc[~rejeitar]
     for coluna in colunas_origem:
         if coluna not in df_ambiental:
             df_ambiental[coluna] = pd.NA
@@ -118,7 +128,9 @@ def tabela_ambiental() -> pd.DataFrame:
             lambda valor: "" if pd.isna(valor) else str(valor).strip()
         )
     )
-    df_ambiental = df_ambiental[colunas_origem + ["data_leitura"]].rename(
+    df_ambiental = df_ambiental[
+        ["id_leitura_origem"] + colunas_origem + ["data_leitura"]
+    ].rename(
         columns={
             "qualidade_agua.temperatura.valor": "temperatura_agua",
             "qualidade_agua.ph.valor": "ph",
@@ -127,12 +139,29 @@ def tabela_ambiental() -> pd.DataFrame:
         }
     )
 
-    df_ambiental = df_ambiental.drop_duplicates().reset_index(drop=True)
-    df_ambiental = df_ambiental.sort_values(["data_leitura"], ascending=False)
+    duplicados = df_ambiental["id_leitura_origem"].duplicated(keep="first")
+    for leitura_id in df_ambiental.loc[
+        duplicados, "id_leitura_origem"
+    ].unique():
+        grupo = df_ambiental.loc[
+            df_ambiental["id_leitura_origem"].eq(leitura_id)
+        ]
+        if len(grupo.drop(columns="id_leitura_origem").drop_duplicates()) > 1:
+            logging.warning(
+                "Retransmissão conflitante no lote; mantendo primeira leitura: "
+                "id_leitura_origem=%s",
+                leitura_id,
+            )
+    if duplicados.any():
+        logging.info(
+            "Duplicatas removidas do lote ambiental: quantidade=%s",
+            int(duplicados.sum()),
+        )
     df_ambiental = df_ambiental.drop_duplicates(
-        subset=["estacao_id", "data_leitura"],
-        keep="first",
+        subset=["id_leitura_origem"], keep="first"
     ).reset_index(drop=True)
+    df_ambiental = df_ambiental.sort_values(["data_leitura"], ascending=False)
+    df_ambiental = df_ambiental.reset_index(drop=True)
 
     return df_ambiental
 
