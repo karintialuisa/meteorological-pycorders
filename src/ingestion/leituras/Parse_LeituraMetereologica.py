@@ -42,8 +42,8 @@ def ler_json(path_arquivo):
 def tabela_metereologica() -> pd.DataFrame:
     """Cria e trata o DataFrame com as leituras meteorológicas.
 
-    O processo inclui normalização dos dados aninhados, remoção de duplicatas,
-    ordenação por data mais recente e conversão dos campos numéricos.
+    O processo inclui normalização dos dados aninhados, preservação de
+    `estacao_id`, remoção de duplicatas, ordenação e conversão dos campos numéricos.
 
     Returns:
         pd.DataFrame: DataFrame pronto para persistência no banco de dados.
@@ -51,9 +51,12 @@ def tabela_metereologica() -> pd.DataFrame:
     # 1. Normalização do JSON e seleção/renomeação das colunas
     parse_metereologica = ler_json(get_path("INGESTION_LEITURA_METEOROLOGICA"))
 
-    df_metereologica = pd.json_normalize(
-        parse_metereologica["leituras_meteorologicas"]
-        )[[
+    registros = pd.json_normalize(parse_metereologica["leituras_meteorologicas"])
+    if "estacao_id" not in registros.columns:
+        raise KeyError("Campo obrigatório ausente no JSON meteorológico: estacao_id")
+
+    df_metereologica = registros[[
+            "estacao_id",
             "cidade",
             "estado",
             "timestamp",
@@ -79,13 +82,15 @@ def tabela_metereologica() -> pd.DataFrame:
 
     # Tratamento de duplicatas mantendo apenas o registro mais recente por cidade/data
     df_metereologica = df_metereologica.drop_duplicates(
-        subset=["cidade", "estado", "data_leitura"], keep="first"
+        subset=["estacao_id", "cidade", "estado", "data_leitura"], keep="first"
     ).reset_index(drop=True)   
 
     # =========================================================================
     # TRATAMENTO E CONVERSÃO DE TIPOS (DTYPES)
     # =========================================================================
-    df_metereologica["data_leitura"] = pd.to_datetime(df_metereologica["data_leitura"])
+    df_metereologica["data_leitura"] = pd.to_datetime(
+        df_metereologica["data_leitura"], utc=True
+    )
 
     colunas_numericas = ["temperatura_ar", "umidade", "chuva", "vento"]
     for col in colunas_numericas:

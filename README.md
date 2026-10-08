@@ -15,7 +15,7 @@ O pipeline contempla:
 - Leitura e normalização de JSONs de estados, municípios, estações e leituras.
 - Carga incremental de estados, cidades, estações, qualidade da água e meteorologia.
 - Resolução e validação de chaves entre os arquivos JSON e o SQL Server.
-- Relatórios interativos por cidade e estação, com média, mediana, desvio padrão, IQR e contagem de outliers.
+- Relatórios interativos por cidade e estação, com média, mediana, desvio padrão, variância amostral, IQR e contagem de outliers por parâmetro.
 - API FastAPI para listar cidades e consultar leituras carregadas dos JSONs.
 - Dashboard Streamlit para consultar no SQL Server e visualizar indicadores, tabelas e séries temporais.
 - Registro de eventos no console e em `logs/execucao_relatorio.log`.
@@ -84,7 +84,7 @@ meteorological-pycorders/
 - `src/database/ddl`: contém `create-database.sql`, `create-tables.sql`, `schema.sql` e `delete-data-table.sql`.
 - `src/database/dml`: carrega localização e leituras; `seed.sql` contém dados SQL auxiliares.
 - `src/database/dql`: reúne consultas de inspeção e análise.
-- `src/analytics`: gera relatórios estatísticos interativos a partir dos JSONs.
+- `src/analytics`: consulta leituras relacionais e gera relatórios estatísticos por parâmetro e estação.
 - `src/api`: expõe cidades e leituras dos arquivos JSON pelos endpoints HTTP.
 - `src/dashboard.py`: apresenta dados persistidos no SQL Server em tabelas, métricas e gráficos.
 - `src/config/settings.py`: concentra leitura do `.env`, caminhos JSON, conexão SQL Server e configuração de logs.
@@ -206,6 +206,12 @@ python -m pytest tests -v
 ## Segurança e governança
 
 - `src/config/.env` contém configurações locais e não deve ser versionado.
+- As tabelas `operadores` e `catalogo_dados` agora são criadas por `src/database/ddl/create-tables.sql`, junto ao esquema relacional. O script usa `IF OBJECT_ID` para preservar essas duas tabelas se já existirem; execute depois `python -m src.database.dml.Insert_Catalogo_LGPD` para registrar os metadados. Atenção: o mesmo script ainda apaga e recria as tabelas operacionais de leituras e localização listadas no início.
+- A tabela `operadores` guarda apenas `cpf_hash` (HMAC-SHA-256) e `nome_completo_cifrado` (Fernet). O módulo `src/security/pii.py` oferece as funções de proteção; `inserir_operadores()` recebe registros de uma fonte aprovada com os campos `cpf` e `nome_completo`. Nenhum cadastro fictício ou arquivo com valores pessoais é fornecido.
+- Defina `HMAC_SECRET_KEY` e `ENCRYPTION_KEY` no ambiente do processo autorizado. Gere uma chave Fernet com `python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"` e um segredo HMAC forte com `python -c "import secrets; print(secrets.token_urlsafe(32))"`. Não grave chaves no banco, no código, em logs ou no controle de versão. `src/config/.env.example` contém somente marcadores de configuração.
+- HMAC permite comparar CPFs normalizados sem armazená-los, mas não é anonimização jurídica. A troca da chave HMAC muda todos os identificadores; como o CPF original não é persistido, planeje a rotação e a reidentificação com a fonte autorizada antes de trocar a chave. A rotação da chave Fernet também requer recriptografia ou uma estratégia de chaves versionadas.
+- A posse da chave Fernet permite descriptografar nomes; este projeto ainda não implementa autorização por usuário ou auditoria de descriptografia. Restrinja a chave e o processo/conta que a lê. A chave, isoladamente, não implementa controle de acesso.
+- Atenção: `src/config/.env` já está versionado neste repositório. A regra no `.gitignore` não remove arquivos já rastreados. Antes de armazenar chaves reais, remova esse arquivo do índice do Git e revise/rotacione quaisquer segredos que tenham sido publicados.
 - O arquivo `logs/execucao_relatorio.log` é local e está coberto pelo `.gitignore`.
 - Revise mensagens e dados registrados antes de incluir logs em chamados ou compartilhá-los.
 - O dashboard e os scripts de carga compartilham a conexão definida em `src/config/.env`.

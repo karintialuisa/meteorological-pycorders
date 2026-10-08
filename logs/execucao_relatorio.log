@@ -14,3 +14,84 @@ Carga realizada com sucesso!
 01-10-2026 15:32 - INFO - ==================== Iniciando: Relatorios_estatisticos.py ====================
 01-10-2026 15:32 - INFO - ✅ Sucesso em Relatorios_estatisticos.py
 01-10-2026 15:33 - INFO - Aplicação encerrada pelo usuário ao selecionar a opção '3'.
+01-10-2026 18:47 - INFO - 
+========================================
+Menu de opções:
+ 1. ETL JSON -> BD
+ 2. Gerar relatórios estatísticos dos dados
+ 3. Cancelar operação
+========================================
+01-10-2026 18:47 - INFO - ==================== Iniciando: Relatorios_estatisticos.py ====================
+01-10-2026 18:47 - INFO - Iniciando a geração dos Relatórios Estatísticos...
+01-10-2026 18:47 - INFO - 
+==================================================
+      1. SELEÇÃO DE CIDADE
+==================================================
+ [0] TODAS AS CIDADES (Visão Geral)
+ [1] Belém
+ [2] Boa Vista
+ [3] Macapá
+ [4] Manaus
+ [5] Palmas
+ [6] Porto Velho
+ [7] Rio Branco
+ [8] Salvador
+ [9] São Luís
+ [10] São Paulo
+==================================================
+01-10-2026 18:47 - INFO - 
+==================================================
+      2. SELEÇÃO DE ESTAÇÃO (São Paulo)
+==================================================
+ [0] TODAS AS ESTAÇÕES DESSA CIDADE
+ [1] AMB-009
+ [2] MET-009
+==================================================
+01-10-2026 18:47 - INFO - Exibindo estatísticas para Cidade: [ São Paulo ] | Estação: [ Todas as Estações ]
+01-10-2026 18:47 - INFO - RELATÓRIO: LEITURAS AMBIENTAIS - Cidade: São Paulo | Estação: Todas as Estações
+╒═══════════════════╤════════════════════════════╤═══════════════════╤═════════╤═══════════╤═════════════════╤═══════╤════════════╕
+│ Relatório         │ Leituras                   │   Total Registros │   Média │   Mediana │   Desvio Padrão │   IQR │   Outliers │
+╞═══════════════════╪════════════════════════════╪═══════════════════╪═════════╪═══════════╪═════════════════╪═══════╪════════════╡
+│ Qualidade da Água │ Temperatura da Água (°C)   │                12 │   16.42 │     16.45 │            0.32 │  0.45 │          0 │
+├───────────────────┼────────────────────────────┼───────────────────┼─────────┼───────────┼─────────────────┼───────┼────────────┤
+│ Qualidade da Água │ pH da Água                 │                12 │    6.91 │      6.9  │            0.12 │  0.2  │          0 │
+├───────────────────┼────────────────────────────┼───────────────────┼─────────┼───────────┼─────────────────┼───────┼────────────┤
+│ Qualidade da Água │ Oxigênio Dissolvido (mg/L) │                12 │    7.93 │      7.95 │            0.16 │  0.23 │          0 │
+├───────────────────┼────────────────────────────┼───────────────────┼─────────┼───────────┼─────────────────┼───────┼────────────┤
+│ Qualidade da Água │ Condutividade (µS/cm)      │                12 │  110.8  │    110.75 │            2.37 │  2.7  │          1 │
+╘═══════════════════╧════════════════════════════╧═══════════════════╧═════════╧═══════════╧═════════════════╧═══════╧════════════╛
+01-10-2026 18:47 - INFO - --- RELATÓRIO AMBIENTAL (São Paulo - Todas as Estações) ---
+        Relatório                   Leituras  Total Registros  Média  Mediana  Desvio Padrão  IQR  Outliers
+Qualidade da Água   Temperatura da Água (°C)               12  16.42    16.45           0.32 0.45         0
+Qualidade da Água                 pH da Água               12   6.91     6.90           0.12 0.20         0
+Qualidade da Água Oxigênio Dissolvido (mg/L)               12   7.93     7.95           0.16 0.23         0
+Qualidade da Água      Condutividade (µS/cm)               12 110.80   110.75           2.37 2.70         1
+
+01-10-2026 18:47 - INFO - RELATÓRIO: LEITURAS METEOROLÓGICAS - Cidade: São Paulo | Estação: Todas as Estações
+╒══════════════╤════════════════════════════╤═══════════════════╤═════════╤═══════════╤═════════════════╤═══════╤════════════╕
+│ Relatório    │ Leituras                   │   Total Registros │   Média │   Mediana │   Desvio Padrão │   IQR │   Outliers │
+╞══════════════╪════════════════════════════╪═══════════════════╪═════════╪═══════════╪═════════════════╪═══════╪════════════╡
+│ Meteorologia │ Temperatura (°C)           │                12 │   16.92 │      17   │            1.31 │  2    │          0 │
+├──────────────┼────────────────────────────┼───────────────────┼─────────┼───────────┼─────────────────┼───────┼────────────┤
+│ Meteorologia │ Umidade (%)                │                12 │   76.5  │      83   │           21.82 │  3.75 │          3 │
+├──────────────┼────────────────────────────┼───────────────────┼─────────┼───────────┼─────────────────┼───────┼────────────┤
+│ Meteorologia │ Precipitação (mm)          │                12 │    1.68 │       0   │            2.49 │  4.2  │          0 │
+├──────────────┼────────────────────────────┼───────────────────┼─────────┼───────────┼─────────────────┼───────┼────────────┤
+│ Meteorologia │ Velocidade do Vento (km/h) │                12 │   13.27 │      13.5 │            1.41 │  2.17 │          0 │
+╘══════════════╧════════════════════════════╧═══════════════════╧═════════╧═══════════╧═════════════════╧═══════╧════════════╛
+01-10-2026 18:47 - INFO - --- RELATÓRIO METEOROLÓGICO (São Paulo - Todas as Estações) ---
+   Relatório                   Leituras  Total Registros  Média  Mediana  Desvio Padrão  IQR  Outliers
+Meteorologia           Temperatura (°C)               12  16.92     17.0           1.31 2.00         0
+Meteorologia                Umidade (%)               12  76.50     83.0          21.82 3.75         3
+Meteorologia          Precipitação (mm)               12   1.68      0.0           2.49 4.20         0
+Meteorologia Velocidade do Vento (km/h)               12  13.27     13.5           1.41 2.17         0
+
+01-10-2026 18:47 - INFO - ✅ Sucesso em Relatorios_estatisticos.py
+01-10-2026 18:47 - INFO - 
+========================================
+Menu de opções:
+ 1. ETL JSON -> BD
+ 2. Gerar relatórios estatísticos dos dados
+ 3. Cancelar operação
+========================================
+01-10-2026 21:07 - INFO - Aplicação encerrada pelo usuário ao selecionar a opção '3'.

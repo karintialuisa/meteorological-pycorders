@@ -155,6 +155,1500 @@
       },
       "descricao": "Estação adicional destinada ao monitoramento da qualidade da água em Salvador.",
       "data_instalacao": "2026-03-10"
+    },
+    {
+      "id": "MET-82353",
+      "nome": "Estação ALTAMIRA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "PA",
+        "city_name": "ALTAMIRA",
+        "latitude": -3.21416666,
+        "longitude": -52.21305555,
+        "altitude": 101.51
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em ALTAMIRA.",
+      "data_instalacao": "1927-04-23",
+      "codigo_estacao": "82353"
+    },
+    {
+      "id": "MET-83007",
+      "nome": "Estação ALTO DA BOA VISTA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "RJ",
+        "city_name": "ALTO DA BOA VISTA",
+        "latitude": -22.96583333,
+        "longitude": -43.27916666,
+        "altitude": 366.0
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em ALTO DA BOA VISTA.",
+      "data_instalacao": "1966-05-31",
+      "codigo_estacao": "83007"
+    },
+    {
+      "id": "MET-82590",
+      "nome": "Estação APODI",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "RN",
+        "city_name": "APODI",
+        "latitude": -5.62666666,
+        "longitude": -37.815,
+        "altitude": 131.37
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em APODI.",
+      "data_instalacao": "1962-12-17",
+      "codigo_estacao": "82590"
+    },
+    {
+      "id": "MET-83442",
+      "nome": "Estação ARACUAI",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "MG",
+        "city_name": "ARACUAI",
+        "latitude": -16.84888888,
+        "longitude": -42.06083333,
+        "altitude": 317.67
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em ARACUAI.",
+      "data_instalacao": "1918-09-05",
+      "codigo_estacao": "83442"
+    },
+    {
+      "id": "MET-82659",
+      "nome": "Estação ARAGUAINA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "TO",
+        "city_name": "ARAGUAINA",
+        "latitude": -7.10388888,
+        "longitude": -48.20138888,
+        "altitude": 231.85
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em ARAGUAINA.",
+      "data_instalacao": "1984-08-20",
+      "codigo_estacao": "82659"
+    },
+    {
+      "id": "MET-83579",
+      "nome": "Estação ARAXA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "MG",
+        "city_name": "ARAXA",
+        "latitude": -19.60555555,
+        "longitude": -46.94972221,
+        "altitude": 1018.28
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em ARAXA.",
+      "data_instalacao": "1916-09-06",
+      "codigo_estacao": "83579"
+    },
+    {
+      "id": "MET-82890",
+      "nome": "Estação ARCO VERDE",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "PE",
+        "city_name": "ARCO VERDE",
+        "latitude": -8.4336111,
+        "longitude": -37.05527777,
+        "altitude": 683.91
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em ARCO VERDE.",
+      "data_instalacao": "1973-01-31",
+      "codigo_estacao": "82890"
+    },
+    {
+      "id": "MET-82696",
+      "nome": "Estação AREIA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "PB",
+        "city_name": "AREIA",
+        "latitude": -6.97555554,
+        "longitude": -35.71805554,
+        "altitude": 571.75
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em AREIA.",
+      "data_instalacao": "1928-12-31",
+      "codigo_estacao": "82696"
+    },
+    {
+      "id": "MET-83384",
+      "nome": "Estação ARINOS",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "MG",
+        "city_name": "ARINOS",
+        "latitude": -15.91527777,
+        "longitude": -46.10722222,
+        "altitude": 523.0
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em ARINOS.",
+      "data_instalacao": "1976-04-04",
+      "codigo_estacao": "83384"
+    },
+    {
+      "id": "MET-83179",
+      "nome": "Estação BARRA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "BA",
+        "city_name": "BARRA",
+        "latitude": -11.08472221,
+        "longitude": -43.13888888,
+        "altitude": 407.5
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em BARRA.",
+      "data_instalacao": "1925-03-02",
+      "codigo_estacao": "83179"
+    },
+    {
+      "id": "MET-83587",
+      "nome": "Estação BELO HORIZONTE",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "MG",
+        "city_name": "BELO HORIZONTE",
+        "latitude": -19.93444444,
+        "longitude": -43.95222222,
+        "altitude": 915.47
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em BELO HORIZONTE.",
+      "data_instalacao": "1910-03-02",
+      "codigo_estacao": "83587"
+    },
+    {
+      "id": "MET-82246",
+      "nome": "Estação BELTERRA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "PA",
+        "city_name": "BELTERRA",
+        "latitude": -2.64222221,
+        "longitude": -54.94388888,
+        "altitude": 164.3
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em BELTERRA.",
+      "data_instalacao": "1971-07-31",
+      "codigo_estacao": "82246"
+    },
+    {
+      "id": "MET-83377",
+      "nome": "Estação BRASILIA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "DF",
+        "city_name": "BRASILIA",
+        "latitude": -15.78972221,
+        "longitude": -47.92583332,
+        "altitude": 1161.42
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em BRASILIA.",
+      "data_instalacao": "1961-09-11",
+      "codigo_estacao": "83377"
+    },
+    {
+      "id": "MET-82188",
+      "nome": "Estação BREVES",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "PA",
+        "city_name": "BREVES",
+        "latitude": -1.68027777,
+        "longitude": -50.47805554,
+        "altitude": 9.8
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em BREVES.",
+      "data_instalacao": "1970-08-31",
+      "codigo_estacao": "82188"
+    },
+    {
+      "id": "MET-82263",
+      "nome": "Estação CAMETA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "PA",
+        "city_name": "CAMETA",
+        "latitude": -2.23972221,
+        "longitude": -49.49972221,
+        "altitude": 9.93
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em CAMETA.",
+      "data_instalacao": "1970-04-30",
+      "codigo_estacao": "82263"
+    },
+    {
+      "id": "MET-83698",
+      "nome": "Estação CAMPOS",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "RJ",
+        "city_name": "CAMPOS",
+        "latitude": -21.74249999,
+        "longitude": -41.33277777,
+        "altitude": 11.2
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em CAMPOS.",
+      "data_instalacao": "1911-06-16",
+      "codigo_estacao": "83698"
+    },
+    {
+      "id": "MET-83639",
+      "nome": "Estação CAPARAO",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "MG",
+        "city_name": "CAPARAO",
+        "latitude": -20.5261111,
+        "longitude": -41.90916666,
+        "altitude": 836.25
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em CAPARAO.",
+      "data_instalacao": "1972-11-16",
+      "codigo_estacao": "83639"
+    },
+    {
+      "id": "MET-82042",
+      "nome": "Estação CARACARAI",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "RR",
+        "city_name": "CARACARAI",
+        "latitude": 1.83249999,
+        "longitude": -61.12083332,
+        "altitude": 51.99
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em CARACARAI.",
+      "data_instalacao": "1970-01-10",
+      "codigo_estacao": "82042"
+    },
+    {
+      "id": "MET-83526",
+      "nome": "Estação CATALAO",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "GO",
+        "city_name": "CATALAO",
+        "latitude": -18.17027777,
+        "longitude": -47.95805555,
+        "altitude": 857.98
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em CATALAO.",
+      "data_instalacao": "1912-12-31",
+      "codigo_estacao": "83526"
+    },
+    {
+      "id": "MET-83942",
+      "nome": "Estação CAXIAS DO SUL",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "RS",
+        "city_name": "CAXIAS DO SUL",
+        "latitude": -29.1961111,
+        "longitude": -51.18638888,
+        "altitude": 750.16
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em CAXIAS DO SUL.",
+      "data_instalacao": "1912-04-11",
+      "codigo_estacao": "83942"
+    },
+    {
+      "id": "MET-82596",
+      "nome": "Estação CEARA MIRIM",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "RN",
+        "city_name": "CEARA MIRIM",
+        "latitude": -5.65333333,
+        "longitude": -35.42583332,
+        "altitude": 62.2
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em CEARA MIRIM.",
+      "data_instalacao": "1967-05-31",
+      "codigo_estacao": "82596"
+    },
+    {
+      "id": "MET-83192",
+      "nome": "Estação CIPO",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "BA",
+        "city_name": "CIPO",
+        "latitude": -11.10138888,
+        "longitude": -38.52416666,
+        "altitude": 143.53
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em CIPO.",
+      "data_instalacao": "1934-12-31",
+      "codigo_estacao": "83192"
+    },
+    {
+      "id": "MET-82326",
+      "nome": "Estação CODAJAS",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "AM",
+        "city_name": "CODAJAS",
+        "latitude": -3.8411111,
+        "longitude": -62.05527777,
+        "altitude": 30.31
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em CODAJAS.",
+      "data_instalacao": "1974-08-18",
+      "codigo_estacao": "82326"
+    },
+    {
+      "id": "MET-82676",
+      "nome": "Estação COLINAS",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "MA",
+        "city_name": "COLINAS",
+        "latitude": -6.03305554,
+        "longitude": -44.23333333,
+        "altitude": 175.56
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em COLINAS.",
+      "data_instalacao": "1976-05-18",
+      "codigo_estacao": "82676"
+    },
+    {
+      "id": "MET-82861",
+      "nome": "Estação CONCEICAO DO ARAGUAIA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "PA",
+        "city_name": "CONCEICAO DO ARAGUAIA",
+        "latitude": -8.25916666,
+        "longitude": -49.26388888,
+        "altitude": 179.02
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em CONCEICAO DO ARAGUAIA.",
+      "data_instalacao": "1920-03-18",
+      "codigo_estacao": "82861"
+    },
+    {
+      "id": "MET-83718",
+      "nome": "Estação CORDEIRO",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "RJ",
+        "city_name": "CORDEIRO",
+        "latitude": -22.02222221,
+        "longitude": -42.36444444,
+        "altitude": 505.9
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em CORDEIRO.",
+      "data_instalacao": "1971-07-15",
+      "codigo_estacao": "83718"
+    },
+    {
+      "id": "MET-83222",
+      "nome": "Estação CRUZ DAS ALMAS",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "BA",
+        "city_name": "CRUZ DAS ALMAS",
+        "latitude": -12.67527777,
+        "longitude": -39.08972221,
+        "altitude": 219.69
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em CRUZ DAS ALMAS.",
+      "data_instalacao": "1957-12-31",
+      "codigo_estacao": "83222"
+    },
+    {
+      "id": "MET-82610",
+      "nome": "Estação EIRUNEPE",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "AM",
+        "city_name": "EIRUNEPE",
+        "latitude": -6.66166666,
+        "longitude": -69.86777777,
+        "altitude": 123.42
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em EIRUNEPE.",
+      "data_instalacao": "1927-12-31",
+      "codigo_estacao": "82610"
+    },
+    {
+      "id": "MET-82678",
+      "nome": "Estação FLORIANO",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "PI",
+        "city_name": "FLORIANO",
+        "latitude": -6.76166666,
+        "longitude": -43.00333333,
+        "altitude": 126.6
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em FLORIANO.",
+      "data_instalacao": "1968-01-20",
+      "codigo_estacao": "82678"
+    },
+    {
+      "id": "MET-83379",
+      "nome": "Estação FORMOSA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "GO",
+        "city_name": "FORMOSA",
+        "latitude": -15.54916666,
+        "longitude": -47.33888888,
+        "altitude": 938.68
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em FORMOSA.",
+      "data_instalacao": "1924-12-31",
+      "codigo_estacao": "83379"
+    },
+    {
+      "id": "MET-83334",
+      "nome": "Estação FORMOSO",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "MG",
+        "city_name": "FORMOSO",
+        "latitude": -14.949727,
+        "longitude": -46.235795,
+        "altitude": 854.6
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em FORMOSO.",
+      "data_instalacao": "1976-04-02",
+      "codigo_estacao": "83334"
+    },
+    {
+      "id": "MET-83630",
+      "nome": "Estação FRANCA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "SP",
+        "city_name": "FRANCA",
+        "latitude": -20.58444444,
+        "longitude": -47.38249999,
+        "altitude": 1003.55
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em FRANCA.",
+      "data_instalacao": "1910-12-31",
+      "codigo_estacao": "83630"
+    },
+    {
+      "id": "MET-83423",
+      "nome": "Estação GOIANIA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "GO",
+        "city_name": "GOIANIA",
+        "latitude": -16.67305554,
+        "longitude": -49.26388888,
+        "altitude": 748.53
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em GOIANIA.",
+      "data_instalacao": "1937-07-10",
+      "codigo_estacao": "83423"
+    },
+    {
+      "id": "MET-83446",
+      "nome": "Estação GUARATINGA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "BA",
+        "city_name": "GUARATINGA",
+        "latitude": -16.58081,
+        "longitude": -39.783182,
+        "altitude": 197.88
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em GUARATINGA.",
+      "data_instalacao": "1973-09-09",
+      "codigo_estacao": "83446"
+    },
+    {
+      "id": "MET-82445",
+      "nome": "Estação ITAITUBA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "PA",
+        "city_name": "ITAITUBA",
+        "latitude": -4.27694443,
+        "longitude": -55.99305555,
+        "altitude": 24.5
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em ITAITUBA.",
+      "data_instalacao": "1927-12-31",
+      "codigo_estacao": "82445"
+    },
+    {
+      "id": "MET-83695",
+      "nome": "Estação ITAPERUNA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "RJ",
+        "city_name": "ITAPERUNA",
+        "latitude": -21.20444444,
+        "longitude": -41.90555555,
+        "altitude": 123.6
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em ITAPERUNA.",
+      "data_instalacao": "1921-12-31",
+      "codigo_estacao": "83695"
+    },
+    {
+      "id": "MET-83386",
+      "nome": "Estação JANUARIA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "MG",
+        "city_name": "JANUARIA",
+        "latitude": -15.44805555,
+        "longitude": -44.36638888,
+        "altitude": 480.0
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em JANUARIA.",
+      "data_instalacao": "1912-06-18",
+      "codigo_estacao": "83386"
+    },
+    {
+      "id": "MET-83464",
+      "nome": "Estação JATAI",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "GO",
+        "city_name": "JATAI",
+        "latitude": -17.9236111,
+        "longitude": -51.71749999,
+        "altitude": 669.84
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em JATAI.",
+      "data_instalacao": "1978-11-23",
+      "codigo_estacao": "83464"
+    },
+    {
+      "id": "MET-82798",
+      "nome": "Estação JOAO PESSOA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "PB",
+        "city_name": "JOAO PESSOA",
+        "latitude": -7.09527777,
+        "longitude": -34.8486111,
+        "altitude": 9.67
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em JOAO PESSOA.",
+      "data_instalacao": "1911-12-31",
+      "codigo_estacao": "82798"
+    },
+    {
+      "id": "MET-83692",
+      "nome": "Estação JUIZ DE FORA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "MG",
+        "city_name": "JUIZ DE FORA",
+        "latitude": -21.76999999,
+        "longitude": -43.36444444,
+        "altitude": 936.9
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em JUIZ DE FORA.",
+      "data_instalacao": "1909-12-31",
+      "codigo_estacao": "83692"
+    },
+    {
+      "id": "MET-82723",
+      "nome": "Estação LABREA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "AM",
+        "city_name": "LABREA",
+        "latitude": -7.26138888,
+        "longitude": -64.78999999,
+        "altitude": 62.23
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em LABREA.",
+      "data_instalacao": "1972-11-29",
+      "codigo_estacao": "82723"
+    },
+    {
+      "id": "MET-83687",
+      "nome": "Estação LAVRAS",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "MG",
+        "city_name": "LAVRAS",
+        "latitude": -21.2261111,
+        "longitude": -44.97972221,
+        "altitude": 916.19
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em LAVRAS.",
+      "data_instalacao": "1911-02-17",
+      "codigo_estacao": "83687"
+    },
+    {
+      "id": "MET-83242",
+      "nome": "Estação LENCOIS",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "BA",
+        "city_name": "LENCOIS",
+        "latitude": -12.55777777,
+        "longitude": -41.38888888,
+        "altitude": 438.09
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em LENCOIS.",
+      "data_instalacao": "1931-08-31",
+      "codigo_estacao": "83242"
+    },
+    {
+      "id": "MET-83766",
+      "nome": "Estação LONDRINA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "PR",
+        "city_name": "LONDRINA",
+        "latitude": -23.32555554,
+        "longitude": -51.14166666,
+        "altitude": 566.0
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em LONDRINA.",
+      "data_instalacao": "1953-12-10",
+      "codigo_estacao": "83766"
+    },
+    {
+      "id": "MET-82296",
+      "nome": "Estação LUZILANDIA(LAG,DO PIAUI)",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "PI",
+        "city_name": "LUZILANDIA(LAG,DO PIAUI)",
+        "latitude": -3.46972221,
+        "longitude": -42.26805554,
+        "altitude": 44.13
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em LUZILANDIA(LAG,DO PIAUI).",
+      "data_instalacao": "1972-05-17",
+      "codigo_estacao": "82296"
+    },
+    {
+      "id": "MET-82098",
+      "nome": "Estação MACAPA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "AP",
+        "city_name": "MACAPA",
+        "latitude": -0.04499999,
+        "longitude": -51.11,
+        "altitude": 12.8
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em MACAPA.",
+      "data_instalacao": "1924-12-31",
+      "codigo_estacao": "82098"
+    },
+    {
+      "id": "MET-82331",
+      "nome": "Estação MANAUS",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "AM",
+        "city_name": "MANAUS",
+        "latitude": -3.10333333,
+        "longitude": -60.01638888,
+        "altitude": 61.25
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em MANAUS.",
+      "data_instalacao": "1909-12-31",
+      "codigo_estacao": "82331"
+    },
+    {
+      "id": "MET-83767",
+      "nome": "Estação MARINGA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "PR",
+        "city_name": "MARINGA",
+        "latitude": -23.40527777,
+        "longitude": -51.93277777,
+        "altitude": 542.0
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em MARINGA.",
+      "data_instalacao": "1953-11-30",
+      "codigo_estacao": "83767"
+    },
+    {
+      "id": "MET-82792",
+      "nome": "Estação MONTEIRO",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "PB",
+        "city_name": "MONTEIRO",
+        "latitude": -7.89444444,
+        "longitude": -37.12472221,
+        "altitude": 606.41
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em MONTEIRO.",
+      "data_instalacao": "1940-01-13",
+      "codigo_estacao": "82792"
+    },
+    {
+      "id": "MET-83437",
+      "nome": "Estação MONTES CLAROS",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "MG",
+        "city_name": "MONTES CLAROS",
+        "latitude": -16.68638888,
+        "longitude": -43.84388888,
+        "altitude": 645.87
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em MONTES CLAROS.",
+      "data_instalacao": "1911-12-31",
+      "codigo_estacao": "83437"
+    },
+    {
+      "id": "MET-82588",
+      "nome": "Estação MORADA NOVA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "CE",
+        "city_name": "MORADA NOVA",
+        "latitude": -5.13666666,
+        "longitude": -38.35666666,
+        "altitude": 43.62
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em MORADA NOVA.",
+      "data_instalacao": "1962-09-30",
+      "codigo_estacao": "82588"
+    },
+    {
+      "id": "MET-83184",
+      "nome": "Estação MORRO DO CHAPEU",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "BA",
+        "city_name": "MORRO DO CHAPEU",
+        "latitude": -11.54749999,
+        "longitude": -41.15111111,
+        "altitude": 1001.66
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em MORRO DO CHAPEU.",
+      "data_instalacao": "1913-01-12",
+      "codigo_estacao": "83184"
+    },
+    {
+      "id": "MET-82598",
+      "nome": "Estação NATAL",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "RN",
+        "city_name": "NATAL",
+        "latitude": -5.83722221,
+        "longitude": -35.20777777,
+        "altitude": 47.68
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em NATAL.",
+      "data_instalacao": "1910-12-31",
+      "codigo_estacao": "82598"
+    },
+    {
+      "id": "MET-82753",
+      "nome": "Estação OURICURI",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "PE",
+        "city_name": "OURICURI",
+        "latitude": -7.87944443,
+        "longitude": -40.09194444,
+        "altitude": 462.01
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em OURICURI.",
+      "data_instalacao": "1975-09-15",
+      "codigo_estacao": "82753"
+    },
+    {
+      "id": "MET-83033",
+      "nome": "Estação PALMAS",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "TO",
+        "city_name": "PALMAS",
+        "latitude": -10.14777777,
+        "longitude": -48.31444444,
+        "altitude": 267.0
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em PALMAS.",
+      "data_instalacao": "1993-10-07",
+      "codigo_estacao": "83033"
+    },
+    {
+      "id": "MET-82992",
+      "nome": "Estação PALMEIRA DOS INDIOS",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "AL",
+        "city_name": "PALMEIRA DOS INDIOS",
+        "latitude": -9.42027777,
+        "longitude": -36.62027777,
+        "altitude": 277.98
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em PALMEIRA DOS INDIOS.",
+      "data_instalacao": "1927-12-31",
+      "codigo_estacao": "82992"
+    },
+    {
+      "id": "MET-83737",
+      "nome": "Estação PASSA QUATRO",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "MG",
+        "city_name": "PASSA QUATRO",
+        "latitude": -22.38277777,
+        "longitude": -44.96694443,
+        "altitude": 919.55
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em PASSA QUATRO.",
+      "data_instalacao": "1912-07-28",
+      "codigo_estacao": "83737"
+    },
+    {
+      "id": "MET-83914",
+      "nome": "Estação PASSO FUNDO",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "RS",
+        "city_name": "PASSO FUNDO",
+        "latitude": -28.2286111,
+        "longitude": -52.41194444,
+        "altitude": 684.05
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em PASSO FUNDO.",
+      "data_instalacao": "1912-07-31",
+      "codigo_estacao": "83914"
+    },
+    {
+      "id": "MET-82791",
+      "nome": "Estação PATOS",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "PB",
+        "city_name": "PATOS",
+        "latitude": -7.05361111,
+        "longitude": -37.27388888,
+        "altitude": 251.65
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em PATOS.",
+      "data_instalacao": "1975-10-16",
+      "codigo_estacao": "82791"
+    },
+    {
+      "id": "MET-82882",
+      "nome": "Estação PAULISTANA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "PI",
+        "city_name": "PAULISTANA",
+        "latitude": -8.13222221,
+        "longitude": -41.14305555,
+        "altitude": 376.0
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em PAULISTANA.",
+      "data_instalacao": "1975-09-21",
+      "codigo_estacao": "82882"
+    },
+    {
+      "id": "MET-83393",
+      "nome": "Estação PEDRA AZUL",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "MG",
+        "city_name": "PEDRA AZUL",
+        "latitude": -16.00944444,
+        "longitude": -41.2811111,
+        "altitude": 647.97
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em PEDRA AZUL.",
+      "data_instalacao": "1918-09-30",
+      "codigo_estacao": "83393"
+    },
+    {
+      "id": "MET-83228",
+      "nome": "Estação PEIXE",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "TO",
+        "city_name": "PEIXE",
+        "latitude": -12.01527777,
+        "longitude": -48.54499999,
+        "altitude": 252.24
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em PEIXE.",
+      "data_instalacao": "1975-04-30",
+      "codigo_estacao": "83228"
+    },
+    {
+      "id": "MET-83985",
+      "nome": "Estação PELOTAS",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "RS",
+        "city_name": "PELOTAS",
+        "latitude": -31.78333333,
+        "longitude": -52.41666666,
+        "altitude": 13.0
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em PELOTAS.",
+      "data_instalacao": "1925-12-31",
+      "codigo_estacao": "83985"
+    },
+    {
+      "id": "MET-82983",
+      "nome": "Estação PETROLINA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "PE",
+        "city_name": "PETROLINA",
+        "latitude": -9.3886111,
+        "longitude": -40.52333332,
+        "altitude": 372.54
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em PETROLINA.",
+      "data_instalacao": "1940-12-31",
+      "codigo_estacao": "82983"
+    },
+    {
+      "id": "MET-83376",
+      "nome": "Estação PIRENOPOLIS",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "GO",
+        "city_name": "PIRENOPOLIS",
+        "latitude": -15.85472222,
+        "longitude": -48.96611111,
+        "altitude": 766.92
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em PIRENOPOLIS.",
+      "data_instalacao": "1977-02-16",
+      "codigo_estacao": "83376"
+    },
+    {
+      "id": "MET-83967",
+      "nome": "Estação PORTO ALEGRE",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "RS",
+        "city_name": "PORTO ALEGRE",
+        "latitude": -30.05361111,
+        "longitude": -51.17472221,
+        "altitude": 41.18
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em PORTO ALEGRE.",
+      "data_instalacao": "1909-12-08",
+      "codigo_estacao": "83967"
+    },
+    {
+      "id": "MET-82184",
+      "nome": "Estação PORTO DE MOZ",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "PA",
+        "city_name": "PORTO DE MOZ",
+        "latitude": -1.751055,
+        "longitude": -52.236186,
+        "altitude": 13.08
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em PORTO DE MOZ.",
+      "data_instalacao": "1928-04-22",
+      "codigo_estacao": "82184"
+    },
+    {
+      "id": "MET-83064",
+      "nome": "Estação PORTO NACIONAL",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "TO",
+        "city_name": "PORTO NACIONAL",
+        "latitude": -10.71083333,
+        "longitude": -48.40638888,
+        "altitude": 243.28
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em PORTO NACIONAL.",
+      "data_instalacao": "1914-12-31",
+      "codigo_estacao": "83064"
+    },
+    {
+      "id": "MET-83332",
+      "nome": "Estação POSSE",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "GO",
+        "city_name": "POSSE",
+        "latitude": -14.08916666,
+        "longitude": -46.36666666,
+        "altitude": 830.35
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em POSSE.",
+      "data_instalacao": "1975-08-03",
+      "codigo_estacao": "83332"
+    },
+    {
+      "id": "MET-83097",
+      "nome": "Estação PROPRIA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "SE",
+        "city_name": "PROPRIA",
+        "latitude": -10.21388888,
+        "longitude": -36.84222221,
+        "altitude": 18.46
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em PROPRIA.",
+      "data_instalacao": "1925-05-09",
+      "codigo_estacao": "83097"
+    },
+    {
+      "id": "MET-82586",
+      "nome": "Estação QUIXERAMOBIM",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "CE",
+        "city_name": "QUIXERAMOBIM",
+        "latitude": -5.17305554,
+        "longitude": -39.28722221,
+        "altitude": 227.33
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em QUIXERAMOBIM.",
+      "data_instalacao": "1895-12-31",
+      "codigo_estacao": "82586"
+    },
+    {
+      "id": "MET-83936",
+      "nome": "Estação SANTA MARIA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "RS",
+        "city_name": "SANTA MARIA",
+        "latitude": -29.72472221,
+        "longitude": -53.72055554,
+        "altitude": 103.1
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em SANTA MARIA.",
+      "data_instalacao": "1911-12-31",
+      "codigo_estacao": "83936"
+    },
+    {
+      "id": "MET-83805",
+      "nome": "Estação SANTO ANTONIO DE PADUA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "RJ",
+        "city_name": "SANTO ANTONIO DE PADUA",
+        "latitude": -21.53694444,
+        "longitude": -42.16083333,
+        "altitude": 95.0
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em SANTO ANTONIO DE PADUA.",
+      "data_instalacao": "1924-03-31",
+      "codigo_estacao": "83805"
+    },
+    {
+      "id": "MET-82689",
+      "nome": "Estação SAO GONCALO",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "PB",
+        "city_name": "SAO GONCALO",
+        "latitude": -6.83583333,
+        "longitude": -38.31166666,
+        "altitude": 237.04
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em SAO GONCALO.",
+      "data_instalacao": "1938-10-07",
+      "codigo_estacao": "82689"
+    },
+    {
+      "id": "MET-82280",
+      "nome": "Estação SAO LUIS",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "MA",
+        "city_name": "SAO LUIS",
+        "latitude": -2.52666666,
+        "longitude": -44.21361111,
+        "altitude": 32.58
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em SAO LUIS.",
+      "data_instalacao": "1924-11-17",
+      "codigo_estacao": "82280"
+    },
+    {
+      "id": "MET-83907",
+      "nome": "Estação SAO LUIZ GONZAGA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "RS",
+        "city_name": "SAO LUIZ GONZAGA",
+        "latitude": -28.41722221,
+        "longitude": -54.9625,
+        "altitude": 245.49
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em SAO LUIZ GONZAGA.",
+      "data_instalacao": "1912-03-31",
+      "codigo_estacao": "83907"
+    },
+    {
+      "id": "MET-83781",
+      "nome": "Estação SAO PAULO(MIR,de SANTANA)",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "SP",
+        "city_name": "SAO PAULO(MIR,de SANTANA)",
+        "latitude": -23.49638888,
+        "longitude": -46.61999999,
+        "altitude": 785.16
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em SAO PAULO(MIR,de SANTANA).",
+      "data_instalacao": "1945-11-30",
+      "codigo_estacao": "83781"
+    },
+    {
+      "id": "MET-82690",
+      "nome": "Estação SERIDO (CAICO)",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "RN",
+        "city_name": "SERIDO (CAICO)",
+        "latitude": -6.46749999,
+        "longitude": -37.08499999,
+        "altitude": 171.26
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em SERIDO (CAICO).",
+      "data_instalacao": "1995-03-13",
+      "codigo_estacao": "82690"
+    },
+    {
+      "id": "MET-82797",
+      "nome": "Estação SURUBIM",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "PE",
+        "city_name": "SURUBIM",
+        "latitude": -7.84249999,
+        "longitude": -35.79027777,
+        "altitude": 421.44
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em SURUBIM.",
+      "data_instalacao": "1929-09-30",
+      "codigo_estacao": "82797"
+    },
+    {
+      "id": "MET-83235",
+      "nome": "Estação TAGUATINGA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "TO",
+        "city_name": "TAGUATINGA",
+        "latitude": -12.40222222,
+        "longitude": -46.43833333,
+        "altitude": 604.88
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em TAGUATINGA.",
+      "data_instalacao": "1915-12-21",
+      "codigo_estacao": "83235"
+    },
+    {
+      "id": "MET-82317",
+      "nome": "Estação TEFE",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "AM",
+        "city_name": "TEFE",
+        "latitude": -3.38027777,
+        "longitude": -64.72527777,
+        "altitude": 56.0
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em TEFE.",
+      "data_instalacao": "1929-01-03",
+      "codigo_estacao": "82317"
+    },
+    {
+      "id": "MET-83744",
+      "nome": "Estação TERESOPOLIS",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "RJ",
+        "city_name": "TERESOPOLIS",
+        "latitude": -22.41722221,
+        "longitude": -42.97222221,
+        "altitude": 874.2
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em TERESOPOLIS.",
+      "data_instalacao": "1912-12-31",
+      "codigo_estacao": "83744"
+    },
+    {
+      "id": "MET-82145",
+      "nome": "Estação TRACUATEUA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "PA",
+        "city_name": "TRACUATEUA",
+        "latitude": -1.06361111,
+        "longitude": -46.86527777,
+        "altitude": 24.68
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em TRACUATEUA.",
+      "data_instalacao": "1972-09-07",
+      "codigo_estacao": "82145"
+    },
+    {
+      "id": "MET-82198",
+      "nome": "Estação TURIACU",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "MA",
+        "city_name": "TURIACU",
+        "latitude": -1.66138888,
+        "longitude": -45.37194443,
+        "altitude": 34.48
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em TURIACU.",
+      "data_instalacao": "1976-07-28",
+      "codigo_estacao": "82198"
+    },
+    {
+      "id": "MET-83428",
+      "nome": "Estação UNAI",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "MG",
+        "city_name": "UNAI",
+        "latitude": -16.36638888,
+        "longitude": -46.88944444,
+        "altitude": 595.59
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em UNAI.",
+      "data_instalacao": "1976-04-06",
+      "codigo_estacao": "83428"
+    },
+    {
+      "id": "MET-83344",
+      "nome": "Estação VITORIA DA CONQUISTA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "BA",
+        "city_name": "VITORIA DA CONQUISTA",
+        "latitude": -14.88638888,
+        "longitude": -40.80138888,
+        "altitude": 879.47
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em VITORIA DA CONQUISTA.",
+      "data_instalacao": "1935-12-31",
+      "codigo_estacao": "83344"
+    },
+    {
+      "id": "MET-82376",
+      "nome": "Estação ZE DOCA",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "MA",
+        "city_name": "ZE DOCA",
+        "latitude": -3.26916666,
+        "longitude": -45.65111111,
+        "altitude": 46.71
+      },
+      "descricao": "Estação convencional destinada ao monitoramento meteorológico em ZE DOCA.",
+      "data_instalacao": "1970-08-24",
+      "codigo_estacao": "82376"
+    },
+    {
+      "id": "MET-RO-ARIQUEMES-AUTOMATICA",
+      "nome": "Estação ARIQUEMES (Automática)",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "RO",
+        "city_name": "Ariquemes",
+        "latitude": -9.9489,
+        "longitude": -62.9619,
+        "altitude": 130
+      },
+      "descricao": "Estação meteorológica automática em Ariquemes, Rondônia.",
+      "data_instalacao": "2011-04-03",
+      "data_termino": "2027-10-03",
+      "codigo_estacao": "ARIQUEMES (Automatica)"
+    },
+    {
+      "id": "MET-RO-CACOAL-AUTOMATICA",
+      "nome": "Estação CACOAL (Automática)",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "RO",
+        "city_name": "Cacoal",
+        "latitude": -11.4458,
+        "longitude": -61.4341,
+        "altitude": 183
+      },
+      "descricao": "Estação meteorológica automática em Cacoal, Rondônia.",
+      "data_instalacao": "2011-04-03",
+      "data_termino": "2027-10-03",
+      "codigo_estacao": "CACOAL (Automatica)"
+    },
+    {
+      "id": "MET-RO-VILHENA-AUTOMATICA",
+      "nome": "Estação VILHENA (Automática)",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "RO",
+        "city_name": "Vilhena",
+        "latitude": -12.7347,
+        "longitude": -60.1578,
+        "altitude": 584
+      },
+      "descricao": "Estação meteorológica automática em Vilhena, Rondônia.",
+      "data_instalacao": "2011-04-03",
+      "data_termino": "2027-10-03",
+      "codigo_estacao": "VILHENA (Automatica)"
+    },
+    {
+      "id": "MET-AC-EPITACIOLANDIA-AUTOMATICA",
+      "nome": "Estação EPITACIOLANDIA (Automática)",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "AC",
+        "city_name": "Epitaciolândia",
+        "latitude": -11.0244,
+        "longitude": -68.735,
+        "altitude": 225
+      },
+      "descricao": "Estação meteorológica automática em Epitaciolândia, Acre.",
+      "data_instalacao": "2011-04-03",
+      "data_termino": "2027-10-03",
+      "codigo_estacao": "EPITACIOLANDIA (Automatica)"
+    },
+    {
+      "id": "MET-AC-FEIJO-AUTOMATICA",
+      "nome": "Estação FEIJO (Automática)",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "AC",
+        "city_name": "Feijó",
+        "latitude": -8.1419,
+        "longitude": -70.3431,
+        "altitude": 157
+      },
+      "descricao": "Estação meteorológica automática em Feijó, Acre.",
+      "data_instalacao": "2011-04-03",
+      "data_termino": "2027-10-03",
+      "codigo_estacao": "FEIJO (Automatica)"
+    },
+    {
+      "id": "MET-AC-RIO-BRANCO-AUTOMATICA",
+      "nome": "Estação RIO BRANCO (Automática)",
+      "tipo": "monitoramento_metereologica",
+      "status": "ativa",
+      "localizacao": {
+        "estado": "AC",
+        "city_name": "Rio Branco",
+        "latitude": -9.9578,
+        "longitude": -68.165,
+        "altitude": 226
+      },
+      "descricao": "Estação meteorológica automática em Rio Branco, Acre.",
+      "data_instalacao": "2011-04-03",
+      "data_termino": "2027-10-03",
+      "codigo_estacao": "RIO BRANCO (Automatica)"
     }
   ]
 }
