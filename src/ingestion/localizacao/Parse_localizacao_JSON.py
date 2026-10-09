@@ -15,6 +15,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from config.settings import configure_logging, get_path
+from database.dml.Insert_Operadores import inserir_operadores
 
 # 3. Biblioteca para manipulação de dados em formato tabular (DataFrames)
 import pandas as pd
@@ -33,6 +34,84 @@ def ler_json(path_arquivo):
     with open(path_arquivo, "r", encoding="utf-8") as arquivo:
         conteudo = json.load(arquivo)
     return conteudo
+
+
+def _converter_status_operador(status: object) -> int:
+    """Converte o status recebido para o BIT usado por dbo.operadores."""
+    if isinstance(status, bool):
+        return int(status)
+    if isinstance(status, int) and status in (0, 1):
+        return status
+
+    normalized = str(status).strip().lower()
+    if normalized in {"1", "ativo", "ativa", "active", "true"}:
+        return 1
+    if normalized in {"0", "inativo", "inativa", "inactive", "false", "desativado"}:
+        return 0
+    raise ValueError("status ausente ou invalido")
+
+
+def carregar_operadores(
+    path_arquivo: str | Path | None = None,
+    engine=None,
+    hmac_secret: str | None = None,
+    encryption_key: str | None = None,
+) -> tuple[int, int]:
+    """Le operadores do JSON, normaliza o contrato e delega a persistencia ao DML."""
+    source_path = Path(path_arquivo) if path_arquivo else Path(__file__).with_name("operadores.json")
+    source_date = "desconhecida"
+    try:
+        payload = ler_json(source_path)
+        source_date = str(payload.get("date") or "desconhecida")
+        operators = payload.get("operadores")
+        if not isinstance(operators, list):
+            raise ValueError("lista de operadores ausente ou invalida")
+    except (OSError, json.JSONDecodeError, AttributeError, ValueError) as error:
+        logging.error(
+            "Falha ao ler operadores: data_leitura=%s estacao_id=desconhecida erro=%s",
+            source_date,
+            type(error).__name__,
+        )
+        return 0, 0
+
+    normalized_operators = []
+    for operator in operators:
+        station_code = (
+            str(operator.get("estacao_id") or "").strip()
+            if isinstance(operator, dict)
+            else ""
+        )
+        try:
+            if not isinstance(operator, dict):
+                raise ValueError("registro invalido")
+            if not station_code:
+                logging.error(
+                    "Estacao nao informada; cadastre-a antes do operador: "
+                    "data_leitura=%s estacao_id=desconhecida",
+                    source_date,
+                )
+                continue
+
+            normalized_operators.append({
+                **operator,
+                "nome_completo": operator.get("nome"),
+                "status": _converter_status_operador(operator.get("status")),
+            })
+        except Exception as error:
+            logging.error(
+                "Falha no ETL do operador: data_leitura=%s estacao_id=%s erro=%s",
+                source_date,
+                station_code or "desconhecida",
+                type(error).__name__,
+            )
+
+    return inserir_operadores(
+        normalized_operators,
+        hmac_secret=hmac_secret,
+        encryption_key=encryption_key,
+        engine=engine,
+        data_leitura=source_date,
+    )
 
 # 7. Tabela Estado
 def tabela_estado() -> pd.DataFrame:
@@ -102,6 +181,7 @@ def tabela_estacao(df_cidade: pd.DataFrame, df_estado: pd.DataFrame) -> pd.DataF
         "localizacao.estado": "sigla_estado",
         "localizacao.city_name": "cidade_estacao"
     })
+    df_estacao["id"] = df_estacao["id"].astype(str)
     df_estacao["estacao_id"] = df_estacao["id"]
 
     # Conversão de status (1 = ativa, 0 = inativa)
@@ -169,6 +249,7 @@ if __name__ == "__main__":
 
     sys.path.append(str(Path(__file__).resolve().parents[2]))
     configure_logging(Path(__file__).resolve().parents[3])
+    carregar_operadores()
     logging.info("%s LISTA DE TABELAS %s", "=" * 30, "=" * 30)
     
     df_est = tabela_estado()

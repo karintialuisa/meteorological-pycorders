@@ -38,7 +38,8 @@ def banco_teste():
         connection.execute(
             text(
                 "CREATE TABLE estacao ("
-                "id INTEGER PRIMARY KEY, nome TEXT NOT NULL, status INTEGER, "
+                "id INTEGER PRIMARY KEY, codigo_origem TEXT UNIQUE, "
+                "nome TEXT NOT NULL, status INTEGER, "
                 "id_cidade INTEGER NOT NULL, id_estado INTEGER NOT NULL, "
                 "FOREIGN KEY (id_cidade) REFERENCES cidade(id), "
                 "FOREIGN KEY (id_estado) REFERENCES estado(id))"
@@ -71,7 +72,9 @@ def banco_teste():
                 "CREATE TABLE operadores ("
                 "id INTEGER PRIMARY KEY, cpf_hash TEXT NOT NULL UNIQUE, "
                 "nome_completo_cifrado TEXT NOT NULL, "
-                "criado_em TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)"
+                "status INTEGER, id_estacao INTEGER NOT NULL, "
+                "criado_em TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                "FOREIGN KEY (id_estacao) REFERENCES estacao(id))"
             )
         )
         connection.execute(

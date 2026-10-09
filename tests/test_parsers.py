@@ -92,7 +92,7 @@ def test_tabela_estacao_resolves_geography_and_status(monkeypatch, tmp_path):
     result = localizacao.tabela_estacao(cities, states)
 
     assert result["nome"].tolist() == ["Rio - Centro", "[Desativado] Lago - Sul"]
-    assert result["estacao_id"].tolist() == [7, 8]
+    assert result["estacao_id"].tolist() == ["7", "8"]
     assert result["tipo"].tolist() == [
         "monitoramento_ambiental",
         "monitoramento_ambiental",

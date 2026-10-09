@@ -328,7 +328,7 @@ def test_location_loading_is_idempotent_for_existing_records(
         "tabela_estacao",
         lambda cidades, estados: pd.DataFrame(
             [{
-                "id": 900,
+                "id": "900",
                 "nome": "Estacao Centro",
                 "status_estacao": 1,
                 "codigo_ibge_cidade": 3550308,

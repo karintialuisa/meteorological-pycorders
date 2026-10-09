@@ -8,9 +8,6 @@ GO
 
 DROP TABLE IF EXISTS leitura_meteorologica;
 DROP TABLE IF EXISTS qualidade_agua;
-DROP TABLE IF EXISTS estacao; 
-DROP TABLE IF EXISTS cidade;
-DROP TABLE IF EXISTS estado;
 
 -- ============================================================
 -- ASSUNTO: GEOGRAFIA / LOCALIZAÇÃO FÍSICA
@@ -60,6 +57,7 @@ IF OBJECT_ID('dbo.estacao', 'U') IS NULL
 BEGIN
     CREATE TABLE dbo.estacao (
         id                  BIGINT IDENTITY(1,1) PRIMARY KEY,
+        codigo_origem       VARCHAR(50) NOT NULL,
         nome                VARCHAR(200) NOT NULL,
         status              BIT,
         id_cidade           BIGINT NOT NULL,
@@ -72,6 +70,7 @@ BEGIN
         CONSTRAINT fk_estacao_estado
             FOREIGN KEY (id_estado)
             REFERENCES estado(id),
+        CONSTRAINT uq_estacao_codigo_origem UNIQUE (codigo_origem),
 
         CONSTRAINT ck_estacao_status
             CHECK (status IN (0, 1))
@@ -83,6 +82,10 @@ BEGIN
     CREATE INDEX idx_estacao_status
         ON estacao (status);
 END;
+GO
+
+IF COL_LENGTH('dbo.estacao', 'codigo_origem') IS NULL
+    ALTER TABLE dbo.estacao ADD codigo_origem VARCHAR(50) NULL;
 GO
 
 -- ============================================================
@@ -173,14 +176,28 @@ BEGIN
         id BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY,
         cpf_hash CHAR(64) NOT NULL,
         nome_completo_cifrado VARCHAR(MAX) NOT NULL,
+        status BIT,
+        id_estacao BIGINT NOT NULL,
         criado_em DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 
         CONSTRAINT uq_operadores_cpf_hash UNIQUE (cpf_hash),
-        CONSTRAINT ck_operadores_cpf_hash_length CHECK (LEN(cpf_hash) = 64)
+        CONSTRAINT ck_operadores_cpf_hash_length CHECK (LEN(cpf_hash) = 64),
+
+        CONSTRAINT fk_operadores_estacao
+            FOREIGN KEY (id_estacao)
+            REFERENCES estacao(id)
+            ON DELETE CASCADE
     );
 END;
 GO
 
+IF COL_LENGTH('dbo.operadores', 'status') IS NULL
+    ALTER TABLE dbo.operadores ADD status BIT NULL;
+GO
+
+IF COL_LENGTH('dbo.operadores', 'id_estacao') IS NULL
+    ALTER TABLE dbo.operadores ADD id_estacao BIGINT NULL;
+GO
 
 -- ============================================================
 -- ASSUNTO: LGPD
