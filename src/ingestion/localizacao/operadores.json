@@ -1,0 +1,629 @@
+{
+  "date": "2026-09-15",
+  "operadores": [
+    {
+      "cpf": "10433218100",
+      "nome": "Maria Silva",
+      "estacao_id": "AMB-011",
+      "status": "ativo"
+    },
+    {
+      "cpf": "96001338914",
+      "nome": "João Santos",
+      "estacao_id": "AMB-001",
+      "status": "ativo"
+    },
+    {
+      "cpf": "08386379499",
+      "nome": "Ana Oliveira",
+      "estacao_id": "AMB-002",
+      "status": "ativo"
+    },
+    {
+      "cpf": "02654235114",
+      "nome": "Carlos Souza",
+      "estacao_id": "AMB-003",
+      "status": "ativo"
+    },
+    {
+      "cpf": "16155940789",
+      "nome": "Fernanda Pereira",
+      "estacao_id": "AMB-004",
+      "status": "ativo"
+    },
+    {
+      "cpf": "81618495950",
+      "nome": "Bruno Costa",
+      "estacao_id": "AMB-005",
+      "status": "ativo"
+    },
+    {
+      "cpf": "31034131656",
+      "nome": "Juliana Rodrigues",
+      "estacao_id": "AMB-006",
+      "status": "ativo"
+    },
+    {
+      "cpf": "47525534144",
+      "nome": "Ricardo Almeida",
+      "estacao_id": "AMB-007",
+      "status": "ativo"
+    },
+    {
+      "cpf": "92832764851",
+      "nome": "Patrícia Lima",
+      "estacao_id": "AMB-008",
+      "status": "ativo"
+    },
+    {
+      "cpf": "35030564160",
+      "nome": "Marcos Gomes",
+      "estacao_id": "AMB-009",
+      "status": "ativo"
+    },
+    {
+      "cpf": "39537672409",
+      "nome": "Camila Ribeiro",
+      "estacao_id": "AMB-010",
+      "status": "ativo"
+    },
+    {
+      "cpf": "23884969692",
+      "nome": "Rafael Carvalho",
+      "estacao_id": "MET-82353",
+      "status": "ativo"
+    },
+    {
+      "cpf": "53287101269",
+      "nome": "Aline Martins",
+      "estacao_id": "MET-83007",
+      "status": "ativo"
+    },
+    {
+      "cpf": "26916697857",
+      "nome": "Gustavo Rocha",
+      "estacao_id": "MET-82590",
+      "status": "ativo"
+    },
+    {
+      "cpf": "48018451427",
+      "nome": "Renata Barbosa",
+      "estacao_id": "MET-83442",
+      "status": "ativo"
+    },
+    {
+      "cpf": "62704828105",
+      "nome": "Eduardo Melo",
+      "estacao_id": "MET-82659",
+      "status": "ativo"
+    },
+    {
+      "cpf": "48932528870",
+      "nome": "Larissa Andrade",
+      "estacao_id": "MET-83579",
+      "status": "ativo"
+    },
+    {
+      "cpf": "09570154373",
+      "nome": "Felipe Batista",
+      "estacao_id": "MET-82890",
+      "status": "ativo"
+    },
+    {
+      "cpf": "03911718284",
+      "nome": "Priscila Moraes",
+      "estacao_id": "MET-82696",
+      "status": "ativo"
+    },
+    {
+      "cpf": "27824896315",
+      "nome": "André Teixeira",
+      "estacao_id": "MET-83384",
+      "status": "ativo"
+    },
+    {
+      "cpf": "83465787170",
+      "nome": "Maria Silva",
+      "estacao_id": "MET-83179",
+      "status": "ativo"
+    },
+    {
+      "cpf": "33150983959",
+      "nome": "João Santos",
+      "estacao_id": "MET-83587",
+      "status": "ativo"
+    },
+    {
+      "cpf": "30103105107",
+      "nome": "Ana Oliveira",
+      "estacao_id": "MET-82246",
+      "status": "ativo"
+    },
+    {
+      "cpf": "83473829994",
+      "nome": "Carlos Souza",
+      "estacao_id": "MET-83377",
+      "status": "ativo"
+    },
+    {
+      "cpf": "73763116532",
+      "nome": "Fernanda Pereira",
+      "estacao_id": "MET-82188",
+      "status": "ativo"
+    },
+    {
+      "cpf": "66701065139",
+      "nome": "Bruno Costa",
+      "estacao_id": "MET-82263",
+      "status": "ativo"
+    },
+    {
+      "cpf": "33387262442",
+      "nome": "Juliana Rodrigues",
+      "estacao_id": "MET-83698",
+      "status": "ativo"
+    },
+    {
+      "cpf": "73178108009",
+      "nome": "Ricardo Almeida",
+      "estacao_id": "MET-83639",
+      "status": "ativo"
+    },
+    {
+      "cpf": "13267736072",
+      "nome": "Patrícia Lima",
+      "estacao_id": "MET-82042",
+      "status": "ativo"
+    },
+    {
+      "cpf": "26064746866",
+      "nome": "Marcos Gomes",
+      "estacao_id": "MET-83526",
+      "status": "ativo"
+    },
+    {
+      "cpf": "72343098026",
+      "nome": "Camila Ribeiro",
+      "estacao_id": "MET-83942",
+      "status": "ativo"
+    },
+    {
+      "cpf": "50097882097",
+      "nome": "Rafael Carvalho",
+      "estacao_id": "MET-82596",
+      "status": "ativo"
+    },
+    {
+      "cpf": "81219136166",
+      "nome": "Aline Martins",
+      "estacao_id": "MET-83192",
+      "status": "ativo"
+    },
+    {
+      "cpf": "93990916947",
+      "nome": "Gustavo Rocha",
+      "estacao_id": "MET-82326",
+      "status": "ativo"
+    },
+    {
+      "cpf": "98543534607",
+      "nome": "Renata Barbosa",
+      "estacao_id": "MET-82676",
+      "status": "ativo"
+    },
+    {
+      "cpf": "24751079956",
+      "nome": "Eduardo Melo",
+      "estacao_id": "MET-82861",
+      "status": "ativo"
+    },
+    {
+      "cpf": "11838425110",
+      "nome": "Larissa Andrade",
+      "estacao_id": "MET-83718",
+      "status": "ativo"
+    },
+    {
+      "cpf": "35427849823",
+      "nome": "Felipe Batista",
+      "estacao_id": "MET-83222",
+      "status": "ativo"
+    },
+    {
+      "cpf": "08412411803",
+      "nome": "Priscila Moraes",
+      "estacao_id": "MET-82610",
+      "status": "ativo"
+    },
+    {
+      "cpf": "24493534885",
+      "nome": "André Teixeira",
+      "estacao_id": "MET-82678",
+      "status": "ativo"
+    },
+    {
+      "cpf": "74016400589",
+      "nome": "Maria Silva",
+      "estacao_id": "MET-83379",
+      "status": "ativo"
+    },
+    {
+      "cpf": "24278680198",
+      "nome": "João Santos",
+      "estacao_id": "MET-83334",
+      "status": "ativo"
+    },
+    {
+      "cpf": "12805982630",
+      "nome": "Ana Oliveira",
+      "estacao_id": "MET-83630",
+      "status": "ativo"
+    },
+    {
+      "cpf": "20450533182",
+      "nome": "Carlos Souza",
+      "estacao_id": "MET-83423",
+      "status": "ativo"
+    },
+    {
+      "cpf": "58692322601",
+      "nome": "Fernanda Pereira",
+      "estacao_id": "MET-83446",
+      "status": "ativo"
+    },
+    {
+      "cpf": "02563421640",
+      "nome": "Bruno Costa",
+      "estacao_id": "MET-82445",
+      "status": "ativo"
+    },
+    {
+      "cpf": "07337543336",
+      "nome": "Juliana Rodrigues",
+      "estacao_id": "MET-83695",
+      "status": "ativo"
+    },
+    {
+      "cpf": "03654145817",
+      "nome": "Ricardo Almeida",
+      "estacao_id": "MET-83386",
+      "status": "ativo"
+    },
+    {
+      "cpf": "68501429414",
+      "nome": "Patrícia Lima",
+      "estacao_id": "MET-83464",
+      "status": "ativo"
+    },
+    {
+      "cpf": "01965569889",
+      "nome": "Marcos Gomes",
+      "estacao_id": "MET-82798",
+      "status": "ativo"
+    },
+    {
+      "cpf": "16934060806",
+      "nome": "Camila Ribeiro",
+      "estacao_id": "MET-83692",
+      "status": "ativo"
+    },
+    {
+      "cpf": "83561595120",
+      "nome": "Rafael Carvalho",
+      "estacao_id": "MET-82723",
+      "status": "ativo"
+    },
+    {
+      "cpf": "48465648271",
+      "nome": "Aline Martins",
+      "estacao_id": "MET-83687",
+      "status": "ativo"
+    },
+    {
+      "cpf": "36629946820",
+      "nome": "Gustavo Rocha",
+      "estacao_id": "MET-83242",
+      "status": "ativo"
+    },
+    {
+      "cpf": "04436995771",
+      "nome": "Renata Barbosa",
+      "estacao_id": "MET-83766",
+      "status": "ativo"
+    },
+    {
+      "cpf": "77387214808",
+      "nome": "Eduardo Melo",
+      "estacao_id": "MET-82296",
+      "status": "ativo"
+    },
+    {
+      "cpf": "95134332002",
+      "nome": "Larissa Andrade",
+      "estacao_id": "MET-82098",
+      "status": "ativo"
+    },
+    {
+      "cpf": "03791769391",
+      "nome": "Felipe Batista",
+      "estacao_id": "MET-82331",
+      "status": "ativo"
+    },
+    {
+      "cpf": "67632016309",
+      "nome": "Priscila Moraes",
+      "estacao_id": "MET-83767",
+      "status": "ativo"
+    },
+    {
+      "cpf": "28708317224",
+      "nome": "André Teixeira",
+      "estacao_id": "MET-82792",
+      "status": "ativo"
+    },
+    {
+      "cpf": "78895798619",
+      "nome": "Maria Silva",
+      "estacao_id": "MET-83437",
+      "status": "ativo"
+    },
+    {
+      "cpf": "87277434897",
+      "nome": "João Santos",
+      "estacao_id": "MET-82588",
+      "status": "ativo"
+    },
+    {
+      "cpf": "73471434542",
+      "nome": "Ana Oliveira",
+      "estacao_id": "MET-83184",
+      "status": "ativo"
+    },
+    {
+      "cpf": "58122362320",
+      "nome": "Carlos Souza",
+      "estacao_id": "MET-82598",
+      "status": "ativo"
+    },
+    {
+      "cpf": "16658760349",
+      "nome": "Fernanda Pereira",
+      "estacao_id": "MET-82753",
+      "status": "ativo"
+    },
+    {
+      "cpf": "66909670507",
+      "nome": "Bruno Costa",
+      "estacao_id": "MET-83033",
+      "status": "ativo"
+    },
+    {
+      "cpf": "46688937301",
+      "nome": "Juliana Rodrigues",
+      "estacao_id": "MET-82992",
+      "status": "ativo"
+    },
+    {
+      "cpf": "46706562793",
+      "nome": "Ricardo Almeida",
+      "estacao_id": "MET-83737",
+      "status": "ativo"
+    },
+    {
+      "cpf": "29806990129",
+      "nome": "Patrícia Lima",
+      "estacao_id": "MET-83914",
+      "status": "ativo"
+    },
+    {
+      "cpf": "62720465372",
+      "nome": "Marcos Gomes",
+      "estacao_id": "MET-82791",
+      "status": "ativo"
+    },
+    {
+      "cpf": "75564641728",
+      "nome": "Camila Ribeiro",
+      "estacao_id": "MET-82882",
+      "status": "ativo"
+    },
+    {
+      "cpf": "08053100376",
+      "nome": "Rafael Carvalho",
+      "estacao_id": "MET-83393",
+      "status": "ativo"
+    },
+    {
+      "cpf": "30923271953",
+      "nome": "Aline Martins",
+      "estacao_id": "MET-83228",
+      "status": "ativo"
+    },
+    {
+      "cpf": "37452991249",
+      "nome": "Gustavo Rocha",
+      "estacao_id": "MET-83985",
+      "status": "ativo"
+    },
+    {
+      "cpf": "41904966349",
+      "nome": "Renata Barbosa",
+      "estacao_id": "MET-82983",
+      "status": "ativo"
+    },
+    {
+      "cpf": "19314919099",
+      "nome": "Eduardo Melo",
+      "estacao_id": "MET-83376",
+      "status": "ativo"
+    },
+    {
+      "cpf": "58651850638",
+      "nome": "Larissa Andrade",
+      "estacao_id": "MET-83967",
+      "status": "ativo"
+    },
+    {
+      "cpf": "71657262847",
+      "nome": "Felipe Batista",
+      "estacao_id": "MET-82184",
+      "status": "ativo"
+    },
+    {
+      "cpf": "49877694506",
+      "nome": "Priscila Moraes",
+      "estacao_id": "MET-83064",
+      "status": "ativo"
+    },
+    {
+      "cpf": "31473799651",
+      "nome": "André Teixeira",
+      "estacao_id": "MET-83332",
+      "status": "ativo"
+    },
+    {
+      "cpf": "50752735489",
+      "nome": "Maria Silva",
+      "estacao_id": "MET-83097",
+      "status": "ativo"
+    },
+    {
+      "cpf": "54948083194",
+      "nome": "João Santos",
+      "estacao_id": "MET-82586",
+      "status": "ativo"
+    },
+    {
+      "cpf": "36783777006",
+      "nome": "Ana Oliveira",
+      "estacao_id": "MET-83936",
+      "status": "ativo"
+    },
+    {
+      "cpf": "14363495758",
+      "nome": "Carlos Souza",
+      "estacao_id": "MET-83805",
+      "status": "ativo"
+    },
+    {
+      "cpf": "88568557473",
+      "nome": "Fernanda Pereira",
+      "estacao_id": "MET-82689",
+      "status": "ativo"
+    },
+    {
+      "cpf": "44313518258",
+      "nome": "Bruno Costa",
+      "estacao_id": "MET-82280",
+      "status": "ativo"
+    },
+    {
+      "cpf": "33749894116",
+      "nome": "Juliana Rodrigues",
+      "estacao_id": "MET-83907",
+      "status": "ativo"
+    },
+    {
+      "cpf": "34352408220",
+      "nome": "Ricardo Almeida",
+      "estacao_id": "MET-83781",
+      "status": "ativo"
+    },
+    {
+      "cpf": "40084271043",
+      "nome": "Patrícia Lima",
+      "estacao_id": "MET-82690",
+      "status": "ativo"
+    },
+    {
+      "cpf": "94777520455",
+      "nome": "Marcos Gomes",
+      "estacao_id": "MET-82797",
+      "status": "ativo"
+    },
+    {
+      "cpf": "71167190246",
+      "nome": "Camila Ribeiro",
+      "estacao_id": "MET-83235",
+      "status": "ativo"
+    },
+    {
+      "cpf": "29413186901",
+      "nome": "Rafael Carvalho",
+      "estacao_id": "MET-82317",
+      "status": "ativo"
+    },
+    {
+      "cpf": "99386774950",
+      "nome": "Aline Martins",
+      "estacao_id": "MET-83744",
+      "status": "ativo"
+    },
+    {
+      "cpf": "64990913329",
+      "nome": "Gustavo Rocha",
+      "estacao_id": "MET-82145",
+      "status": "ativo"
+    },
+    {
+      "cpf": "41232812064",
+      "nome": "Renata Barbosa",
+      "estacao_id": "MET-82198",
+      "status": "ativo"
+    },
+    {
+      "cpf": "67974034483",
+      "nome": "Eduardo Melo",
+      "estacao_id": "MET-83428",
+      "status": "ativo"
+    },
+    {
+      "cpf": "71349361801",
+      "nome": "Larissa Andrade",
+      "estacao_id": "MET-83344",
+      "status": "ativo"
+    },
+    {
+      "cpf": "32421024951",
+      "nome": "Felipe Batista",
+      "estacao_id": "MET-82376",
+      "status": "ativo"
+    },
+    {
+      "cpf": "94717464850",
+      "nome": "Priscila Moraes",
+      "estacao_id": "MET-RO-ARIQUEMES-AUTOMATICA",
+      "status": "ativo"
+    },
+    {
+      "cpf": "87719065921",
+      "nome": "André Teixeira",
+      "estacao_id": "MET-RO-CACOAL-AUTOMATICA",
+      "status": "ativo"
+    },
+    {
+      "cpf": "40139904905",
+      "nome": "Maria Silva",
+      "estacao_id": "MET-RO-VILHENA-AUTOMATICA",
+      "status": "ativo"
+    },
+    {
+      "cpf": "02787429637",
+      "nome": "João Santos",
+      "estacao_id": "MET-AC-EPITACIOLANDIA-AUTOMATICA",
+      "status": "ativo"
+    },
+    {
+      "cpf": "71756551260",
+      "nome": "Ana Oliveira",
+      "estacao_id": "MET-AC-FEIJO-AUTOMATICA",
+      "status": "ativo"
+    },
+    {
+      "cpf": "56746807100",
+      "nome": "Carlos Souza",
+      "estacao_id": "MET-AC-RIO-BRANCO-AUTOMATICA",
+      "status": "ativo"
+    }
+  ]
+}
