@@ -6,9 +6,6 @@
 USE monitoramento
 GO
 
-DROP TABLE IF EXISTS leitura_meteorologica;
-DROP TABLE IF EXISTS qualidade_agua;
-
 -- ============================================================
 -- ASSUNTO: GEOGRAFIA / LOCALIZAÇÃO FÍSICA
 -- ============================================================
