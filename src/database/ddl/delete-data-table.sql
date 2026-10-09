@@ -22,3 +22,4 @@ EXEC sp_msforeachtable "ALTER TABLE ? WITH CHECK CHECK CONSTRAINT all";
 
 -- 5. Valida que realmente as tabelas foram limpas
 SELECT * FROM estado;
+SELECT * FROM leitura_meteorologica;

@@ -91,9 +91,13 @@ def main():
             script_amb = get_env("INSERT_LEITURA_AMBIENTAL")
             script_met = get_env("INSERT_LEITURA_METEOROLOGICA")
 
-            executar_script(script_loc)
-            executar_script(script_amb)
-            executar_script(script_met)
+            for script in (script_loc, script_amb, script_met):
+                if not executar_script(script):
+                    logging.error(
+                        "Carga ETL interrompida após falha em %s.",
+                        Path(script).name,
+                    )
+                    break
 
         elif opcao == "2":
             script_rel = get_env("RELATORIO_ESTATISTICO")

@@ -144,7 +144,7 @@ def test_main_dispatches_menu_actions_and_exits(main_module, monkeypatch):
     monkeypatch.setattr(
         main_module,
         "executar_script",
-        lambda path, interativo=False: calls.append((path, interativo)),
+        lambda path, interativo=False: calls.append((path, interativo)) or True,
     )
 
     main_module.main()
@@ -155,6 +155,27 @@ def test_main_dispatches_menu_actions_and_exits(main_module, monkeypatch):
         ("weather.py", False),
         ("report.py", True),
     ]
+
+
+def test_main_stops_etl_after_a_script_fails(main_module, monkeypatch):
+    options = iter(["1", "3"])
+    calls = []
+    scripts = {
+        "INSERT_LOCALIZACAO": "locations.py",
+        "INSERT_LEITURA_AMBIENTAL": "water.py",
+        "INSERT_LEITURA_METEOROLOGICA": "weather.py",
+    }
+    monkeypatch.setattr(main_module, "exibir_menu", lambda: next(options))
+    monkeypatch.setattr(main_module, "get_env", scripts.__getitem__)
+    monkeypatch.setattr(
+        main_module,
+        "executar_script",
+        lambda path, interativo=False: calls.append(path) and False,
+    )
+
+    main_module.main()
+
+    assert calls == ["locations.py"]
 
 
 if __name__ == "__main__":

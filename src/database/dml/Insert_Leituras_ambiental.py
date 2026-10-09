@@ -170,6 +170,9 @@ def resolver_id_estacao(df_leituras: pd.DataFrame, connection) -> pd.DataFrame:
         return df_leituras.copy()
 
     df_estacao = tabela_estacao(tabela_cidade(), tabela_estado())[["id", "nome"]]
+    df_estacao["id"] = df_estacao["id"].astype("string").str.strip()
+    if df_estacao["id"].isna().any() or df_estacao["id"].eq("").any():
+        raise ValueError("Código de estação ausente em estacoes.json")
     duplicados = df_estacao[df_estacao["id"].duplicated(keep=False)]
     if not duplicados.empty:
         raise ValueError(
@@ -185,10 +188,9 @@ def resolver_id_estacao(df_leituras: pd.DataFrame, connection) -> pd.DataFrame:
     )
 
     df_leituras = df_leituras.copy()
-    df_leituras["estacao_id"] = pd.to_numeric(
-        df_leituras["estacao_id"], errors="coerce"
+    df_leituras["estacao_id"] = (
+        df_leituras["estacao_id"].astype("string").str.strip()
     )
-    df_estacao["id"] = pd.to_numeric(df_estacao["id"], errors="coerce")
 
     df_leituras = df_leituras.merge(
         df_estacao[["id", "id_estacao"]],
@@ -252,8 +254,9 @@ def inserir_dados():
 
         logging.info("Carga realizada com sucesso!")
 
-    except Exception as e:
-        logging.exception("Erro durante a inserção dos dados: %s", e)
+    except Exception:
+        logging.exception("Erro durante a inserção dos dados")
+        raise
 
 
 if __name__ == "__main__":

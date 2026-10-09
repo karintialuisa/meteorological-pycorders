@@ -89,15 +89,59 @@ def tabela_metereologica() -> pd.DataFrame:
     # TRATAMENTO E CONVERSÃO DE TIPOS (DTYPES)
     # =========================================================================
     df_metereologica["data_leitura"] = pd.to_datetime(
-        df_metereologica["data_leitura"], utc=True
+        df_metereologica["data_leitura"], utc=True, errors="coerce"
     )
 
     colunas_numericas = ["temperatura_ar", "umidade", "chuva", "vento"]
     for col in colunas_numericas:
         df_metereologica[col] = pd.to_numeric(df_metereologica[col], errors="coerce")
 
+    campos_invalidos = pd.DataFrame(
+        {
+            "umidade": (df_metereologica["umidade"] < 0)
+            | (df_metereologica["umidade"] > 100),
+            "chuva": df_metereologica["chuva"] < 0,
+            "vento": df_metereologica["vento"] < 0,
+        },
+        index=df_metereologica.index,
+    )
 
-    return df_metereologica 
+    colunas_obrigatorias = [
+        "estacao_id",
+        "cidade",
+        "estado",
+        "data_leitura",
+        "temperatura_ar",
+        "condicao",
+        "umidade",
+        "chuva",
+        "vento",
+    ]
+    campos_texto = ["estacao_id", "cidade", "estado", "condicao"]
+    campos_vazios = df_metereologica[colunas_obrigatorias].isna()
+    for coluna in campos_texto:
+        campos_vazios[coluna] |= (
+            df_metereologica[coluna].astype("string").str.strip().eq("").fillna(True)
+        )
+
+    campos_rejeicao = campos_vazios.copy()
+    for coluna in campos_invalidos.columns:
+        campos_rejeicao[coluna] |= campos_invalidos[coluna]
+
+    rejeitadas = campos_rejeicao.any(axis=1)
+    for indice, leitura in df_metereologica.loc[rejeitadas].iterrows():
+        campos = campos_rejeicao.columns[campos_rejeicao.loc[indice]].tolist()
+        valores = {campo: leitura[campo] for campo in campos}
+        logging.error(
+            "Leitura meteorológica rejeitada por campo obrigatório vazio ou inválido: "
+            "estacao_id=%s, data_leitura=%s, campos=%s, valores=%s",
+            leitura["estacao_id"],
+            leitura["data_leitura"],
+            campos,
+            valores,
+        )
+
+    return df_metereologica.loc[~rejeitadas].reset_index(drop=True)
 
 
 
