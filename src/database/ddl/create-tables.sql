@@ -150,13 +150,13 @@ CREATE TABLE dbo.leitura_meteorologica (
         ON DELETE CASCADE,
 
     CONSTRAINT ck_meteo_umidade
-        CHECK (umidade IS NULL OR umidade BETWEEN 0 AND 100),
+        CHECK (umidade BETWEEN 0 AND 100),
 
     CONSTRAINT ck_meteo_chuva
-        CHECK (chuva IS NULL OR chuva >= 0),
+        CHECK (chuva >= 0),
 
     CONSTRAINT ck_meteo_vento
-        CHECK (vento IS NULL OR vento >= 0)
+        CHECK (vento >= 0)
 
     );
 

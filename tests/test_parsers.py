@@ -127,6 +127,24 @@ def test_tabela_estacao_rejects_unmatched_location(monkeypatch, tmp_path):
         )
 
 
+def test_tabela_estacao_resolves_repository_locations(monkeypatch):
+    location_dir = Path(__file__).resolve().parents[1] / "src" / "ingestion" / "localizacao"
+    paths = {
+        "INGESTION_LOCALIZACAO_ESTADOS": location_dir / "estado.json",
+        "INGESTION_LOCALIZACAO_MUNICIPIOS": location_dir / "municipio.json",
+        "INGESTION_LOCALIZACAO_ESTACOES": location_dir / "estacoes.json",
+    }
+    monkeypatch.setattr(localizacao, "get_path", paths.__getitem__)
+
+    result = localizacao.tabela_estacao(
+        localizacao.tabela_cidade(), localizacao.tabela_estado()
+    )
+
+    assert len(result) == 104
+    assert result["codigo_ibge_cidade"].notna().all()
+    assert result["codigo_ibge_estado"].notna().all()
+
+
 def test_tabela_ambiental_normalizes_deduplicates_and_parses_dates(
     monkeypatch, tmp_path, caplog
 ):
@@ -292,14 +310,146 @@ def test_tabela_metereologica_normalizes_numeric_fields_and_deduplicates(
 
     result = meteorologica.tabela_metereologica()
 
-    assert len(result) == 2
-    assert result["estacao_id"].tolist() == ["MET-RECIFE-01", "MET-RECIFE-01"]
+    assert len(result) == 1
+    assert result["estacao_id"].tolist() == ["MET-RECIFE-01"]
     assert str(result["data_leitura"].dt.tz) == "UTC"
-    assert pd.isna(result.loc[result["data_leitura"].dt.day == 1, "temperatura_ar"]).all()
     latest = result.loc[result["data_leitura"].dt.day == 2].iloc[0]
     assert latest["temperatura_ar"] == 25
     assert latest["umidade"] == 70
     assert latest["vento"] == 5.2
+
+
+def test_tabela_metereologica_treats_negative_wind_as_missing(
+    monkeypatch, tmp_path, caplog
+):
+    record = {
+        "estacao_id": "MET-RECIFE-01",
+        "cidade": "Recife",
+        "estado": "Pernambuco",
+        "timestamp": "2026-01-02T10:00:00-04:00",
+        "dados_meteorologicos": {
+            "temperatura_ar": {"valor": 25},
+            "condicao": {"description": "Nublado"},
+            "umidade": {"valor": 70},
+            "chuva": {"valor": 0},
+            "vento": {"velocidade": -5},
+        },
+    }
+    path = save_json(
+        tmp_path, "weather.json", {"leituras_meteorologicas": [record]}
+    )
+    monkeypatch.setattr(meteorologica, "get_path", lambda key: path)
+
+    result = meteorologica.tabela_metereologica()
+
+    assert result.empty
+    assert any(
+        record.levelname == "ERROR" and "valores={'vento': -5}" in record.message
+        for record in caplog.records
+    )
+
+
+def test_tabela_metereologica_treats_negative_rain_as_missing(
+    monkeypatch, tmp_path, caplog
+):
+    record = {
+        "estacao_id": "MET-RECIFE-01",
+        "cidade": "Recife",
+        "estado": "Pernambuco",
+        "timestamp": "2026-01-02T10:00:00-04:00",
+        "dados_meteorologicos": {
+            "temperatura_ar": {"valor": 25},
+            "condicao": {"description": "Dado de chuva invalido para teste"},
+            "umidade": {"valor": 70},
+            "chuva": {"valor": -1},
+            "vento": {"velocidade": 5.2},
+        },
+    }
+    path = save_json(
+        tmp_path, "weather.json", {"leituras_meteorologicas": [record]}
+    )
+    monkeypatch.setattr(meteorologica, "get_path", lambda key: path)
+
+    result = meteorologica.tabela_metereologica()
+
+    assert result.empty
+    assert any(
+        record.levelname == "ERROR" and "valores={'chuva': -1}" in record.message
+        for record in caplog.records
+    )
+
+
+@pytest.mark.parametrize("humidity", [-1, 120])
+def test_tabela_metereologica_rejects_out_of_range_humidity(
+    monkeypatch, tmp_path, caplog, humidity
+):
+    record = {
+        "estacao_id": "MET-RECIFE-01",
+        "cidade": "Recife",
+        "estado": "Pernambuco",
+        "timestamp": "2026-01-02T10:00:00-04:00",
+        "dados_meteorologicos": {
+            "temperatura_ar": {"valor": 25},
+            "condicao": {"description": "Dado de umidade invalido para teste"},
+            "umidade": {"valor": humidity},
+            "chuva": {"valor": 0},
+            "vento": {"velocidade": 5.2},
+        },
+    }
+    path = save_json(
+        tmp_path, "weather.json", {"leituras_meteorologicas": [record]}
+    )
+    monkeypatch.setattr(meteorologica, "get_path", lambda key: path)
+
+    result = meteorologica.tabela_metereologica()
+
+    assert result.empty
+    assert any(
+        record.levelname == "ERROR" and "umidade" in record.message
+        for record in caplog.records
+    )
+
+
+def test_tabela_metereologica_rejects_empty_required_fields(
+    monkeypatch, tmp_path, caplog
+):
+    record = {
+        "estacao_id": "MET-RECIFE-01",
+        "cidade": "Recife",
+        "estado": "Pernambuco",
+        "timestamp": None,
+        "dados_meteorologicos": {
+            "temperatura_ar": {"valor": 25},
+            "condicao": {"description": "  "},
+            "umidade": {"valor": 70},
+            "chuva": {"valor": 0},
+            "vento": {"velocidade": 5.2},
+        },
+    }
+    valid_record = {
+        **record,
+        "estacao_id": "MET-RECIFE-02",
+        "timestamp": "2026-01-02T11:00:00-04:00",
+        "dados_meteorologicos": {
+            **record["dados_meteorologicos"],
+            "condicao": {"description": "Nublado"},
+        },
+    }
+    path = save_json(
+        tmp_path,
+        "weather.json",
+        {"leituras_meteorologicas": [record, valid_record]},
+    )
+    monkeypatch.setattr(meteorologica, "get_path", lambda key: path)
+
+    result = meteorologica.tabela_metereologica()
+
+    assert result["estacao_id"].tolist() == ["MET-RECIFE-02"]
+    assert any(
+        record.levelname == "ERROR"
+        and "campos=['data_leitura', 'condicao']" in record.message
+        for record in caplog.records
+    )
 
 
 if __name__ == "__main__":

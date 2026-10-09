@@ -8,6 +8,7 @@ no banco de dados.
 # 1 . Biblioteca para manipulação de arquivos JSON
 import json
 import logging
+import unicodedata
 
 # 2. Biblioteca para manipulação de caminhos de arquivos
 from pathlib import Path
@@ -19,6 +20,24 @@ from database.dml.Insert_Operadores import inserir_operadores
 
 # 3. Biblioteca para manipulação de dados em formato tabular (DataFrames)
 import pandas as pd
+
+
+_ALIAS_CIDADE = {
+    ("RJ", "altodaboavista"): "riodejaneiro",
+    ("RJ", "campos"): "camposdosgoytacazes",
+    ("PI", "luzilandialagdopiaui"): "luzilandia",
+    ("PB", "saogoncalo"): "sousa",
+    ("SP", "saopaulomirdesantana"): "saopaulo",
+    ("RN", "seridocaico"): "caico",
+}
+
+
+def _normalizar_localidade(valor) -> str:
+    """Gera uma chave de comparação sem acentos, espaços ou pontuação."""
+    if pd.isna(valor):
+        return ""
+    texto = unicodedata.normalize("NFKD", str(valor)).casefold()
+    return "".join(caractere for caractere in texto if caractere.isalnum())
 
 # 4. Diretório base para arquivos de parsing JSON
 # 6. Função para ler arquivo JSON
@@ -202,6 +221,28 @@ def tabela_estacao(df_cidade: pd.DataFrame, df_estado: pd.DataFrame) -> pd.DataF
     df_estacao = df_estacao.drop(columns=["descricao"])
 
     # --- MERGES ---
+
+    df_estado = df_estado.copy()
+    df_cidade = df_cidade.copy()
+    df_estacao["sigla_estado"] = (
+        df_estacao["sigla_estado"].fillna("").astype(str).str.strip().str.upper()
+    )
+    df_estado["sigla_estado"] = (
+        df_estado["sigla_estado"].fillna("").astype(str).str.strip().str.upper()
+    )
+    df_cidade["sigla_estado"] = (
+        df_cidade["sigla_estado"].fillna("").astype(str).str.strip().str.upper()
+    )
+    df_cidade["chave_cidade"] = df_cidade["nome_cidade"].map(
+        _normalizar_localidade
+    )
+    chaves_cidade_estacao = df_estacao["cidade_estacao"].map(
+        _normalizar_localidade
+    )
+    df_estacao["chave_cidade"] = [
+        _ALIAS_CIDADE.get((sigla, chave), chave)
+        for sigla, chave in zip(df_estacao["sigla_estado"], chaves_cidade_estacao)
+    ]
     
     # A sigla identifica o estado; o ID usado como FK será consultado no banco.
     df_estacao = df_estacao.merge(
@@ -213,9 +254,10 @@ def tabela_estacao(df_cidade: pd.DataFrame, df_estado: pd.DataFrame) -> pd.DataF
 
     # Nome e UF juntos evitam associar municípios homônimos de outros estados.
     df_estacao = df_estacao.merge(
-        df_cidade[["nome_cidade", "sigla_estado", "codigo_ibge_cidade"]],
-        left_on=["cidade_estacao", "sigla_estado"],
-        right_on=["nome_cidade", "sigla_estado"],
+        df_cidade[
+            ["nome_cidade", "sigla_estado", "chave_cidade", "codigo_ibge_cidade"]
+        ],
+        on=["chave_cidade", "sigla_estado"],
         how="left",
         validate="many_to_one",
     )

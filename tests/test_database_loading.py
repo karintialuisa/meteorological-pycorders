@@ -51,14 +51,28 @@ def test_empty_readings_skip_database_connection(monkeypatch, module, loader_nam
     module.inserir_dados()
 
 
-def test_resolver_id_cidade_rejects_city_not_in_database(banco_teste):
+def test_resolver_id_cidade_rejects_station_without_database_city(banco_teste):
     readings = pd.DataFrame(
-        [{"cidade": "Atlantis", "estado": "Oceano", "temperatura_ar": 20}]
+        [{"id_estacao": 999, "cidade": "Atlantis", "estado": "Oceano"}]
     )
 
     with banco_teste.connect() as connection:
-        with pytest.raises(ValueError, match="sem cadastro no banco"):
+        with pytest.raises(ValueError, match="Estações sem cidade cadastrada"):
             meteorologica.resolver_id_cidade(readings, connection)
+
+
+def test_resolver_id_cidade_uses_station_relationship(banco_teste):
+    seed_location(banco_teste)
+    readings = pd.DataFrame(
+        [{"id_estacao": 20, "cidade": "SAO PAULO", "estado": "SP"}]
+    )
+
+    with banco_teste.connect() as connection:
+        result = meteorologica.resolver_id_cidade(readings, connection)
+
+    assert result["id_cidade"].tolist() == [10]
+    assert "cidade" not in result.columns
+    assert "estado" not in result.columns
 
 
 def test_resolver_id_estacao_filters_station_not_in_database(
@@ -83,6 +97,27 @@ def test_resolver_id_estacao_filters_station_not_in_database(
         "rejeitada por estação sem correspondência" in record.message
         for record in caplog.records
     )
+
+
+def test_resolver_id_estacao_matches_alphanumeric_station_code(
+    banco_teste, monkeypatch
+):
+    seed_location(banco_teste)
+    monkeypatch.setattr(
+        ambiental,
+        "tabela_estacao",
+        lambda cidades, estados: pd.DataFrame(
+            [{"id": "AMB-001", "nome": "Estacao Centro"}]
+        ),
+    )
+    readings = pd.DataFrame(
+        [{"estacao_id": "AMB-001", "data_leitura": "2026-01-01T00:00:00Z"}]
+    )
+
+    with banco_teste.connect() as connection:
+        result = ambiental.resolver_id_estacao(readings, connection)
+
+    assert result["id_estacao"].tolist() == [20]
 
 
 def test_ambiental_load_resolves_station_and_persists_reading(
@@ -296,6 +331,129 @@ def test_meteorological_load_resolves_city_and_persists_reading(
         ).one()
 
     assert reading == (10, 20, 24.0, "Nublado")
+
+
+def test_meteorological_load_rejects_missing_wind(
+    banco_teste, monkeypatch
+):
+    seed_location(banco_teste)
+    monkeypatch.setattr(
+        meteorologica,
+        "tabela_metereologica",
+        lambda: pd.DataFrame(
+            [{
+                "estacao_id": "MET-RECIFE-01",
+                "cidade": "Recife",
+                "estado": "Pernambuco",
+                "data_leitura": "2026-05-20T12:00:00",
+                "temperatura_ar": 24.0,
+                "umidade": 65.0,
+                "chuva": 0.0,
+                "vento": float("nan"),
+                "condicao": "Nublado",
+            }]
+        ),
+    )
+    monkeypatch.setattr(
+        meteorologica,
+        "resolver_id_estacao",
+        lambda readings, connection: readings.assign(id_estacao=20).drop(
+            columns=["estacao_id"]
+        ),
+    )
+    monkeypatch.setattr(meteorologica, "create_db_engine", lambda: banco_teste)
+
+    with pytest.raises(pd.errors.DatabaseError):
+        meteorologica.inserir_dados()
+
+    with banco_teste.connect() as connection:
+        row_count = connection.execute(
+            text("SELECT COUNT(*) FROM leitura_meteorologica")
+        ).scalar_one()
+
+    assert row_count == 0
+
+
+def test_meteorological_load_rejects_missing_rain(
+    banco_teste, monkeypatch
+):
+    seed_location(banco_teste)
+    monkeypatch.setattr(
+        meteorologica,
+        "tabela_metereologica",
+        lambda: pd.DataFrame(
+            [{
+                "estacao_id": "MET-RECIFE-01",
+                "cidade": "Recife",
+                "estado": "Pernambuco",
+                "data_leitura": "2026-05-20T12:00:00",
+                "temperatura_ar": 24.0,
+                "umidade": 65.0,
+                "chuva": float("nan"),
+                "vento": 4.5,
+                "condicao": "Nublado",
+            }]
+        ),
+    )
+    monkeypatch.setattr(
+        meteorologica,
+        "resolver_id_estacao",
+        lambda readings, connection: readings.assign(id_estacao=20).drop(
+            columns=["estacao_id"]
+        ),
+    )
+    monkeypatch.setattr(meteorologica, "create_db_engine", lambda: banco_teste)
+
+    with pytest.raises(pd.errors.DatabaseError):
+        meteorologica.inserir_dados()
+
+    with banco_teste.connect() as connection:
+        row_count = connection.execute(
+            text("SELECT COUNT(*) FROM leitura_meteorologica")
+        ).scalar_one()
+
+    assert row_count == 0
+
+
+def test_meteorological_load_rejects_missing_humidity(
+    banco_teste, monkeypatch
+):
+    seed_location(banco_teste)
+    monkeypatch.setattr(
+        meteorologica,
+        "tabela_metereologica",
+        lambda: pd.DataFrame(
+            [{
+                "estacao_id": "MET-RECIFE-01",
+                "cidade": "Recife",
+                "estado": "Pernambuco",
+                "data_leitura": "2026-05-20T12:00:00",
+                "temperatura_ar": 24.0,
+                "umidade": float("nan"),
+                "chuva": 0.0,
+                "vento": 4.5,
+                "condicao": "Nublado",
+            }]
+        ),
+    )
+    monkeypatch.setattr(
+        meteorologica,
+        "resolver_id_estacao",
+        lambda readings, connection: readings.assign(id_estacao=20).drop(
+            columns=["estacao_id"]
+        ),
+    )
+    monkeypatch.setattr(meteorologica, "create_db_engine", lambda: banco_teste)
+
+    with pytest.raises(pd.errors.DatabaseError):
+        meteorologica.inserir_dados()
+
+    with banco_teste.connect() as connection:
+        row_count = connection.execute(
+            text("SELECT COUNT(*) FROM leitura_meteorologica")
+        ).scalar_one()
+
+    assert row_count == 0
 
 
 def test_location_loading_is_idempotent_for_existing_records(
