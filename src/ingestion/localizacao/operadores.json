@@ -624,6 +624,46 @@
       "nome": "Carlos Souza",
       "estacao_id": "MET-AC-RIO-BRANCO-AUTOMATICA",
       "status": "ativo"
+    },
+    {
+      "cpf": "123.45",
+      "nome": "Registro de teste com CPF malformado",
+      "estacao_id": "AMB-001",
+      "status": "ativo",
+      "observacoes": "N/A"
+    },
+    {
+      "cpf": "",
+      "nome": "",
+      "estacao_id": "AMB-001",
+      "status": "ativo",
+      "observacoes": "N/A"
+    },
+    {
+      "nome": "Registro de teste sem CPF",
+      "estacao_id": "AMB-001",
+      "status": "ativo",
+      "observacoes": "N/A"
+    },
+    {
+      "cpf": "12345678909",
+      "estacao_id": "AMB-001",
+      "status": "ativo",
+      "observacoes": "N/A"
+    },
+    {
+      "cpf": "12345678909",
+      "nome": "Registro de teste com status vazio",
+      "estacao_id": "AMB-001",
+      "status": "",
+      "observacoes": "N/A"
+    },
+    {
+      "cpf": "12345678909",
+      "nome": "Registro de teste com status desconhecido",
+      "estacao_id": "AMB-001",
+      "status": "pendente",
+      "observacoes": "N/A"
     }
   ]
 }

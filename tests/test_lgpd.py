@@ -2,6 +2,7 @@
 
 import json
 import logging
+from pathlib import Path
 import pytest
 from cryptography.fernet import Fernet, InvalidToken
 from sqlalchemy import text
@@ -302,5 +303,38 @@ def test_json_loader_skips_operator_when_station_is_not_registered(
     )
     assert any("data_leitura=2026-10-09" in record.message for record in caplog.records)
     assert any("estacao_id=AMB-999" in record.message for record in caplog.records)
+    with banco_teste.connect() as connection:
+        assert connection.execute(text("SELECT COUNT(*) FROM operadores")).scalar_one() == 0
+
+
+def test_json_loader_rejects_invalid_operator_fixtures(
+    banco_teste, tmp_path, caplog
+):
+    _seed_operator_stations(banco_teste)
+    source_path = (
+        Path(__file__).resolve().parents[1]
+        / "src"
+        / "ingestion"
+        / "localizacao"
+        / "operadores.json"
+    )
+    source = json.loads(source_path.read_text(encoding="utf-8"))
+    invalid_operators = [
+        operator
+        for operator in source["operadores"]
+        if "observacoes" in operator
+    ]
+    path = tmp_path / "operadores_invalidos.json"
+    path.write_text(
+        json.dumps({"date": source["date"], "operadores": invalid_operators}),
+        encoding="utf-8",
+    )
+
+    assert len(invalid_operators) == 6
+    assert localizacao.carregar_operadores(
+        path, banco_teste, "test-hmac-secret", Fernet.generate_key().decode("ascii")
+    ) == (0, 0)
+    assert any("data_leitura=2026-09-15" in record.message for record in caplog.records)
+    assert any("estacao_id=AMB-001" in record.message for record in caplog.records)
     with banco_teste.connect() as connection:
         assert connection.execute(text("SELECT COUNT(*) FROM operadores")).scalar_one() == 0
