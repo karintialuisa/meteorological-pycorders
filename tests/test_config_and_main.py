@@ -27,6 +27,18 @@ def test_get_path_resolves_relative_and_absolute_paths(monkeypatch, tmp_path):
     assert settings.get_path("INPUT_PATH") == absolute_path
 
 
+def test_get_silver_dir_resolves_default_relative_and_absolute(monkeypatch, tmp_path):
+    monkeypatch.delenv("SILVER_DIR", raising=False)
+    assert settings.get_silver_dir() == settings.PROJECT_ROOT / "data_lake" / "silver"
+
+    monkeypatch.setenv("SILVER_DIR", "lake/custom-silver")
+    assert settings.get_silver_dir() == settings.PROJECT_ROOT / "lake" / "custom-silver"
+
+    absolute_path = tmp_path / "silver"
+    monkeypatch.setenv("SILVER_DIR", str(absolute_path))
+    assert settings.get_silver_dir() == absolute_path
+
+
 def test_create_db_engine_builds_sql_server_connection(monkeypatch):
     values = {
         "DB_HOST": "sql.example.test",

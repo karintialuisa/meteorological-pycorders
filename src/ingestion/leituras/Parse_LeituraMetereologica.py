@@ -75,19 +75,11 @@ def tabela_metereologica() -> pd.DataFrame:
                 "dados_meteorologicos.vento.velocidade": "vento"
             })
 
-    df_metereologica = df_metereologica.drop_duplicates().reset_index(drop=True)
-
-    # Ordenação para priorizar o registro mais recente em caso de duplicatas
-    df_metereologica = df_metereologica.sort_values(["data_leitura"], ascending=False)
-
-    # Tratamento de duplicatas mantendo apenas o registro mais recente por cidade/data
-    df_metereologica = df_metereologica.drop_duplicates(
-        subset=["estacao_id", "cidade", "estado", "data_leitura"], keep="first"
-    ).reset_index(drop=True)   
-
-    # =========================================================================
-    # TRATAMENTO E CONVERSÃO DE TIPOS (DTYPES)
-    # =========================================================================
+    # 3.2 Auditoria (itens 26-31): completude, unicidade, validade, tempo e consistencia.
+    df_metereologica["estacao_id"] = (
+        df_metereologica["estacao_id"].astype("string").str.strip()
+    )
+    # Tempestividade (item 30): converter para UTC antes de ordenar ou deduplicar.
     df_metereologica["data_leitura"] = pd.to_datetime(
         df_metereologica["data_leitura"], utc=True, errors="coerce"
     )
@@ -96,8 +88,11 @@ def tabela_metereologica() -> pd.DataFrame:
     for col in colunas_numericas:
         df_metereologica[col] = pd.to_numeric(df_metereologica[col], errors="coerce")
 
+    # Acuracia e validade (item 29): limites fisicos de temperatura, umidade, chuva e vento.
     campos_invalidos = pd.DataFrame(
         {
+            "temperatura_ar": (df_metereologica["temperatura_ar"] < -50)
+            | (df_metereologica["temperatura_ar"] > 60),
             "umidade": (df_metereologica["umidade"] < 0)
             | (df_metereologica["umidade"] > 100),
             "chuva": df_metereologica["chuva"] < 0,
@@ -141,7 +136,43 @@ def tabela_metereologica() -> pd.DataFrame:
             valores,
         )
 
-    return df_metereologica.loc[~rejeitadas].reset_index(drop=True)
+    # Unicidade (item 27): a chave e estacao + instante UTC; mantem a primeira ocorrencia.
+    df_validas = df_metereologica.loc[~rejeitadas].copy()
+    chave = ["estacao_id", "data_leitura"]
+    duplicadas = df_validas.duplicated(subset=chave, keep="first")
+    colunas_comparacao = [
+        coluna for coluna in df_validas.columns if coluna not in chave
+    ]
+
+    for estacao_id, data_leitura in (
+        df_validas.loc[duplicadas, chave].drop_duplicates().itertuples(
+            index=False, name=None
+        )
+    ):
+        grupo = df_validas.loc[
+            df_validas["estacao_id"].eq(estacao_id)
+            & df_validas["data_leitura"].eq(data_leitura)
+        ]
+        if len(grupo[colunas_comparacao].drop_duplicates()) > 1:
+            logging.warning(
+                "Retransmissao meteorologica conflitante; mantendo primeira: "
+                "estacao_id=%s, data_leitura=%s, ocorrencias=%s",
+                estacao_id,
+                data_leitura,
+                len(grupo),
+            )
+
+    if duplicadas.any():
+        logging.info(
+            "Duplicatas removidas do lote meteorologico: quantidade=%s",
+            int(duplicadas.sum()),
+        )
+
+    df_validas = df_validas.drop_duplicates(subset=chave, keep="first")
+    # Tempestividade (item 30): a ordenacao final usa o instante UTC validado.
+    return df_validas.sort_values(
+        "data_leitura", ascending=False, kind="stable"
+    ).reset_index(drop=True)
 
 
 

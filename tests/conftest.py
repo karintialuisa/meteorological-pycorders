@@ -8,6 +8,12 @@ from pathlib import Path
 path = Path(__file__).resolve().parents[1] 
 sys.path.append(str(path))
 
+
+@pytest.fixture(autouse=True)
+def silver_dir_teste(monkeypatch, tmp_path):
+    monkeypatch.setenv("SILVER_DIR", str(tmp_path / "silver"))
+
+
 @pytest.fixture
 def banco_teste():
     engine = create_engine(
@@ -48,10 +54,12 @@ def banco_teste():
         connection.execute(
             text(
                 "CREATE TABLE qualidade_agua ("
-                "id INTEGER PRIMARY KEY, id_leitura_origem TEXT UNIQUE, "
+                "id INTEGER PRIMARY KEY, id_leitura_origem TEXT, "
                 "id_estacao INTEGER NOT NULL, "
                 "data_leitura TEXT NOT NULL, temperatura_agua REAL, "
-                "ph REAL, oxigenio REAL, condutividade REAL, "
+                "ph REAL CHECK (ph IS NULL OR ph BETWEEN 0 AND 14), "
+                "oxigenio REAL CHECK (oxigenio IS NULL OR oxigenio >= 0), "
+                "condutividade REAL CHECK (condutividade IS NULL OR condutividade >= 0), "
                 "FOREIGN KEY (id_estacao) REFERENCES estacao(id))"
             )
         )

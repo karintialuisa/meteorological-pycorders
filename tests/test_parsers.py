@@ -271,10 +271,63 @@ def test_tabela_ambiental_rejects_records_without_required_keys(
     result = ambiental.tabela_ambiental()
 
     assert result.empty
-    assert len(caplog.records) == 1
-    assert "estacao_id ausente" in caplog.records[0].message
-    assert "timestamp ausente ou inválido" in caplog.records[0].message
-    assert "id de origem ausente" in caplog.records[0].message
+    rejeicoes = [
+        record.message
+        for record in caplog.records
+        if "Leitura ambiental rejeitada" in record.message
+    ]
+    assert len(rejeicoes) == 1
+    assert "estacao_id ausente" in rejeicoes[0]
+    assert "timestamp ausente ou inválido" in rejeicoes[0]
+    assert "id de origem ausente" in rejeicoes[0]
+
+
+def test_tabela_ambiental_rejects_missing_nonnumeric_and_invalid_measurements(
+    monkeypatch, tmp_path, caplog
+):
+    def record(reading_id, temperature=20, ph=7, oxygen=8, conductivity=100):
+        return {
+            "id": reading_id,
+            "estacao_id": 7,
+            "timestamp": "2026-01-01T10:00:00Z",
+            "qualidade_agua": {
+                "temperatura": {"valor": temperature},
+                "ph": {"valor": ph},
+                "oxigenio_dissolvido": {"valor": oxygen},
+                "condutividade": {"valor": conductivity},
+            },
+        }
+
+    records = [
+        record("ph-min", ph="0", oxygen="0", conductivity="0"),
+        record("ph-max", ph="14"),
+        record("missing-temperature", temperature=None),
+        record("nonnumeric-oxygen", oxygen="sem-leitura"),
+        record("ph-below", ph=-0.1),
+        record("ph-above", ph=14.1),
+        record("negative-oxygen", oxygen=-0.1),
+        record("negative-conductivity", conductivity=-0.1),
+    ]
+    path = save_json(tmp_path, "water.json", {"leituras_ambientais": records})
+    monkeypatch.setattr(ambiental, "get_path", lambda key: path)
+
+    result = ambiental.tabela_ambiental()
+
+    assert set(result["id_leitura_origem"]) == {"ph-min", "ph-max"}
+    assert all(
+        pd.api.types.is_numeric_dtype(result[column])
+        for column in ["temperatura_agua", "ph", "oxigenio", "condutividade"]
+    )
+    assert str(result["data_leitura"].dt.tz) == "UTC"
+    assert any("temperatura_agua ausente" in record.message for record in caplog.records)
+    assert any("oxigenio nao numerico" in record.message for record in caplog.records)
+    assert any("ph fora do intervalo 0-14" in record.message for record in caplog.records)
+    assert any("oxigenio negativo" in record.message for record in caplog.records)
+    assert any("condutividade negativa" in record.message for record in caplog.records)
+    assert sum(
+        "Leitura ambiental rejeitada" in record.message
+        for record in caplog.records
+    ) == 6
 
 
 def test_tabela_metereologica_normalizes_numeric_fields_and_deduplicates(
@@ -450,6 +503,53 @@ def test_tabela_metereologica_rejects_empty_required_fields(
         and "campos=['data_leitura', 'condicao']" in record.message
         for record in caplog.records
     )
+
+
+def test_tabela_metereologica_normalizes_offsets_and_keeps_first_conflict(
+    monkeypatch, tmp_path, caplog
+):
+    def record(station, timestamp, temperature, city="Recife"):
+        return {
+            "estacao_id": station,
+            "cidade": city,
+            "estado": "Pernambuco",
+            "timestamp": timestamp,
+            "dados_meteorologicos": {
+                "temperatura_ar": {"valor": temperature},
+                "condicao": {"description": "Nublado"},
+                "umidade": {"valor": 70},
+                "chuva": {"valor": 0},
+                "vento": {"velocidade": 5},
+            },
+        }
+
+    records = [
+        record("MET-A", "2026-01-02T10:00:00-03:00", 22),
+        record("MET-A", "2026-01-02T13:00:00Z", 23, city="Olinda"),
+        record("MET-B", "2026-01-02T12:30:00-04:00", 60),
+        record("MET-C", "2026-01-02T12:00:00+02:00", -50),
+        record("MET-D", "2026-01-02T14:00:00Z", -50.1),
+        record("MET-E", "2026-01-02T15:00:00Z", 60.1),
+    ]
+    path = save_json(
+        tmp_path, "weather.json", {"leituras_meteorologicas": records}
+    )
+    monkeypatch.setattr(meteorologica, "get_path", lambda key: path)
+
+    result = meteorologica.tabela_metereologica()
+
+    assert result["estacao_id"].tolist() == ["MET-B", "MET-A", "MET-C"]
+    assert result["temperatura_ar"].tolist() == [60, 22, -50]
+    assert result["data_leitura"].is_monotonic_decreasing
+    assert str(result["data_leitura"].dt.tz) == "UTC"
+    assert any(
+        "Retransmissao meteorologica conflitante" in record.message
+        for record in caplog.records
+    )
+    assert sum(
+        "temperatura_ar" in record.message and record.levelname == "ERROR"
+        for record in caplog.records
+    ) == 2
 
 
 if __name__ == "__main__":

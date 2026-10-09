@@ -15,8 +15,10 @@ from sqlalchemy import bindparam, text
 
 sys.path.append(str(Path(__file__).resolve().parents[2]))
 from config.settings import PROJECT_ROOT, configure_logging, create_db_engine
+from database.dml.etl_lock import adquirir_lock_etl
 
 from ingestion.leituras.Parse_LeituraAmbiental import tabela_ambiental
+from ingestion.leituras.Persistir_Silver import persistir_silver
 from ingestion.localizacao.Parse_localizacao_JSON import (
     tabela_cidade,
     tabela_estacao,
@@ -235,9 +237,14 @@ def inserir_dados():
                 logging.info("Nenhuma leitura com estação cadastrada para inserir.")
                 return
 
+            # 3.2 Auditoria (item 27): serializa cargas cooperantes antes do check-and-insert.
+            adquirir_lock_etl(connection, "etl:qualidade_agua")
             df_dados = filtrar_retransmissoes(df_dados, connection)
             if df_dados.empty:
                 return
+
+            # 3.2 Persistencia (itens 35-36): grava leituras limpas e enriquecidas na Silver.
+            persistir_silver(df_dados, "qualidade_agua")
 
             logging.info(
                 "Inserindo %s registros na tabela '%s'...",

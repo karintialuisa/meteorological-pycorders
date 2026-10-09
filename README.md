@@ -25,7 +25,7 @@ O pipeline contempla:
 - Python 3.10 ou superior
 - SQL Server
 - SQL Server e Microsoft ODBC Driver 17 for SQL Server
-- pandas, SQLAlchemy, pyodbc e python-dotenv
+- pandas, PyArrow, SQLAlchemy, pyodbc e python-dotenv
 - FastAPI e Uvicorn (API)
 - Streamlit (dashboard)
 - tabulate (relatórios no terminal) e pytest (testes)
@@ -60,6 +60,7 @@ meteorological-pycorders/
 │   │   ├── leituras/
 │   │   │   ├── Parse_LeituraAmbiental.py
 │   │   │   ├── Parse_LeituraMetereologica.py
+│   │   │   ├── Persistir_Silver.py
 │   │   │   ├── leituras_ambientais.json
 │   │   │   └── leituras_meteorologicas.json
 │   │   └── localizacao/
@@ -128,6 +129,7 @@ Configure `src/config/.env` com as variáveis abaixo. Esse arquivo é local e ig
 
    ```env
    LOGS_DIR=logs
+   SILVER_DIR=data_lake/silver
    DB_HOST=.\SQLEXPRESS
    DB_PORT=1433
    DB_NAME=monitoramento
@@ -181,6 +183,54 @@ Os logs são gravados em `logs/execucao_relatorio.log`. `LOGS_DIR` pode apontar 
 4. O relatório estatístico lê os arquivos de leituras, permite filtrar cidade/estação e calcula estatísticas por variável.
 5. A API consulta os JSONs diretamente; o dashboard consulta as tabelas SQL Server.
 
+## Camada Silver
+
+As cargas de qualidade da água e meteorologia persistem os DataFrames limpos e enriquecidos em Parquet usando PyArrow e compressão Snappy. `SILVER_DIR` é opcional: por padrão, os arquivos são gravados em `data_lake/silver`, sob a raiz do projeto. Um caminho relativo configurado em `SILVER_DIR` também é resolvido a partir da raiz; caminhos absolutos são usados diretamente.
+
+O layout particiona por dia UTC e dataset:
+
+```text
+data_lake/silver/
+├── qualidade_agua/data_leitura=AAAA-MM-DD/part-00000.parquet
+├── leitura_meteorologica/data_leitura=AAAA-MM-DD/part-00000.parquet
+└── _audit/<dataset>/<id-da-execucao>.json
+```
+
+O writer mescla novas linhas com a partição diária existente, remove retransmissões pela chave natural e substitui o Parquet por meio de arquivo temporário e troca atômica. As chaves são `id_leitura_origem` para água e `id_estacao + data_leitura` normalizada em UTC para meteorologia. O índice do DataFrame não é gravado.
+
+As regras verificadas na Silver são:
+
+- **Completude:** campos obrigatórios nulos/vazios são rejeitados.
+- **Unicidade:** duplicatas no lote ou já persistidas são contabilizadas e não são regravadas.
+- **Acurácia:** temperatura do ar fora de -50 °C a +60 °C é rejeitada.
+- **Validade:** pH fora de 0–14, oxigênio/condutividade negativos, umidade fora de 0–100 e chuva/vento negativos são rejeitados; valores numéricos não finitos também são inválidos.
+- **Tempestividade:** timestamps são convertidos para UTC e as linhas da partição são ordenadas cronologicamente.
+- **Consistência:** as chaves resolvidas de estação e cidade precisam estar preenchidas; as cargas também resolvem as FKs antes da persistência.
+
+Cada execução cria um manifesto JSON em `_audit/<dataset>/` com contagens avaliadas, aprovadas e rejeitadas por dimensão, formato/codec e partições escritas. O manifesto contém apenas contagens e metadados técnicos; não grava valores das leituras, CPF, nome completo ou segredos.
+
+O Parquet da Silver e o SQL Server não compartilham uma transação distribuída. O writer Silver roda antes do `to_sql`; se a gravação SQL falhar depois, a partição Silver pode já estar persistida. Reexecuções são idempotentes pelas chaves naturais. O lock `sp_getapplock` protege apenas writers SQL Server que usem o mesmo recurso; não impede inserts feitos por aplicações externas que ignorem o lock.
+
+## Regras de qualidade e pendências
+
+Os parsers rejeitam leituras sem identidade, estação, data ou medições obrigatórias, validam pH, umidade, precipitação e vento, e normalizam datas para UTC. A faixa aprovada de temperatura do ar é -50 °C a +60 °C. Ainda não há faixa acordada para temperatura da água; ela é exigida como campo numérico, mas não é rejeitada por limite físico. As dimensões de consistência também não cobrem todas as possíveis contradições entre leituras de fontes diferentes.
+
+## Testes
+
+Os testes SQLite exercitam parsers, loaders, constraints, configuração e writer Parquet com dados temporários. O fixture configura `SILVER_DIR` sob o diretório temporário do pytest para não produzir arquivos na raiz do repositório. Execute a suíte com:
+
+```bash
+python -m pytest tests -v
+```
+
+O teste de integração LGPD com SQL Server é opt-in e exige um banco descartável vazio. Configure `RUN_SQLSERVER_LGPD_TESTS=1` e `SQLSERVER_LGPD_TEST_URL`; o nome do banco precisa terminar em `_test`, `_tests`, `_disposable` ou `_scratch`. O teste aborta sem criar objetos se as tabelas necessárias já existirem, cria apenas tabelas temporárias de teste e as remove ao final. Execute somente contra uma instância descartável:
+
+```bash
+python -m pytest tests/test_sqlserver_lgpd.py -v
+```
+
+Sem as duas variáveis de opt-in, esse teste é ignorado e não abre conexão.
+
 ## Modelo de dados simplificado
 
 | Tabela                  | Finalidade                                      |
@@ -195,14 +245,6 @@ Os logs são gravados em `logs/execucao_relatorio.log`. `LOGS_DIR` pode apontar 
 
 Para cada parâmetro ambiental, o sistema calcula média, mediana, desvio padrão e intervalo interquartil. Os valores abaixo de `Q1 − 1,5 × IQR` ou acima de `Q3 + 1,5 × IQR` são classificados como possíveis outliers.
 
-## Testes
-
-Os testes usam dados manuais e SQLite em memória para exercitar `estado`, `cidade`, `estacao`, `qualidade_agua` e `leitura_meteorologica`, sem alterar o SQL Server. Execute-os com:
-
-```bash
-python -m pytest tests -v
-```
-
 ## Segurança e governança
 
 - `src/config/.env` contém configurações locais e não deve ser versionado.
@@ -213,6 +255,7 @@ python -m pytest tests -v
 - A posse da chave Fernet permite descriptografar nomes; este projeto ainda não implementa autorização por usuário ou auditoria de descriptografia. Restrinja a chave e o processo/conta que a lê. A chave, isoladamente, não implementa controle de acesso.
 - Atenção: `src/config/.env` já está versionado neste repositório. A regra no `.gitignore` não remove arquivos já rastreados. Antes de armazenar chaves reais, remova esse arquivo do índice do Git e revise/rotacione quaisquer segredos que tenham sido publicados.
 - O arquivo `logs/execucao_relatorio.log` é local e está coberto pelo `.gitignore`.
+- Configure e proteja `SILVER_DIR` conforme a política de retenção do Data Lake; os arquivos Parquet contêm dados ambientais e não devem receber campos pessoais de operadores.
 - Revise mensagens e dados registrados antes de incluir logs em chamados ou compartilhá-los.
 - O dashboard e os scripts de carga compartilham a conexão definida em `src/config/.env`.
 
