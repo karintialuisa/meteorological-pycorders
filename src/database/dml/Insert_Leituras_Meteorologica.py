@@ -20,7 +20,7 @@ tabeladestino = "leitura_meteorologica"
 modocarga = "append"
 
 def resolver_id_cidade(df_leituras: pd.DataFrame, connection) -> pd.DataFrame:
-    """Resolve o identificador da cidade com base no nome e estado.
+    """Resolve a cidade a partir da estação já cadastrada no banco.
 
     Args:
         df_leituras (pd.DataFrame): DataFrame contendo as leituras meteorológicas.
@@ -29,41 +29,32 @@ def resolver_id_cidade(df_leituras: pd.DataFrame, connection) -> pd.DataFrame:
     Returns:
         pd.DataFrame: DataFrame enriquecido com o id_cidade do banco.
     """
-    colunas_necessarias = {"cidade", "estado"}
-    colunas_ausentes = colunas_necessarias.difference(df_leituras.columns)
-    if colunas_ausentes:
-        raise KeyError(
-            "Colunas ausentes no DataFrame meteorológico: "
-            f"{sorted(colunas_ausentes)}"
-        )
+    if "id_estacao" not in df_leituras.columns:
+        raise KeyError("Coluna id_estacao ausente no DataFrame meteorológico")
 
-    cidades_banco = pd.read_sql(
+    cidades_estacoes_banco = pd.read_sql(
         text(
-            "SELECT c.id AS id_cidade, c.nome AS nome_cidade, "
-            "e.nome AS nome_estado "
-            "FROM cidade AS c "
-            "INNER JOIN estado AS e ON e.id = c.id_estado"
+            "SELECT id AS id_estacao, id_cidade "
+            "FROM estacao"
         ),
         connection,
     )
 
     df_leituras = df_leituras.merge(
-        cidades_banco,
-        left_on=["cidade", "estado"],
-        right_on=["nome_cidade", "nome_estado"],
+        cidades_estacoes_banco,
+        on="id_estacao",
         how="left",
         validate="many_to_one",
     )
 
-    sem_cidade = df_leituras.loc[df_leituras["id_cidade"].isna(), "cidade"]
+    sem_cidade = df_leituras.loc[df_leituras["id_cidade"].isna(), "id_estacao"]
     if not sem_cidade.empty:
         raise ValueError(
-            f"Cidades encontradas no JSON sem cadastro no banco: {sorted(sem_cidade.unique())}"
+            "Estações sem cidade cadastrada no banco: "
+            f"{sorted(sem_cidade.unique())}"
         )
 
-    return df_leituras.drop(
-        columns=["cidade", "estado", "nome_cidade", "nome_estado"]
-    )
+    return df_leituras.drop(columns=["cidade", "estado"], errors="ignore")
 
 
 def inserir_dados():
@@ -98,8 +89,9 @@ def inserir_dados():
 
         logging.info("Carga realizada com sucesso!")
 
-    except Exception as e:
-        logging.exception("Erro ao inserir dados: %s", e)
+    except Exception:
+        logging.exception("Erro ao inserir dados")
+        raise
 
 
 if __name__ == "__main__":
