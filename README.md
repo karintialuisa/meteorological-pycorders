@@ -147,7 +147,7 @@ Configure `src/config/.env` com as variáveis abaixo. Esse arquivo é local e ig
 
 ## Execução
 
-Prepare o banco no SQL Server executando `src/database/ddl/create-database.sql` e, em seguida, `src/database/ddl/create-tables.sql`. Atenção: o script de criação das tabelas remove tabelas existentes antes de recriá-las.
+Prepare o banco em uma instância SQL Server dedicada. Execute `src/database/ddl/create-database.sql` apenas quando o banco `monitoramento` ainda não existir; o comando `CREATE DATABASE` falha se o nome já estiver em uso. Em seguida, execute `src/database/ddl/create-tables.sql` pelo SSMS ou `sqlcmd`, pois o arquivo contém separadores `GO`. O script cria tabelas ausentes, mas não remove nem recria tabelas existentes e não migra constraints para um schema já criado.
 
 Para abrir o menu e executar as cargas ou relatórios:
 
