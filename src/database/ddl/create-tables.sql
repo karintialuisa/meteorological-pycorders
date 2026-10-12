@@ -88,12 +88,13 @@ GO
 -- ============================================================
 -- ASSUNTO: LEITURA DA QUALIDADE DA ÁGUA
 -- ============================================================
+-- 3.2 Unicidade: chaves naturais impedem gravar novamente leituras retransmitidas.
 
 IF OBJECT_ID('dbo.qualidade_agua', 'U') IS NULL
 BEGIN
     CREATE TABLE dbo.qualidade_agua (
         id                      BIGINT IDENTITY(1,1) PRIMARY KEY,
-        id_leitura_origem       VARCHAR(100) NULL,
+        id_leitura_origem       VARCHAR(100) NOT NULL,
         id_estacao              BIGINT NOT NULL,
         data_leitura            DATETIMEOFFSET NOT NULL,
         temperatura_agua        NUMERIC(8,3),
@@ -106,6 +107,9 @@ BEGIN
             FOREIGN KEY (id_estacao)
             REFERENCES estacao(id)
             ON DELETE CASCADE,
+
+        CONSTRAINT uq_qualidade_agua_id_leitura_origem
+            UNIQUE (id_leitura_origem),
 
         CONSTRAINT ck_qualidade_ph
             CHECK (ph IS NULL OR ph BETWEEN 0 AND 14),
@@ -145,6 +149,9 @@ CREATE TABLE dbo.leitura_meteorologica (
         FOREIGN KEY (id_estacao)
         REFERENCES estacao(id)
         ON DELETE CASCADE,
+
+    CONSTRAINT uq_leitura_meteorologica_estacao_data
+        UNIQUE (id_estacao, data_leitura),
 
     CONSTRAINT ck_meteo_umidade
         CHECK (umidade BETWEEN 0 AND 100),

@@ -54,7 +54,7 @@ def banco_teste():
         connection.execute(
             text(
                 "CREATE TABLE qualidade_agua ("
-                "id INTEGER PRIMARY KEY, id_leitura_origem TEXT, "
+                "id INTEGER PRIMARY KEY, id_leitura_origem TEXT NOT NULL UNIQUE, "
                 "id_estacao INTEGER NOT NULL, "
                 "data_leitura TEXT NOT NULL, temperatura_agua REAL, "
                 "ph REAL CHECK (ph IS NULL OR ph BETWEEN 0 AND 14), "
@@ -73,6 +73,7 @@ def banco_teste():
                 "chuva REAL NOT NULL CHECK (chuva >= 0), "
                 "vento REAL NOT NULL CHECK (vento >= 0), "
                 "condicao TEXT NOT NULL, data_leitura TEXT NOT NULL, "
+                "UNIQUE (id_estacao, data_leitura), "
                 "FOREIGN KEY (id_cidade) REFERENCES cidade(id), "
                 "FOREIGN KEY (id_estacao) REFERENCES estacao(id))"
             )

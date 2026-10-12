@@ -23,6 +23,21 @@ modocarga = "append"
 TAMANHO_LOTE_CHAVES = 400
 
 
+def validar_unicidade_persistida(connection) -> None:
+    """Rejeita chaves naturais meteorologicas repetidas ja persistidas."""
+    # 3.2 Unicidade: valida retransmissoes historicas antes da nova carga.
+    duplicada = connection.execute(
+        text(
+            "SELECT id_estacao, data_leitura FROM leitura_meteorologica "
+            "GROUP BY id_estacao, data_leitura HAVING COUNT(*) > 1"
+        )
+    ).first()
+    if duplicada is not None:
+        raise ValueError(
+            "3.2 Unicidade: leitura_meteorologica possui chaves naturais duplicadas."
+        )
+
+
 def filtrar_retransmissoes(
     df_leituras: pd.DataFrame, connection
 ) -> pd.DataFrame:
@@ -187,6 +202,7 @@ def inserir_dados():
 
             # 3.2 Auditoria (item 27): lock transacional antes do check-and-insert.
             adquirir_lock_etl(connection, "etl:leitura_meteorologica")
+            validar_unicidade_persistida(connection)
             df_dados = filtrar_retransmissoes(df_dados, connection)
             if df_dados.empty:
                 return

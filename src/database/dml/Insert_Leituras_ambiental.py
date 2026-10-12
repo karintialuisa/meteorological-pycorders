@@ -32,6 +32,33 @@ modo_carga = "append"
 TAMANHO_LOTE_CONSULTA = 1000
 
 
+def validar_unicidade_persistida(connection) -> None:
+    """Rejeita dados existentes sem ID ou com ID de leitura repetido."""
+    # 3.2 Unicidade: valida o legado antes de processar novas retransmissoes.
+    sem_identidade = connection.execute(
+        text(
+            "SELECT 1 FROM qualidade_agua "
+            "WHERE id_leitura_origem IS NULL "
+            "OR LTRIM(RTRIM(id_leitura_origem)) = ''"
+        )
+    ).first()
+    if sem_identidade is not None:
+        raise ValueError(
+            "3.2 Unicidade: qualidade_agua possui id_leitura_origem nulo ou vazio."
+        )
+
+    duplicada = connection.execute(
+        text(
+            "SELECT id_leitura_origem FROM qualidade_agua "
+            "GROUP BY id_leitura_origem HAVING COUNT(*) > 1"
+        )
+    ).first()
+    if duplicada is not None:
+        raise ValueError(
+            "3.2 Unicidade: qualidade_agua possui id_leitura_origem duplicado."
+        )
+
+
 def filtrar_retransmissoes(
     df_leituras: pd.DataFrame, connection
 ) -> pd.DataFrame:
@@ -239,6 +266,7 @@ def inserir_dados():
 
             # 3.2 Auditoria (item 27): serializa cargas cooperantes antes do check-and-insert.
             adquirir_lock_etl(connection, "etl:qualidade_agua")
+            validar_unicidade_persistida(connection)
             df_dados = filtrar_retransmissoes(df_dados, connection)
             if df_dados.empty:
                 return
