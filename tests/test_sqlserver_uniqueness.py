@@ -1,10 +1,10 @@
 """3.2 Validacao opt-in de unicidade em uma instancia SQL Server descartavel.
 
 Configure RUN_SQLSERVER_UNIQUENESS_TESTS=1,
-SQLSERVER_UNIQUENESS_TEST_DISPOSABLE=1 e
-SQLSERVER_UNIQUENESS_TEST_URL e SQLSERVER_UNIQUENESS_TEST_EXPECTED_SERVER antes
-de executar este modulo. A instancia deve ser isolada; os scripts DDL do projeto
-usam o nome fixo de banco monitoramento.
+SQLSERVER_UNIQUENESS_TEST_DISPOSABLE=1 e SQLSERVER_UNIQUENESS_TEST_URL antes
+de executar este modulo; SQLSERVER_UNIQUENESS_TEST_EXPECTED_SERVER e opcional
+(projeto_final.pdf secao 3.2 Unicidade -> features.csv ID 27). A instancia deve
+ser isolada; os scripts DDL do projeto usam o nome fixo de banco monitoramento.
 """
 
 from concurrent.futures import ThreadPoolExecutor
@@ -57,11 +57,6 @@ def sqlserver_engine():
             "Confirme que a instância SQL Server é descartável definindo "
             "SQLSERVER_UNIQUENESS_TEST_DISPOSABLE=1; nenhum dado foi alterado."
         )
-    if not EXPECTED_SERVER:
-        pytest.fail(
-            "Defina SQLSERVER_UNIQUENESS_TEST_EXPECTED_SERVER com o valor de "
-            "SERVERPROPERTY('ServerName') da instância descartável."
-        )
     if _database_name(TEST_URL).casefold() != "monitoramento":
         pytest.fail(
             "A URL de teste precisa apontar para o banco monitoramento em "
@@ -80,7 +75,8 @@ def sqlserver_engine():
             server_name = connection.execute(
                 text("SELECT CONVERT(nvarchar(128), SERVERPROPERTY('ServerName'))")
             ).scalar_one()
-            if server_name.casefold() != EXPECTED_SERVER.casefold():
+            # O servidor varia por maquina; a conferencia so ocorre se informado.
+            if EXPECTED_SERVER and server_name.casefold() != EXPECTED_SERVER.casefold():
                 pytest.fail(
                     "A instância SQL Server conectada não corresponde a "
                     "SQLSERVER_UNIQUENESS_TEST_EXPECTED_SERVER; "
