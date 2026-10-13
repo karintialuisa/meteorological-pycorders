@@ -3,6 +3,7 @@
 import pandas as pd
 import pytest
 from sqlalchemy import text
+from sqlalchemy.exc import IntegrityError
 import sys
 from pathlib import Path
 path = Path(__file__).resolve().parents[1] 
@@ -249,6 +250,151 @@ def test_ambiental_load_is_idempotent_and_keeps_first_conflicting_reading(
     )
 
 
+def test_meteorological_load_is_idempotent_and_keeps_first_reading(
+    banco_teste, monkeypatch
+):
+    seed_location(banco_teste)
+    rows = iter(
+        [
+            pd.DataFrame(
+                [{
+                    "estacao_id": 900,
+                    "cidade": "Sao Paulo",
+                    "estado": "Sao Paulo",
+                    "data_leitura": "2026-05-20T12:00:00Z",
+                    "temperatura_ar": 24.0,
+                    "umidade": 65.0,
+                    "chuva": 0.0,
+                    "vento": 4.5,
+                    "condicao": "Nublado",
+                }]
+            ),
+            pd.DataFrame(
+                [{
+                    "estacao_id": 900,
+                    "cidade": "Sao Paulo",
+                    "estado": "Sao Paulo",
+                    "data_leitura": "2026-05-20T12:00:00Z",
+                    "temperatura_ar": 31.0,
+                    "umidade": 65.0,
+                    "chuva": 0.0,
+                    "vento": 4.5,
+                    "condicao": "Ensolarado",
+                }]
+            ),
+        ]
+    )
+    monkeypatch.setattr(meteorologica, "tabela_metereologica", lambda: next(rows))
+    monkeypatch.setattr(
+        meteorologica,
+        "resolver_id_estacao",
+        lambda readings, connection: readings.assign(id_estacao=20).drop(
+            columns=["estacao_id"]
+        ),
+    )
+    monkeypatch.setattr(meteorologica, "create_db_engine", lambda: banco_teste)
+
+    meteorologica.inserir_dados()
+    meteorologica.inserir_dados()
+
+    with banco_teste.connect() as connection:
+        readings_in_database = connection.execute(
+            text(
+                "SELECT id_estacao, data_leitura, temperatura_ar "
+                "FROM leitura_meteorologica"
+            )
+        ).all()
+
+    assert len(readings_in_database) == 1
+    assert readings_in_database[0][0] == 20
+    assert readings_in_database[0][2] == 24.0
+
+
+def test_database_rejects_duplicate_natural_keys(banco_teste):
+    seed_location(banco_teste)
+    with banco_teste.begin() as connection:
+        connection.execute(
+            text(
+                "INSERT INTO qualidade_agua "
+                "(id_leitura_origem, id_estacao, data_leitura) "
+                "VALUES ('WATER-UNIQUE-1', 20, '2026-05-20T12:00:00Z')"
+            )
+        )
+        connection.execute(
+            text(
+                "INSERT INTO leitura_meteorologica "
+                "(id_cidade, id_estacao, temperatura_ar, umidade, chuva, vento, "
+                "condicao, data_leitura) "
+                "VALUES (10, 20, 24, 65, 0, 4.5, 'Nublado', '2026-05-20T12:00:00Z')"
+            )
+        )
+
+    with banco_teste.begin() as connection:
+        with pytest.raises(IntegrityError):
+            connection.execute(
+                text(
+                    "INSERT INTO qualidade_agua "
+                    "(id_leitura_origem, id_estacao, data_leitura) "
+                    "VALUES ('WATER-UNIQUE-1', 20, '2026-05-21T12:00:00Z')"
+                )
+            )
+
+    with banco_teste.begin() as connection:
+        with pytest.raises(IntegrityError):
+            connection.execute(
+                text(
+                    "INSERT INTO leitura_meteorologica "
+                    "(id_cidade, id_estacao, temperatura_ar, umidade, chuva, vento, "
+                    "condicao, data_leitura) "
+                    "VALUES (10, 20, 31, 65, 0, 4.5, 'Ensolarado', "
+                    "'2026-05-20T12:00:00Z')"
+                )
+            )
+
+
+@pytest.mark.parametrize(
+    "rows, expected_message",
+    [
+        ([(None,), ("W-2",)], "nulo ou vazio"),
+        ([("W-1",), ("W-1",)], "duplicado"),
+    ],
+)
+def test_ambiental_dml_validates_existing_database_keys(
+    connection, rows, expected_message
+):
+    connection.execute(text("DROP TABLE qualidade_agua"))
+    connection.execute(
+        text("CREATE TABLE qualidade_agua (id_leitura_origem TEXT)")
+    )
+    connection.execute(
+        text("INSERT INTO qualidade_agua (id_leitura_origem) VALUES (:id)"),
+        [{"id": reading_id} for (reading_id,) in rows],
+    )
+
+    with pytest.raises(ValueError, match=expected_message):
+        ambiental.validar_unicidade_persistida(connection)
+
+
+def test_meteorological_dml_validates_existing_duplicate_keys(connection):
+    connection.execute(text("DROP TABLE leitura_meteorologica"))
+    connection.execute(
+        text(
+            "CREATE TABLE leitura_meteorologica "
+            "(id_estacao INTEGER, data_leitura TEXT)"
+        )
+    )
+    connection.execute(
+        text(
+            "INSERT INTO leitura_meteorologica (id_estacao, data_leitura) "
+            "VALUES (20, '2026-05-20T12:00:00Z'), "
+            "(20, '2026-05-20T12:00:00Z')"
+        )
+    )
+
+    with pytest.raises(ValueError, match="chaves naturais duplicadas"):
+        meteorologica.validar_unicidade_persistida(connection)
+
+
 def test_ambiental_load_skips_insert_when_all_stations_are_unresolved(
     banco_teste, monkeypatch
 ):
@@ -363,7 +509,7 @@ def test_meteorological_load_rejects_missing_wind(
     )
     monkeypatch.setattr(meteorologica, "create_db_engine", lambda: banco_teste)
 
-    with pytest.raises(pd.errors.DatabaseError):
+    with pytest.raises((pd.errors.DatabaseError, IntegrityError)):
         meteorologica.inserir_dados()
 
     with banco_teste.connect() as connection:
@@ -404,7 +550,7 @@ def test_meteorological_load_rejects_missing_rain(
     )
     monkeypatch.setattr(meteorologica, "create_db_engine", lambda: banco_teste)
 
-    with pytest.raises(pd.errors.DatabaseError):
+    with pytest.raises((pd.errors.DatabaseError, IntegrityError)):
         meteorologica.inserir_dados()
 
     with banco_teste.connect() as connection:
@@ -445,7 +591,7 @@ def test_meteorological_load_rejects_missing_humidity(
     )
     monkeypatch.setattr(meteorologica, "create_db_engine", lambda: banco_teste)
 
-    with pytest.raises(pd.errors.DatabaseError):
+    with pytest.raises((pd.errors.DatabaseError, IntegrityError)):
         meteorologica.inserir_dados()
 
     with banco_teste.connect() as connection:
@@ -486,7 +632,7 @@ def test_location_loading_is_idempotent_for_existing_records(
         "tabela_estacao",
         lambda cidades, estados: pd.DataFrame(
             [{
-                "id": 900,
+                "id": "900",
                 "nome": "Estacao Centro",
                 "status_estacao": 1,
                 "codigo_ibge_cidade": 3550308,

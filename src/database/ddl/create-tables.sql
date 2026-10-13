@@ -6,13 +6,6 @@
 USE monitoramento
 GO
 
-DROP TABLE IF EXISTS leitura_meteorologica;
-DROP TABLE IF EXISTS qualidade_agua;
-DROP TABLE IF EXISTS estacao; 
-DROP TABLE IF EXISTS cidade;
-DROP TABLE IF EXISTS estado;
-DROP TABLE IF EXISTS operadores;
-
 -- ============================================================
 -- ASSUNTO: GEOGRAFIA / LOCALIZAÇÃO FÍSICA
 -- ============================================================
@@ -61,6 +54,7 @@ IF OBJECT_ID('dbo.estacao', 'U') IS NULL
 BEGIN
     CREATE TABLE dbo.estacao (
         id                  BIGINT IDENTITY(1,1) PRIMARY KEY,
+        codigo_origem       VARCHAR(50) NOT NULL,
         nome                VARCHAR(200) NOT NULL,
         status              BIT,
         id_cidade           BIGINT NOT NULL,
@@ -73,6 +67,7 @@ BEGIN
         CONSTRAINT fk_estacao_estado
             FOREIGN KEY (id_estado)
             REFERENCES estado(id),
+        CONSTRAINT uq_estacao_codigo_origem UNIQUE (codigo_origem),
 
         CONSTRAINT ck_estacao_status
             CHECK (status IN (0, 1))
@@ -86,15 +81,20 @@ BEGIN
 END;
 GO
 
+IF COL_LENGTH('dbo.estacao', 'codigo_origem') IS NULL
+    ALTER TABLE dbo.estacao ADD codigo_origem VARCHAR(50) NULL;
+GO
+
 -- ============================================================
 -- ASSUNTO: LEITURA DA QUALIDADE DA ÁGUA
 -- ============================================================
+-- 3.2 Unicidade: chaves naturais impedem gravar novamente leituras retransmitidas.
 
 IF OBJECT_ID('dbo.qualidade_agua', 'U') IS NULL
 BEGIN
     CREATE TABLE dbo.qualidade_agua (
         id                      BIGINT IDENTITY(1,1) PRIMARY KEY,
-        id_leitura_origem       VARCHAR(100) NULL,
+        id_leitura_origem       VARCHAR(100) NOT NULL,
         id_estacao              BIGINT NOT NULL,
         data_leitura            DATETIMEOFFSET NOT NULL,
         temperatura_agua        NUMERIC(8,3),
@@ -107,6 +107,9 @@ BEGIN
             FOREIGN KEY (id_estacao)
             REFERENCES estacao(id)
             ON DELETE CASCADE,
+
+        CONSTRAINT uq_qualidade_agua_id_leitura_origem
+            UNIQUE (id_leitura_origem),
 
         CONSTRAINT ck_qualidade_ph
             CHECK (ph IS NULL OR ph BETWEEN 0 AND 14),
@@ -147,6 +150,9 @@ CREATE TABLE dbo.leitura_meteorologica (
         REFERENCES estacao(id)
         ON DELETE CASCADE,
 
+    CONSTRAINT uq_leitura_meteorologica_estacao_data
+        UNIQUE (id_estacao, data_leitura),
+
     CONSTRAINT ck_meteo_umidade
         CHECK (umidade BETWEEN 0 AND 100),
 
@@ -174,14 +180,28 @@ BEGIN
         id BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY,
         cpf_hash CHAR(64) NOT NULL,
         nome_completo_cifrado VARCHAR(MAX) NOT NULL,
+        status BIT,
+        id_estacao BIGINT NOT NULL,
         criado_em DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 
         CONSTRAINT uq_operadores_cpf_hash UNIQUE (cpf_hash),
-        CONSTRAINT ck_operadores_cpf_hash_length CHECK (LEN(cpf_hash) = 64)
+        CONSTRAINT ck_operadores_cpf_hash_length CHECK (LEN(cpf_hash) = 64),
+
+        CONSTRAINT fk_operadores_estacao
+            FOREIGN KEY (id_estacao)
+            REFERENCES estacao(id)
+            ON DELETE CASCADE
     );
 END;
 GO
 
+IF COL_LENGTH('dbo.operadores', 'status') IS NULL
+    ALTER TABLE dbo.operadores ADD status BIT NULL;
+GO
+
+IF COL_LENGTH('dbo.operadores', 'id_estacao') IS NULL
+    ALTER TABLE dbo.operadores ADD id_estacao BIGINT NULL;
+GO
 
 -- ============================================================
 -- ASSUNTO: LGPD

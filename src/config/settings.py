@@ -31,6 +31,12 @@ def get_path(key: str) -> Path:
     return path if path.is_absolute() else PROJECT_ROOT / path
 
 
+def get_silver_dir() -> Path:
+    """Resolve SILVER_DIR ou retorna data_lake/silver sob a raiz do projeto."""
+    path = Path(os.getenv("SILVER_DIR") or "data_lake/silver").expanduser()
+    return path if path.is_absolute() else PROJECT_ROOT / path
+
+
 def create_db_engine():
     """Cria a engine SQL Server usando as configurações locais."""
     server = get_env("DB_HOST")

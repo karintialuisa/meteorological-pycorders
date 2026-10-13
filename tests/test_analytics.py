@@ -172,9 +172,11 @@ def test_carregar_dados_sql_returns_station_context_and_measurements(banco_teste
         connection.execute(
             text(
                 "INSERT INTO qualidade_agua "
-                "(id, id_estacao, data_leitura, temperatura_agua, ph, "
+                "(id, id_leitura_origem, id_estacao, data_leitura, "
+                "temperatura_agua, ph, "
                 "oxigenio, condutividade) "
-                "VALUES (1, 20, '2026-01-01', 21.5, 7.2, 8.1, 120.0)"
+                "VALUES (1, 'LEIT-AMB-TEST-001', 20, '2026-01-01', "
+                "21.5, 7.2, 8.1, 120.0)"
             )
         )
         connection.execute(

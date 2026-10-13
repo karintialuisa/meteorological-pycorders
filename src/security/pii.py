@@ -30,6 +30,7 @@ def _cpf_check_digit(digits: list[int], weights: range) -> int:
     return 0 if remainder < 2 else 11 - remainder
 
 
+# 3.2 SHA-256 (item 33): HMAC-SHA-256 pseudonimiza o CPF com chave secreta.
 def hash_cpf(cpf: str, secret_key: str | bytes) -> str:
     """Gera HMAC-SHA-256 deterministico para permitir comparacao do CPF."""
     key = secret_key.encode("utf-8") if isinstance(secret_key, str) else secret_key
@@ -40,6 +41,7 @@ def hash_cpf(cpf: str, secret_key: str | bytes) -> str:
     return hmac.new(key, normalized_cpf.encode("ascii"), hashlib.sha256).hexdigest()
 
 
+# 3.2 LGPD (item 34): Fernet permite recuperar o nome somente com a chave autorizada.
 def encrypt_name(name: str, encryption_key: str | bytes) -> str:
     """Cifra o nome usando uma chave Fernet fornecida pelo chamador."""
     if not isinstance(name, str) or not name.strip():

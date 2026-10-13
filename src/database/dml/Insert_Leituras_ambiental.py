@@ -15,8 +15,10 @@ from sqlalchemy import bindparam, text
 
 sys.path.append(str(Path(__file__).resolve().parents[2]))
 from config.settings import PROJECT_ROOT, configure_logging, create_db_engine
+from database.dml.etl_lock import adquirir_lock_etl
 
 from ingestion.leituras.Parse_LeituraAmbiental import tabela_ambiental
+from ingestion.leituras.Persistir_Silver import persistir_silver
 from ingestion.localizacao.Parse_localizacao_JSON import (
     tabela_cidade,
     tabela_estacao,
@@ -28,6 +30,33 @@ BASE_DIR = PROJECT_ROOT
 tabela_destino = "qualidade_agua"
 modo_carga = "append"
 TAMANHO_LOTE_CONSULTA = 1000
+
+
+def validar_unicidade_persistida(connection) -> None:
+    """Rejeita dados existentes sem ID ou com ID de leitura repetido."""
+    # 3.2 Unicidade: valida o legado antes de processar novas retransmissoes.
+    sem_identidade = connection.execute(
+        text(
+            "SELECT 1 FROM qualidade_agua "
+            "WHERE id_leitura_origem IS NULL "
+            "OR LTRIM(RTRIM(id_leitura_origem)) = ''"
+        )
+    ).first()
+    if sem_identidade is not None:
+        raise ValueError(
+            "3.2 Unicidade: qualidade_agua possui id_leitura_origem nulo ou vazio."
+        )
+
+    duplicada = connection.execute(
+        text(
+            "SELECT id_leitura_origem FROM qualidade_agua "
+            "GROUP BY id_leitura_origem HAVING COUNT(*) > 1"
+        )
+    ).first()
+    if duplicada is not None:
+        raise ValueError(
+            "3.2 Unicidade: qualidade_agua possui id_leitura_origem duplicado."
+        )
 
 
 def filtrar_retransmissoes(
@@ -235,9 +264,15 @@ def inserir_dados():
                 logging.info("Nenhuma leitura com estação cadastrada para inserir.")
                 return
 
+            # 3.2 Auditoria (item 27): serializa cargas cooperantes antes do check-and-insert.
+            adquirir_lock_etl(connection, "etl:qualidade_agua")
+            validar_unicidade_persistida(connection)
             df_dados = filtrar_retransmissoes(df_dados, connection)
             if df_dados.empty:
                 return
+
+            # 3.2 Persistencia (itens 35-36): grava leituras limpas e enriquecidas na Silver.
+            persistir_silver(df_dados, "qualidade_agua")
 
             logging.info(
                 "Inserindo %s registros na tabela '%s'...",

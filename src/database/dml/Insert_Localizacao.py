@@ -168,23 +168,19 @@ def inserir_estacoes(connection, estado_ids):
             "Estação com cidade ou estado não encontrado no banco"
         )
 
-    df_estacao = df_estacao.rename(columns={"status_estacao": "status"})[
-        ["nome", "status", "id_estado", "id_cidade"]
+    df_estacao = df_estacao.rename(
+        columns={"status_estacao": "status", "id": "codigo_origem"}
+    )[
+        ["codigo_origem", "nome", "status", "id_estado", "id_cidade"]
     ]
 
     if modo_carga == "append":
         estacoes_existentes = pd.read_sql(
-            text("SELECT nome, id_estado, id_cidade FROM estacao"), connection
+            text("SELECT codigo_origem FROM estacao"), connection
         )
-        df_estacao = df_estacao.merge(
-            estacoes_existentes,
-            on=["nome", "id_estado", "id_cidade"],
-            how="left",
-            indicator=True,
-        )
-        df_estacao = df_estacao[df_estacao["_merge"] == "left_only"].drop(
-            columns=["_merge"]
-        )
+        df_estacao = df_estacao[
+            ~df_estacao["codigo_origem"].isin(estacoes_existentes["codigo_origem"])
+        ]
 
     if not df_estacao.empty:
         df_estacao.to_sql(

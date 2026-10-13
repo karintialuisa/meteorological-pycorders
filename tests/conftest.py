@@ -8,6 +8,12 @@ from pathlib import Path
 path = Path(__file__).resolve().parents[1] 
 sys.path.append(str(path))
 
+
+@pytest.fixture(autouse=True)
+def silver_dir_teste(monkeypatch, tmp_path):
+    monkeypatch.setenv("SILVER_DIR", str(tmp_path / "silver"))
+
+
 @pytest.fixture
 def banco_teste():
     engine = create_engine(
@@ -38,7 +44,8 @@ def banco_teste():
         connection.execute(
             text(
                 "CREATE TABLE estacao ("
-                "id INTEGER PRIMARY KEY, nome TEXT NOT NULL, status INTEGER, "
+                "id INTEGER PRIMARY KEY, codigo_origem TEXT UNIQUE, "
+                "nome TEXT NOT NULL, status INTEGER, "
                 "id_cidade INTEGER NOT NULL, id_estado INTEGER NOT NULL, "
                 "FOREIGN KEY (id_cidade) REFERENCES cidade(id), "
                 "FOREIGN KEY (id_estado) REFERENCES estado(id))"
@@ -47,10 +54,12 @@ def banco_teste():
         connection.execute(
             text(
                 "CREATE TABLE qualidade_agua ("
-                "id INTEGER PRIMARY KEY, id_leitura_origem TEXT UNIQUE, "
+                "id INTEGER PRIMARY KEY, id_leitura_origem TEXT NOT NULL UNIQUE, "
                 "id_estacao INTEGER NOT NULL, "
                 "data_leitura TEXT NOT NULL, temperatura_agua REAL, "
-                "ph REAL, oxigenio REAL, condutividade REAL, "
+                "ph REAL CHECK (ph IS NULL OR ph BETWEEN 0 AND 14), "
+                "oxigenio REAL CHECK (oxigenio IS NULL OR oxigenio >= 0), "
+                "condutividade REAL CHECK (condutividade IS NULL OR condutividade >= 0), "
                 "FOREIGN KEY (id_estacao) REFERENCES estacao(id))"
             )
         )
@@ -64,6 +73,7 @@ def banco_teste():
                 "chuva REAL NOT NULL CHECK (chuva >= 0), "
                 "vento REAL NOT NULL CHECK (vento >= 0), "
                 "condicao TEXT NOT NULL, data_leitura TEXT NOT NULL, "
+                "UNIQUE (id_estacao, data_leitura), "
                 "FOREIGN KEY (id_cidade) REFERENCES cidade(id), "
                 "FOREIGN KEY (id_estacao) REFERENCES estacao(id))"
             )
@@ -73,7 +83,9 @@ def banco_teste():
                 "CREATE TABLE operadores ("
                 "id INTEGER PRIMARY KEY, cpf_hash TEXT NOT NULL UNIQUE, "
                 "nome_completo_cifrado TEXT NOT NULL, "
-                "criado_em TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)"
+                "status INTEGER, id_estacao INTEGER NOT NULL, "
+                "criado_em TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                "FOREIGN KEY (id_estacao) REFERENCES estacao(id))"
             )
         )
         connection.execute(
