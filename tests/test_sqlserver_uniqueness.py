@@ -288,7 +288,7 @@ def _configure_weather_loader(monkeypatch, engine, station, batch_provider):
 def _hold_first_loader_lock_until_contender_arrives(
     monkeypatch, loader_module, expected_resource: str
 ):
-    original_acquire_lock = loader_module.acquirir_lock_etl
+    original_acquire_lock = loader_module.adquirir_lock_etl
     call_order_lock = Lock()
     calls = 0
     first_lock_acquired = Event()
@@ -312,7 +312,7 @@ def _hold_first_loader_lock_until_contender_arrives(
         second_lock_attempted.set()
         return original_acquire_lock(connection, resource, timeout_ms)
 
-    monkeypatch.setattr(loader_module, "acquirir_lock_etl", acquire_lock)
+    monkeypatch.setattr(loader_module, "adquirir_lock_etl", acquire_lock)
     return first_lock_acquired, second_lock_attempted, release_first_loader
 
 
