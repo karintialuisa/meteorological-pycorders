@@ -12,6 +12,10 @@ sys.path.append(str(Path(__file__).resolve().parents[2]))
 from config.settings import configure_logging, create_db_engine, get_env
 from security.pii import decrypt_name, encrypt_name, hash_cpf
 
+# Referencia: projeto_final.pdf, secao 1 (Operadores - origem dos dados), features.csv ID 10.
+# Referencia: projeto_final.pdf, secao 3.3 (Operadores - tabela cadastral), ID 38.
+# LGPD dos operadores: projeto_final.pdf, secao 3.2; features.csv IDs 32-34 e 38.
+
 
 class EstacaoNaoCadastradaError(ValueError):
     """Indica que o codigo de origem nao existe no cadastro de estacoes."""

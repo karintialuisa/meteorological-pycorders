@@ -52,6 +52,7 @@ def tabela_ambiental() -> pd.DataFrame:
         "qualidade_agua.ph.valor": "ph",
         "qualidade_agua.oxigenio_dissolvido.valor": "oxigenio",
         "qualidade_agua.condutividade.valor": "condutividade",
+        "qualidade_agua.turbidez.valor": "turbidez",
     }
     colunas_saida = [
         "id_leitura_origem",
@@ -123,6 +124,9 @@ def tabela_ambiental() -> pd.DataFrame:
     motivos_rejeicao["condutividade negativa"] = (
         df_origem["condutividade"] < 0
     ).fillna(False)
+    motivos_rejeicao["turbidez negativa"] = (df_origem["turbidez"] < 0).fillna(
+        False
+    )
 
     # Completude e validade (itens 26 e 28): rejeita leituras incompletas ou fora do dominio.
     rejeitar_completude = id_ausente | estacao_ausente | data_ausente

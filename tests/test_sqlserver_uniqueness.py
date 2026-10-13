@@ -219,7 +219,9 @@ def synthetic_station(sqlserver_engine):
             )
 
 
-def _water_batch(station, reading_id: str, temperature: float) -> pd.DataFrame:
+def _water_batch(
+    station, reading_id: str, temperature: float, turbidity: float = 2.5
+) -> pd.DataFrame:
     return pd.DataFrame(
         [
             {
@@ -230,6 +232,7 @@ def _water_batch(station, reading_id: str, temperature: float) -> pd.DataFrame:
                 "ph": 7.0,
                 "oxigenio": 8.0,
                 "condutividade": 100.0,
+                "turbidez": turbidity,
             }
         ]
     )
@@ -366,7 +369,7 @@ def test_sqlserver_water_loader_ignores_sequential_replays(
     batches = iter(
         [
             _water_batch(synthetic_station, reading_id, 21.5),
-            _water_batch(synthetic_station, reading_id, 29.0),
+            _water_batch(synthetic_station, reading_id, 21.5, turbidity=75.0),
         ]
     )
     _configure_water_loader(
@@ -379,12 +382,13 @@ def test_sqlserver_water_loader_ignores_sequential_replays(
     with sqlserver_engine.connect() as connection:
         result = connection.execute(
             text(
-                "SELECT COUNT(*), MIN(temperatura_agua) FROM dbo.qualidade_agua "
+                "SELECT COUNT(*), MIN(temperatura_agua), MIN(turbidez) "
+                "FROM dbo.qualidade_agua "
                 "WHERE id_leitura_origem = :reading_id"
             ),
             {"reading_id": reading_id},
         ).one()
-    assert result == (1, 21.5)
+    assert result == (1, 21.5, 2.5)
 
 
 def test_sqlserver_weather_loader_ignores_sequential_replays(

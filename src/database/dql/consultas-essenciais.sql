@@ -17,7 +17,8 @@ SELECT
     AVG(qa.temperatura_agua) AS temperatura_media_agua,
     AVG(qa.ph) AS ph_medio,
     AVG(qa.oxigenio) AS oxigenio_medio,
-    AVG(qa.condutividade) AS condutividade_media
+    AVG(qa.condutividade) AS condutividade_media,
+    AVG(qa.turbidez) AS turbidez_media
 FROM estacao AS es
 INNER JOIN cidade AS ci
     ON ci.id = es.id_cidade
@@ -38,7 +39,8 @@ SELECT
     COUNT(qa.id) AS quantidade_leituras,
     AVG(qa.temperatura_agua) AS temperatura_media_agua,
     AVG(qa.ph) AS ph_medio,
-    AVG(qa.oxigenio) AS oxigenio_medio
+    AVG(qa.oxigenio) AS oxigenio_medio,
+    AVG(qa.turbidez) AS turbidez_media
 FROM qualidade_agua AS qa
 INNER JOIN estacao AS es
     ON es.id = qa.id_estacao
@@ -59,7 +61,8 @@ SELECT
     qa.temperatura_agua,
     qa.ph,
     qa.oxigenio,
-    qa.condutividade
+    qa.condutividade,
+    qa.turbidez
 FROM qualidade_agua AS qa
 INNER JOIN estacao AS es
     ON es.id = qa.id_estacao

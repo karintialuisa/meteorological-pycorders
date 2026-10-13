@@ -158,6 +158,7 @@ def test_tabela_ambiental_normalizes_deduplicates_and_parses_dates(
                 "ph": {"valor": 7},
                 "oxigenio_dissolvido": {"valor": 8},
                 "condutividade": {"valor": 100},
+                "turbidez": {"valor": 3.2},
             },
         },
         {
@@ -169,6 +170,7 @@ def test_tabela_ambiental_normalizes_deduplicates_and_parses_dates(
                 "ph": {"valor": 7.1},
                 "oxigenio_dissolvido": {"valor": 8.2},
                 "condutividade": {"valor": 101},
+                "turbidez": {"valor": 3.4},
             },
         },
         {
@@ -180,6 +182,7 @@ def test_tabela_ambiental_normalizes_deduplicates_and_parses_dates(
                 "ph": {"valor": 7.1},
                 "oxigenio_dissolvido": {"valor": 8.2},
                 "condutividade": {"valor": 101},
+                "turbidez": {"valor": 3.4},
             },
         },
         {
@@ -191,6 +194,7 @@ def test_tabela_ambiental_normalizes_deduplicates_and_parses_dates(
                 "ph": {"valor": 7.0},
                 "oxigenio_dissolvido": {"valor": 8.0},
                 "condutividade": {"valor": 99},
+                "turbidez": {"valor": 3.1},
             },
         },
     ]
@@ -208,7 +212,10 @@ def test_tabela_ambiental_normalizes_deduplicates_and_parses_dates(
         "LEIT-AMB-000003",
     }
     assert result["temperatura_agua"].tolist().count(21) == 1
-    assert {"ph", "oxigenio", "condutividade"}.issubset(result.columns)
+    assert {"ph", "oxigenio", "condutividade", "turbidez"}.issubset(
+        result.columns
+    )
+    assert result["turbidez"].tolist().count(3.4) == 1
     assert any("Retransmissão conflitante no lote" in rec.message for rec in caplog.records)
 
 
@@ -225,6 +232,7 @@ def test_tabela_ambiental_rejects_incomplete_readings_and_logs_reasons(
                 "ph": {"valor": 7},
                 "oxigenio_dissolvido": {"valor": 8},
                 "condutividade": {"valor": 100},
+                "turbidez": {"valor": 3.2},
             },
         }
 
@@ -285,7 +293,9 @@ def test_tabela_ambiental_rejects_records_without_required_keys(
 def test_tabela_ambiental_rejects_missing_nonnumeric_and_invalid_measurements(
     monkeypatch, tmp_path, caplog
 ):
-    def record(reading_id, temperature=20, ph=7, oxygen=8, conductivity=100):
+    def record(
+        reading_id, temperature=20, ph=7, oxygen=8, conductivity=100, turbidity=3.2
+    ):
         return {
             "id": reading_id,
             "estacao_id": 7,
@@ -295,6 +305,7 @@ def test_tabela_ambiental_rejects_missing_nonnumeric_and_invalid_measurements(
                 "ph": {"valor": ph},
                 "oxigenio_dissolvido": {"valor": oxygen},
                 "condutividade": {"valor": conductivity},
+                "turbidez": {"valor": turbidity},
             },
         }
 
@@ -311,6 +322,9 @@ def test_tabela_ambiental_rejects_missing_nonnumeric_and_invalid_measurements(
         record("ph-above", ph=14.1),
         record("negative-oxygen", oxygen=-0.1),
         record("negative-conductivity", conductivity=-0.1),
+        record("missing-turbidity", turbidity=None),
+        record("nonnumeric-turbidity", turbidity="sem-leitura"),
+        record("negative-turbidity", turbidity=-0.1),
     ]
     path = save_json(tmp_path, "water.json", {"leituras_ambientais": records})
     monkeypatch.setattr(ambiental, "get_path", lambda key: path)
@@ -325,7 +339,9 @@ def test_tabela_ambiental_rejects_missing_nonnumeric_and_invalid_measurements(
     }
     assert all(
         pd.api.types.is_numeric_dtype(result[column])
-        for column in ["temperatura_agua", "ph", "oxigenio", "condutividade"]
+        for column in [
+            "temperatura_agua", "ph", "oxigenio", "condutividade", "turbidez"
+        ]
     )
     assert str(result["data_leitura"].dt.tz) == "UTC"
     assert any("temperatura_agua ausente" in record.message for record in caplog.records)
@@ -337,10 +353,17 @@ def test_tabela_ambiental_rejects_missing_nonnumeric_and_invalid_measurements(
     assert any("ph fora do intervalo 0-14" in record.message for record in caplog.records)
     assert any("oxigenio negativo" in record.message for record in caplog.records)
     assert any("condutividade negativa" in record.message for record in caplog.records)
+    assert any("turbidez ausente" in record.message for record in caplog.records)
+    assert any("turbidez nao numerico" in record.message for record in caplog.records)
+    assert any("turbidez negativa" in record.message for record in caplog.records)
     assert sum(
         "Leitura ambiental rejeitada" in record.message
         for record in caplog.records
+<<<<<<< HEAD
     ) == 8
+=======
+    ) == 9
+>>>>>>> origin/feature/karintia
 
 
 def test_tabela_metereologica_normalizes_numeric_fields_and_deduplicates(
