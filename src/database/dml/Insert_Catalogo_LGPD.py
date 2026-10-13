@@ -9,8 +9,9 @@ sys.path.append(str(Path(__file__).resolve().parents[2]))
 from config.settings import configure_logging, create_db_engine
 
 
-# 3.2 LGPD (item 32): inventaria CPF e nome completo com classificacao,
-# finalidade, protecao e politica de acesso.
+# Referencia: projeto_final.pdf, secao 3.2 (LGPD de operadores);
+# features.csv IDs 32 (catalogo), 33 (pseudonimizacao), 34 (criptografia) e 38 (Operadores).
+# Inventaria CPF e nome completo com classificacao, finalidade, protecao e politica de acesso.
 METADADOS_CATALOGO = (
     {
         "schema_name": "dbo",

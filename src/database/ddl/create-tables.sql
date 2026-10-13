@@ -1,10 +1,55 @@
--- Cria a estrutura relacional do banco de dados monitoramento.
--- O script recria as tabelas operacionais listadas no bloco DROP e cria, se ausentes,
--- as entidades de localização, leituras, operadores e catálogo LGPD.
--- A ordem das operações respeita as dependências entre as chaves estrangeiras.
 
 USE monitoramento
 GO
+
+-- REFERENCIAS DE ENTREGA: projeto_final.pdf / features.csv
+-- PDF secao 2, "leituras temporais de parametros" -> features.csv IDs 4-9.
+-- PDF secao 3.3, "Parametros (Tabela de Dominio)" -> features.csv ID 39.
+-- PDF secao 3.3, "Leituras (Tabela Transacional / Cabecalho)" -> ID 40.
+-- PDF secao 3.3, "Parametros Leitura_Itens (Tabela Associativa N:M)" -> ID 41.
+-- PDF secao 3.3, "Operadores (Tabela Cadastral)" -> ID 38.
+--
+/* ESPECIFICACAO DO MODELO NORMALIZADO (decisao da etapa 2; nao executavel):
+-- dbo.parametros: 
+    id BIGINT IDENTITY PK; 
+    codigo VARCHAR(50) NOT NULL UNIQUE;
+    nome VARCHAR(150) NOT NULL; 
+    unidade_medida VARCHAR(50) NOT NULL;
+-- dbo.Leituras: 
+    id BIGINT IDENTITY PK; 
+    origem VARCHAR(30) NOT NULL;
+    chave_origem VARCHAR(150) NOT NULL; 
+    id_estacao BIGINT NOT NULL FK 
+    dbo.estacao(id);
+    id_operador BIGINT NULL FK dbo.operadores(id); 
+    data_leitura DATETIMEOFFSET NOT NULL;
+    UNIQUE (origem, chave_origem);
+
+A origem separa os dois contratos legados;
+-- chave_origem usa id_leitura_origem para agua e serializacao sem ambiguidade
+-- de id_estacao + instante UTC para meteorologia, preservando as chaves atuais.
+
+-- dbo.Leitura_Itens: 
+    id_leitura BIGINT NOT NULL FK dbo.Leituras(id) ON DELETE CASCADE;
+    id_parametro BIGINT NOT NULL FK dbo.parametros(id); 
+    valor_numerico NUMERIC(18,6) NULL;
+    valor_texto VARCHAR(200) NULL; 
+    CHECK (
+        (valor_numerico IS NOT NULL AND valor_texto IS NULL) OR
+        (valor_numerico IS NULL AND valor_texto IS NOT NULL)
+    ) -- exige exatamente um dos dois valores;
+    PRIMARY KEY (id_leitura, id_parametro) 
+    
+impede repetir o mesmo parametro no evento.
+qualidade_agua e leitura_meteorologica sao os contratos legados de leitura.
+Na migracao, parsers, chaves naturais e interfaces de consulta devem ser preservados; 
+a DML passara a gravar o cabecalho e seus itens em uma transacao.
+Os nomes legados devem ser mantidos como interfaces de compatibilidade (views ou adaptacao equivalente de leitura), sem gravar a mesma medicao nas tabelas
+antigas e em Leitura_Itens. Nao fazer dual-write. 
+Fazer backfill idempotente usando as chaves naturais atuais antes da troca; 
+validar cobertura de consultas.
+id_operador fica NULL para leituras automaticas/historicas sem operador conhecido;
+estacao, instante, parametro e valor do item permanecem obrigatorios.*/
 
 -- ============================================================
 -- ASSUNTO: GEOGRAFIA / LOCALIZAÇÃO FÍSICA
@@ -89,6 +134,7 @@ GO
 -- ASSUNTO: LEITURA DA QUALIDADE DA ÁGUA
 -- ============================================================
 -- 3.2 Unicidade: chaves naturais impedem gravar novamente leituras retransmitidas.
+-- Referencia: projeto_final.pdf, secao 2; features.csv IDs 4, 6, 7, 8 e 9.
 
 IF OBJECT_ID('dbo.qualidade_agua', 'U') IS NULL
 BEGIN
@@ -126,6 +172,7 @@ GO
 -- ============================================================
 -- ASSUNTO: METEOROLOGIA OBSERVADA
 -- ============================================================
+-- Referencia: projeto_final.pdf, secao 2; features.csv IDs 5 e 4-9 (leituras temporais).
 
 IF OBJECT_ID('dbo.leitura_meteorologica', 'U') IS NULL
 BEGIN
@@ -172,6 +219,8 @@ GO
 -- ============================================================
 -- ASSUNTO: OPERADORES
 -- Receber registros de uma fonte aprovada, protegê-los antes da gravação e persistir os campos protegidos.
+-- Referencia: projeto_final.pdf, secao 1 (origem dos dados) -> features.csv ID 10;
+-- secao 3.3 (tabela cadastral) -> ID 38; secao 3.2 (LGPD de operadores) -> IDs 32-34.
 -- ============================================================
 
 IF OBJECT_ID('dbo.operadores', 'U') IS NULL
@@ -204,8 +253,35 @@ IF COL_LENGTH('dbo.operadores', 'id_estacao') IS NULL
 GO
 
 -- ============================================================
+-- ASSUNTO: PARAMETROS DE MEDICAO - TABELA DE DOMINIO
+-- Referencia: projeto_final.pdf, secao 3.3; features.csv ID 39.
+-- Codigos estaveis sao resolvidos pela carga em Insert_Parametros.py.
+-- ============================================================
+IF OBJECT_ID('dbo.parametros', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.parametros (
+        id BIGINT IDENTITY(1,1) NOT NULL,
+        codigo VARCHAR(50) NOT NULL,
+        nome VARCHAR(150) NOT NULL,
+        unidade_medida VARCHAR(50) NOT NULL,
+        criado_em DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
+
+        CONSTRAINT pk_parametros PRIMARY KEY (id),
+        CONSTRAINT uq_parametros_codigo UNIQUE (codigo),
+        CONSTRAINT ck_parametros_codigo_nao_vazio
+            CHECK (LEN(LTRIM(RTRIM(codigo))) > 0),
+        CONSTRAINT ck_parametros_nome_nao_vazio
+            CHECK (LEN(LTRIM(RTRIM(nome))) > 0),
+        CONSTRAINT ck_parametros_unidade_nao_vazia
+            CHECK (LEN(LTRIM(RTRIM(unidade_medida))) > 0)
+    );
+END;
+GO
+
+-- ============================================================
 -- ASSUNTO: LGPD
 -- cadastrar de forma idempotente os metadados dos dois campos.
+-- Referencia: projeto_final.pdf, secao 3.2 (LGPD) -> features.csv ID 32.
 -- ============================================================
 
 IF OBJECT_ID('dbo.catalogo_dados', 'U') IS NULL

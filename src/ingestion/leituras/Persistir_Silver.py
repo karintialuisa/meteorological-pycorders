@@ -15,7 +15,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from config.settings import PROJECT_ROOT, get_silver_dir
 
 
-# Itens 35-36: a Silver aceita somente os datasets de leitura e grava Parquet/Snappy.
+# Referencia: projeto_final.pdf, secao 3.2 (persistencia e compressao);
+# features.csv IDs 35 (Parquet) e 36 (Snappy).
+# Leituras temporais de parametros: projeto_final.pdf, secao 2; features.csv IDs 4-9.
+# A Silver aceita somente os datasets de leitura e grava Parquet/Snappy.
 CONTRATOS_DATASETS = {
     "qualidade_agua": {
         "chave": ["id_leitura_origem"],
