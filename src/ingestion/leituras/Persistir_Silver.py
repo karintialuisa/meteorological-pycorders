@@ -159,7 +159,11 @@ def _resumo_qualidade(
     consistencia_invalida = _mascara_vazia(preparado, contrato["relacoes"])
 
     if dataset == "qualidade_agua":
-        acuracia_invalida = pd.Series(False, index=preparado.index)
+        # 3.2 Acurácia e validade: aceita água de 0 °C a +50 °C, inclusive.
+        acuracia_invalida = (
+            (preparado["temperatura_agua"] < 0)
+            | (preparado["temperatura_agua"] > 50)
+        ).fillna(False)
         validade_invalida = (
             (preparado["ph"] < 0)
             | (preparado["ph"] > 14)
@@ -168,6 +172,7 @@ def _resumo_qualidade(
             | _mascara_infinita(preparado, contrato["numericas"])
         ).fillna(False)
     else:
+        # 3.2 Acurácia e validade: aceita ar de -50 °C a +60 °C, inclusive.
         acuracia_invalida = (
             (preparado["temperatura_ar"] < -50)
             | (preparado["temperatura_ar"] > 60)

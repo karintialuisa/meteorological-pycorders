@@ -202,7 +202,7 @@ As regras verificadas na Silver são:
 
 - **Completude:** campos obrigatórios nulos/vazios são rejeitados.
 - **Unicidade:** duplicatas no lote ou já persistidas são contabilizadas e não são regravadas.
-- **Acurácia:** temperatura do ar fora de -50 °C a +60 °C é rejeitada.
+- **Acurácia:** temperatura do ar fora de -50 °C a +60 °C e temperatura da água fora de 0 °C a +50 °C são rejeitadas; os limites são inclusivos.
 - **Validade:** pH fora de 0–14, oxigênio/condutividade negativos, umidade fora de 0–100 e chuva/vento negativos são rejeitados; valores numéricos não finitos também são inválidos.
 - **Tempestividade:** timestamps são convertidos para UTC e as linhas da partição são ordenadas cronologicamente.
 - **Consistência:** as chaves resolvidas de estação e cidade precisam estar preenchidas; as cargas também resolvem as FKs antes da persistência.
@@ -213,7 +213,7 @@ O Parquet da Silver e o SQL Server não compartilham uma transação distribuíd
 
 ## Regras de qualidade e pendências
 
-Os parsers rejeitam leituras sem identidade, estação, data ou medições obrigatórias, validam pH, umidade, precipitação e vento, e normalizam datas para UTC. A faixa aprovada de temperatura do ar é -50 °C a +60 °C. Ainda não há faixa acordada para temperatura da água; ela é exigida como campo numérico, mas não é rejeitada por limite físico. As dimensões de consistência também não cobrem todas as possíveis contradições entre leituras de fontes diferentes.
+Os parsers rejeitam leituras sem identidade, estação, data ou medições obrigatórias, validam temperaturas, pH, umidade, precipitação e vento, e normalizam datas para UTC. As faixas inclusivas de temperatura são -50 °C a +60 °C para o ar e 0 °C a +50 °C para a água; parser e Silver rejeitam valores fora delas. As dimensões de consistência também não cobrem todas as possíveis contradições entre leituras de fontes diferentes.
 
 ## Testes
 
