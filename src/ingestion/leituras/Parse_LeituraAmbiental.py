@@ -110,6 +110,11 @@ def tabela_ambiental() -> pd.DataFrame:
         motivos_rejeicao[f"{coluna_destino} ausente"] = valor_ausente
         motivos_rejeicao[f"{coluna_destino} nao numerico"] = valor_nao_numerico
 
+    # 3.2 Acurácia e validade: aceita água de 0 °C a +50 °C, inclusive.
+    motivos_rejeicao["temperatura_agua fora do intervalo 0-50"] = (
+        (df_origem["temperatura_agua"] < 0)
+        | (df_origem["temperatura_agua"] > 50)
+    ).fillna(False)
     motivos_rejeicao["ph fora do intervalo 0-14"] = (
         (df_origem["ph"] < 0) | (df_origem["ph"] > 14)
     ).fillna(False)

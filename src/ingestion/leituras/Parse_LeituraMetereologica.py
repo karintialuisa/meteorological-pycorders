@@ -88,7 +88,7 @@ def tabela_metereologica() -> pd.DataFrame:
     for col in colunas_numericas:
         df_metereologica[col] = pd.to_numeric(df_metereologica[col], errors="coerce")
 
-    # Acuracia e validade (item 29): limites fisicos de temperatura, umidade, chuva e vento.
+    # 3.2 Acurácia e validade: aceita ar de -50 °C a +60 °C, inclusive.
     campos_invalidos = pd.DataFrame(
         {
             "temperatura_ar": (df_metereologica["temperatura_ar"] < -50)

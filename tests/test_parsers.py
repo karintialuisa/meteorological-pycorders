@@ -312,6 +312,10 @@ def test_tabela_ambiental_rejects_missing_nonnumeric_and_invalid_measurements(
     records = [
         record("ph-min", ph="0", oxygen="0", conductivity="0"),
         record("ph-max", ph="14"),
+        record("water-temp-min", temperature="0"),
+        record("water-temp-max", temperature="50"),
+        record("water-temp-below", temperature="-0.1"),
+        record("water-temp-above", temperature="50.1"),
         record("missing-temperature", temperature=None),
         record("nonnumeric-oxygen", oxygen="sem-leitura"),
         record("ph-below", ph=-0.1),
@@ -327,7 +331,12 @@ def test_tabela_ambiental_rejects_missing_nonnumeric_and_invalid_measurements(
 
     result = ambiental.tabela_ambiental()
 
-    assert set(result["id_leitura_origem"]) == {"ph-min", "ph-max"}
+    assert set(result["id_leitura_origem"]) == {
+        "ph-min",
+        "ph-max",
+        "water-temp-min",
+        "water-temp-max",
+    }
     assert all(
         pd.api.types.is_numeric_dtype(result[column])
         for column in [
@@ -336,6 +345,10 @@ def test_tabela_ambiental_rejects_missing_nonnumeric_and_invalid_measurements(
     )
     assert str(result["data_leitura"].dt.tz) == "UTC"
     assert any("temperatura_agua ausente" in record.message for record in caplog.records)
+    assert sum(
+        "motivos=temperatura_agua fora do intervalo 0-50" in record.message
+        for record in caplog.records
+    ) == 2
     assert any("oxigenio nao numerico" in record.message for record in caplog.records)
     assert any("ph fora do intervalo 0-14" in record.message for record in caplog.records)
     assert any("oxigenio negativo" in record.message for record in caplog.records)
@@ -346,7 +359,11 @@ def test_tabela_ambiental_rejects_missing_nonnumeric_and_invalid_measurements(
     assert sum(
         "Leitura ambiental rejeitada" in record.message
         for record in caplog.records
+<<<<<<< HEAD
+    ) == 8
+=======
     ) == 9
+>>>>>>> origin/feature/karintia
 
 
 def test_tabela_metereologica_normalizes_numeric_fields_and_deduplicates(

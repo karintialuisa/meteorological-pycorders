@@ -14,13 +14,17 @@ def _water_record(
     ph=7.0,
     oxygen=8.0,
     conductivity=100.0,
+<<<<<<< HEAD
+    temperature=20.0,
+=======
     turbidity=2.5,
+>>>>>>> origin/feature/karintia
 ):
     return {
         "id_leitura_origem": reading_id,
         "id_estacao": 20,
         "data_leitura": timestamp,
-        "temperatura_agua": 20.0,
+        "temperatura_agua": temperature,
         "ph": ph,
         "oxigenio": oxygen,
         "condutividade": conductivity,
@@ -188,6 +192,64 @@ def test_quality_manifest_counts_invalid_and_incomplete_rows(tmp_path):
     assert dimensions["validity"]["linhas_rejeitadas"] == 2
     assert dimensions["accuracy"]["linhas_rejeitadas"] == 0
     assert dimensions["timeliness"]["linhas_rejeitadas"] == 0
+
+
+def test_silver_rejects_water_temperatures_outside_domain_range(tmp_path):
+    rows = pd.DataFrame(
+        [
+            _water_record("W-min", "2026-05-20T10:00:00Z", temperature=0),
+            _water_record("W-max", "2026-05-20T11:00:00Z", temperature=50),
+            _water_record("W-below", "2026-05-20T12:00:00Z", temperature=-0.1),
+            _water_record("W-above", "2026-05-20T13:00:00Z", temperature=50.1),
+        ]
+    )
+
+    result = persistir_silver(rows, "qualidade_agua", tmp_path)
+
+    partition = (
+        tmp_path
+        / "qualidade_agua"
+        / "data_leitura=2026-05-20"
+        / "part-00000.parquet"
+    )
+    restored = pd.read_parquet(partition, engine="pyarrow")
+    accuracy = _manifest(result)["dimensoes_qualidade"]["accuracy"]
+    assert result["linhas_gravadas"] == 2
+    assert set(restored["id_leitura_origem"]) == {"W-min", "W-max"}
+    assert accuracy == {
+        "linhas_avaliadas": 4,
+        "linhas_aprovadas": 2,
+        "linhas_rejeitadas": 2,
+    }
+
+
+def test_silver_rejects_air_temperatures_outside_agreed_range(tmp_path):
+    rows = pd.DataFrame(
+        [
+            _weather_record(20, "2026-05-20T10:00:00Z", temperature=-50),
+            _weather_record(21, "2026-05-20T11:00:00Z", temperature=60),
+            _weather_record(22, "2026-05-20T12:00:00Z", temperature=-50.1),
+            _weather_record(23, "2026-05-20T13:00:00Z", temperature=60.1),
+        ]
+    )
+
+    result = persistir_silver(rows, "leitura_meteorologica", tmp_path)
+
+    partition = (
+        tmp_path
+        / "leitura_meteorologica"
+        / "data_leitura=2026-05-20"
+        / "part-00000.parquet"
+    )
+    restored = pd.read_parquet(partition, engine="pyarrow")
+    accuracy = _manifest(result)["dimensoes_qualidade"]["accuracy"]
+    assert result["linhas_gravadas"] == 2
+    assert set(restored["temperatura_ar"]) == {-50, 60}
+    assert accuracy == {
+        "linhas_avaliadas": 4,
+        "linhas_aprovadas": 2,
+        "linhas_rejeitadas": 2,
+    }
 
 
 def test_empty_silver_batch_writes_zero_count_manifest(tmp_path):
