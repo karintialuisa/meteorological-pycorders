@@ -120,14 +120,7 @@ BEGIN
 
     CREATE INDEX idx_estacao_cidade_id
     ON estacao (id_cidade);
-
-    CREATE INDEX idx_estacao_status
-        ON estacao (status);
 END;
-GO
-
-IF COL_LENGTH('dbo.estacao', 'codigo_origem') IS NULL
-    ALTER TABLE dbo.estacao ADD codigo_origem VARCHAR(50) NULL;
 GO
 
 -- ============================================================
@@ -275,6 +268,77 @@ BEGIN
         CONSTRAINT ck_parametros_unidade_nao_vazia
             CHECK (LEN(LTRIM(RTRIM(unidade_medida))) > 0)
     );
+END;
+GO
+
+-- ============================================================
+-- ASSUNTO: LEITURAS - CABECALHO TRANSACIONAL
+-- Referencia: projeto_final.pdf, secao 3.3; features.csv ID 40.
+-- A DML resolve codigo_origem da estacao e cpf_hash do operador.
+-- ============================================================
+IF OBJECT_ID('dbo.leituras', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.leituras (
+        id BIGINT IDENTITY(1,1) NOT NULL,
+        origem VARCHAR(30) NOT NULL,
+        chave_origem VARCHAR(150) NOT NULL,
+        id_estacao BIGINT NOT NULL,
+        id_operador BIGINT NULL,
+        data_leitura DATETIMEOFFSET NOT NULL,
+        criado_em DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
+
+        CONSTRAINT pk_leituras PRIMARY KEY (id),
+        CONSTRAINT uq_leituras_origem_chave UNIQUE (origem, chave_origem),
+        CONSTRAINT ck_leituras_origem
+            CHECK (origem IN ('qualidade_agua', 'leitura_meteorologica')),
+        CONSTRAINT ck_leituras_chave_origem_nao_vazia
+            CHECK (LEN(LTRIM(RTRIM(chave_origem))) > 0),
+        CONSTRAINT fk_leituras_estacao
+            FOREIGN KEY (id_estacao)
+            REFERENCES dbo.estacao(id),
+        CONSTRAINT fk_leituras_operador
+            FOREIGN KEY (id_operador)
+            REFERENCES dbo.operadores(id)
+    );
+
+    CREATE INDEX idx_leituras_estacao_data
+        ON dbo.leituras (id_estacao, data_leitura);
+END;
+GO
+
+-- ============================================================
+-- ASSUNTO: LEITURA_ITENS - ASSOCIACAO LEITURA/PARAMETRO
+-- Referencia: projeto_final.pdf, secao 3.3; features.csv ID 41.
+-- A PK composta impede repetir um parametro no mesmo evento de leitura.
+-- ============================================================
+IF OBJECT_ID('dbo.leitura_itens', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.leitura_itens (
+        id_leitura BIGINT NOT NULL,
+        id_parametro BIGINT NOT NULL,
+        valor_numerico NUMERIC(18,6) NULL,
+        valor_texto VARCHAR(200) NULL,
+        criado_em DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
+
+        CONSTRAINT pk_leitura_itens PRIMARY KEY (id_leitura, id_parametro),
+        CONSTRAINT ck_leitura_itens_um_valor
+            CHECK (
+                (valor_numerico IS NOT NULL AND valor_texto IS NULL)
+                OR (valor_numerico IS NULL AND valor_texto IS NOT NULL)
+            ),
+        CONSTRAINT ck_leitura_itens_texto_nao_vazio
+            CHECK (valor_texto IS NULL OR LEN(LTRIM(RTRIM(valor_texto))) > 0),
+        CONSTRAINT fk_leitura_itens_leitura
+            FOREIGN KEY (id_leitura)
+            REFERENCES dbo.leituras(id)
+            ON DELETE CASCADE,
+        CONSTRAINT fk_leitura_itens_parametro
+            FOREIGN KEY (id_parametro)
+            REFERENCES dbo.parametros(id)
+    );
+
+    CREATE INDEX idx_leitura_itens_parametro
+        ON dbo.leitura_itens (id_parametro);
 END;
 GO
 
