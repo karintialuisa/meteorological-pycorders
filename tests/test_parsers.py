@@ -359,11 +359,7 @@ def test_tabela_ambiental_rejects_missing_nonnumeric_and_invalid_measurements(
     assert sum(
         "Leitura ambiental rejeitada" in record.message
         for record in caplog.records
-<<<<<<< HEAD
-    ) == 8
-=======
-    ) == 9
->>>>>>> origin/feature/karintia
+    ) == 11
 
 
 def test_tabela_metereologica_normalizes_numeric_fields_and_deduplicates(

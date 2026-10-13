@@ -14,11 +14,8 @@ def _water_record(
     ph=7.0,
     oxygen=8.0,
     conductivity=100.0,
-<<<<<<< HEAD
     temperature=20.0,
-=======
     turbidity=2.5,
->>>>>>> origin/feature/karintia
 ):
     return {
         "id_leitura_origem": reading_id,
