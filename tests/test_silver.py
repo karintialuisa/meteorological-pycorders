@@ -8,7 +8,14 @@ import pyarrow.parquet as parquet
 from src.ingestion.leituras.Persistir_Silver import persistir_silver
 
 
-def _water_record(reading_id, timestamp, ph=7.0, oxygen=8.0, conductivity=100.0):
+def _water_record(
+    reading_id,
+    timestamp,
+    ph=7.0,
+    oxygen=8.0,
+    conductivity=100.0,
+    turbidity=2.5,
+):
     return {
         "id_leitura_origem": reading_id,
         "id_estacao": 20,
@@ -17,6 +24,7 @@ def _water_record(reading_id, timestamp, ph=7.0, oxygen=8.0, conductivity=100.0)
         "ph": ph,
         "oxigenio": oxygen,
         "condutividade": conductivity,
+        "turbidez": turbidity,
     }
 
 
@@ -61,6 +69,7 @@ def test_water_round_trip_partition_snappy_and_idempotent_merge(tmp_path):
     parquet_file.close()
     assert restored["id_leitura_origem"].tolist() == ["W-1"]
     assert restored.loc[0, "ph"] == 7.0
+    assert restored.loc[0, "turbidez"] == 2.5
     assert "__index_level_0__" not in restored.columns
 
     repeated = persistir_silver(rows, "qualidade_agua", tmp_path)
@@ -74,6 +83,38 @@ def test_water_round_trip_partition_snappy_and_idempotent_merge(tmp_path):
     assert merged["linhas_gravadas"] == 1
     assert set(restored["id_leitura_origem"]) == {"W-1", "W-3"}
     assert (tmp_path / "qualidade_agua" / "data_leitura=2026-05-21").is_dir()
+
+
+def test_water_merge_evolves_legacy_partition_schema(tmp_path):
+    partition = (
+        tmp_path
+        / "qualidade_agua"
+        / "data_leitura=2026-05-20"
+    )
+    partition.mkdir(parents=True)
+    legacy_record = _water_record("W-OLD", "2026-05-20T10:00:00Z")
+    legacy_record.pop("turbidez")
+    legacy_record["data_leitura"] = pd.to_datetime(
+        legacy_record["data_leitura"], utc=True
+    )
+    pd.DataFrame([legacy_record]).to_parquet(
+        partition / "part-00000.parquet", engine="pyarrow", index=False
+    )
+
+    result = persistir_silver(
+        pd.DataFrame(
+            [_water_record("W-NEW", "2026-05-20T12:00:00Z", turbidity=75.0)]
+        ),
+        "qualidade_agua",
+        tmp_path,
+    )
+
+    restored = pd.read_parquet(
+        partition / "part-00000.parquet", engine="pyarrow"
+    ).set_index("id_leitura_origem")
+    assert result["linhas_gravadas"] == 1
+    assert pd.isna(restored.loc["W-OLD", "turbidez"])
+    assert restored.loc["W-NEW", "turbidez"] == 75.0
 
 
 def test_weather_uses_utc_natural_key_and_writes_quality_manifest(tmp_path):
@@ -134,6 +175,7 @@ def test_quality_manifest_counts_invalid_and_incomplete_rows(tmp_path):
             _water_record("W-valid", "2026-05-20T12:00:00Z"),
             _water_record("W-ph", "2026-05-20T13:00:00Z", ph=14.1),
             _water_record("W-missing", "2026-05-20T14:00:00Z", oxygen=None),
+            _water_record("W-turbidity", "2026-05-20T15:00:00Z", turbidity=-0.1),
         ]
     )
 
@@ -143,7 +185,7 @@ def test_quality_manifest_counts_invalid_and_incomplete_rows(tmp_path):
     dimensions = manifest["dimensoes_qualidade"]
     assert result["linhas_gravadas"] == 1
     assert dimensions["completeness"]["linhas_rejeitadas"] == 1
-    assert dimensions["validity"]["linhas_rejeitadas"] == 1
+    assert dimensions["validity"]["linhas_rejeitadas"] == 2
     assert dimensions["accuracy"]["linhas_rejeitadas"] == 0
     assert dimensions["timeliness"]["linhas_rejeitadas"] == 0
 
@@ -157,6 +199,7 @@ def test_empty_silver_batch_writes_zero_count_manifest(tmp_path):
         "ph",
         "oxigenio",
         "condutividade",
+        "turbidez",
     ]
 
     result = persistir_silver(

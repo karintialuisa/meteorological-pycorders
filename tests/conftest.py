@@ -60,6 +60,7 @@ def banco_teste():
                 "ph REAL CHECK (ph IS NULL OR ph BETWEEN 0 AND 14), "
                 "oxigenio REAL CHECK (oxigenio IS NULL OR oxigenio >= 0), "
                 "condutividade REAL CHECK (condutividade IS NULL OR condutividade >= 0), "
+                "turbidez REAL CHECK (turbidez IS NULL OR turbidez >= 0), "
                 "FOREIGN KEY (id_estacao) REFERENCES estacao(id))"
             )
         )

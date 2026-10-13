@@ -101,6 +101,7 @@ BEGIN
         ph                      NUMERIC(5,3),
         oxigenio                NUMERIC(10,3),
         condutividade           NUMERIC(12,3),
+        turbidez                NUMERIC(12,3),
         criado_em               DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 
         CONSTRAINT fk_qualidade_estacao
@@ -118,9 +119,22 @@ BEGIN
             CHECK (oxigenio IS NULL OR oxigenio >= 0),
 
         CONSTRAINT ck_qualidade_condutividade
-            CHECK (condutividade IS NULL OR condutividade >= 0)
+            CHECK (condutividade IS NULL OR condutividade >= 0),
+
+        CONSTRAINT ck_qualidade_turbidez
+            CHECK (turbidez IS NULL OR turbidez >= 0)
         );
     END;
+GO
+
+IF COL_LENGTH('dbo.qualidade_agua', 'turbidez') IS NULL
+    ALTER TABLE dbo.qualidade_agua ADD turbidez NUMERIC(12,3) NULL;
+GO
+
+IF OBJECT_ID('dbo.ck_qualidade_turbidez', 'C') IS NULL
+    ALTER TABLE dbo.qualidade_agua
+        ADD CONSTRAINT ck_qualidade_turbidez
+        CHECK (turbidez IS NULL OR turbidez >= 0);
 GO
 
 -- ============================================================
