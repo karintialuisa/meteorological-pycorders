@@ -136,10 +136,11 @@ BEGIN
         id_leitura_origem       VARCHAR(100) NOT NULL,
         id_estacao              BIGINT NOT NULL,
         data_leitura            DATETIMEOFFSET NOT NULL,
-        temperatura_agua        NUMERIC(8,3),
-        ph                      NUMERIC(5,3),
-        oxigenio                NUMERIC(10,3),
-        condutividade           NUMERIC(12,3),
+        temperatura_agua        NUMERIC(8,3) NULL,
+        ph                      NUMERIC(5,3) NULL,
+        oxigenio                NUMERIC(10,3) NULL,
+        condutividade           NUMERIC(12,3) NULL,
+        turbidez                NUMERIC(12,3) NULL,
         criado_em               DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 
         CONSTRAINT fk_qualidade_estacao
@@ -157,7 +158,10 @@ BEGIN
             CHECK (oxigenio IS NULL OR oxigenio >= 0),
 
         CONSTRAINT ck_qualidade_condutividade
-            CHECK (condutividade IS NULL OR condutividade >= 0)
+            CHECK (condutividade IS NULL OR condutividade >= 0),
+
+        CONSTRAINT ck_qualidade_turbidez
+            CHECK (turbidez IS NULL OR turbidez >= 0)
         );
     END;
 GO

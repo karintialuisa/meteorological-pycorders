@@ -461,7 +461,8 @@ query_agua = """
         CAST(q.temperatura_agua AS FLOAT) AS [Temperatura],
         CAST(q.ph AS FLOAT) AS [pH],
         CAST(q.oxigenio AS FLOAT) AS [Oxigênio],
-        CAST(q.condutividade AS FLOAT) AS [Condutividade]
+        CAST(q.condutividade AS FLOAT) AS [Condutividade],
+        CAST(q.turbidez AS FLOAT) AS [Turbidez]
     FROM qualidade_agua q
     JOIN estacao e ON q.id_estacao = e.id
     JOIN cidade c ON e.id_cidade = c.id
@@ -519,14 +520,16 @@ with aba1:
         ph_agua = df_agua['pH'].dropna()
         ox_agua = df_agua['Oxigênio'].dropna()
         condutividade_agua = df_agua['Condutividade'].dropna()
+        turbidez_agua = df_agua['Turbidez'].dropna()
 
         # Cálculo de IQR (Q3 - Q1)
         iqr_temp = temp_agua.quantile(0.75) - temp_agua.quantile(0.25) if not temp_agua.empty else 0
         iqr_ph = ph_agua.quantile(0.75) - ph_agua.quantile(0.25) if not ph_agua.empty else 0
         iqr_ox = ox_agua.quantile(0.75) - ox_agua.quantile(0.25) if not ox_agua.empty else 0
         iqr_condutividade = condutividade_agua.quantile(0.75) - condutividade_agua.quantile(0.25) if not condutividade_agua.empty else 0
+        iqr_turbidez = turbidez_agua.quantile(0.75) - turbidez_agua.quantile(0.25) if not turbidez_agua.empty else 0
         # Exibição dos cards
-        col1, col2, col3, col4 = st.columns(4)
+        col1, col2, col3, col4, col5 = st.columns(5)
 
         with col1:
             st.metric("Média Temp. Água", f"{temp_agua.mean():.2f} °C")
@@ -544,6 +547,10 @@ with aba1:
             st.metric("Média Condutividade", f"{condutividade_agua.mean():.2f} µS/cm")
             st.caption(f"**Mediana:** {condutividade_agua.median():.2f} µS/cm | **Desv. Padrão:** {condutividade_agua.std():.2f} | **IQR:** {iqr_condutividade:.2f}")
 
+        with col5:
+            st.metric("Média Turbidez", f"{turbidez_agua.mean():.2f} NTU")
+            st.caption(f"**Mediana:** {turbidez_agua.median():.2f} NTU | **Desv. Padrão:** {turbidez_agua.std():.2f} | **IQR:** {iqr_turbidez:.2f}")
+
         exibir_relatorio_outliers(
             df_agua,
             {
@@ -551,17 +558,20 @@ with aba1:
                 "pH": "pH",
                 "Oxigênio": "Oxigênio dissolvido",
                 "Condutividade": "Condutividade",
+                "Turbidez": "Turbidez da água",
             },
             "agua",
             ["ID", "Estação", "Cidade", "UF", "Data/Hora"],
         )
 
         st.markdown("---")
-        st.caption("*Temperatura: °C | Chuva: mm | Vento: Km/h | Condutividade: µS/cm | Oxigênio: mg/L")
+        st.caption("*Temperatura: °C | Chuva: mm | Vento: Km/h | Condutividade: µS/cm | Oxigênio: mg/L | Turbidez: NTU")
 
         # Formatação para exibição na Tabela (2 casas decimais)
         df_agua_exibicao = df_agua.copy()
-        colunas_float_agua = ["Temperatura", "pH", "Oxigênio", "Condutividade"]
+        colunas_float_agua = [
+            "Temperatura", "pH", "Oxigênio", "Condutividade", "Turbidez"
+        ]
         for col in colunas_float_agua:
             df_agua_exibicao[col] = df_agua_exibicao[col].map(lambda x: f"{x:.2f}" if pd.notnull(x) else "")
 
@@ -574,6 +584,7 @@ with aba1:
                 "Temperatura",
                 "Oxigênio",
                 "Condutividade",
+                "Turbidez",
             ],
         )
         dados_grafico_agua = preparar_dados_grafico(df_agua, metrica_agua)
