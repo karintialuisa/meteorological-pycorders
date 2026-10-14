@@ -17,7 +17,7 @@ O pipeline contempla:
 - Carga incremental de estados, cidades, estações, qualidade da água e meteorologia.
 - Resolução e validação de chaves entre os arquivos JSON e o SQL Server.
 - Modelo relacional de leituras com `parametros`, `leituras` e `leitura_itens`, cujas cargas na camada DML validam campos, resolvem chaves por código e são idempotentes.
-- Proteção de dados pessoais de operadores: CPF em HMAC-SHA-256 e nome completo cifrado com Fernet, com catálogo LGPD.
+- Proteção de dados pessoais de operadores: CPF em HMAC-SHA-256 e nome completo cifrado com Fernet, com catálogo LGPD. A descriptografia exige autorização explícita do chamador e registra auditoria sem conteúdo pessoal ou chaves.
 - Relatórios interativos por cidade e estação, com média, mediana, desvio padrão, variância amostral, IQR e contagem de outliers por parâmetro.
 - API FastAPI para listar cidades e consultar leituras carregadas dos JSONs.
 - Dashboard Streamlit para consultar no SQL Server e visualizar indicadores, tabelas e séries temporais.
@@ -41,6 +41,7 @@ meteorological-pycorders/
 ├── src/
 │   ├── config/
 │   │   ├── .env                     # Configuração local, não versionar
+│   │   ├── .env.example             # Modelo sem segredos
 │   │   ├── requirements.txt
 │   │   └── settings.py              # Ambiente, logs, caminhos JSON e conexão SQL
 │   ├── analytics/
@@ -173,7 +174,11 @@ Configure `src/config/.env` com as variáveis abaixo. Esse arquivo é local e ig
    AGRITEMPO_BEARER_TOKEN=adicione_o_token_fornecido_pela_fonte
    API_REQUESTS_PER_MINUTE=30
    API_RAW_DIR=src/ingestion/leituras
+   HMAC_SECRET_KEY=gere_um_segredo_aleatorio_longo
+   ENCRYPTION_KEY=gere_uma_chave_fernet
    ```
+
+`src/config/.env.example` é um modelo sem segredos. Copie-o para `src/config/.env` e substitua os marcadores antes de executar cargas que protegem dados de operadores. A opção 5 do menu executa os cadastros de parâmetros, catálogo LGPD e operadores; para operadores, as chaves HMAC e Fernet devem ser reais. O loader recusa valores que começam com `replace-with`.
 
 `Get_dados.py` usa a API Agritempo da Embrapa. O bearer deve ficar somente em `src/config/.env`; não o coloque no código nem o versione. O escopo atual dessa fonte é meteorológico, com os dados de temperatura do ar disponíveis no retorno climático. O contrato em `src/ingestion/api_ingestion.py` valida o envelope, os dados da estação e cada observação diária, exigindo data, ID e temperaturas mínima/máxima numéricas, finitas e coerentes entre si. Estações sem série climática são aceitas.
 
@@ -183,7 +188,7 @@ Bronze, Silver e Gold são nomes de etapas, não uma exigência de criar pastas 
 
 ## Execução
 
-Prepare o banco em uma instância SQL Server dedicada. Execute `src/database/ddl/create-database.sql` apenas quando o banco `monitoramento` ainda não existir; o comando `CREATE DATABASE` falha se o nome já estiver em uso. Em seguida, execute `src/database/ddl/create-tables.sql` pelo SSMS ou `sqlcmd`, pois o arquivo contém separadores `GO`. O script cria tabelas ausentes, mas não remove nem recria tabelas existentes e não migra constraints para um schema já criado. Colunas acrescentadas depois à definição (por exemplo `qualidade_agua.turbidez`) também não chegam a tabelas já criadas; confira o catálogo do banco antes de executar as cargas.
+Prepare o banco em uma instância SQL Server dedicada. Execute `src/database/ddl/create-database.sql` apenas quando o banco `monitoramento` ainda não existir; o comando `CREATE DATABASE` falha se o nome já estiver em uso. Em seguida, execute `src/database/ddl/create-tables.sql` pelo SSMS ou `sqlcmd`, pois o arquivo contém separadores `GO`. O script cria tabelas ausentes, mas não remove nem recria tabelas existentes e não migra constraints para um schema já criado. Em um banco criado com uma versão anterior do script, confira o catálogo antes das cargas, pois colunas acrescentadas depois à definição (como `qualidade_agua.turbidez`) não chegam a tabelas já criadas.
 
 Para abrir o menu e executar as cargas ou relatórios:
 
@@ -191,7 +196,7 @@ Para abrir o menu e executar as cargas ou relatórios:
    python -m src.main
    ```
 
-No menu, a opção de carga executa as inserções de localização, leituras ambientais e leituras meteorológicas. A opção de relatório permite selecionar cidade e estação. A carga depende de uma conexão SQL Server configurada em `src/config/.env`.
+No menu, a opção 1 executa as inserções de localização, leituras ambientais e leituras meteorológicas. A opção 2 abre relatórios; a opção 5 executa os cadastros de parâmetros, catálogo LGPD e operadores, nessa ordem, interrompendo ao primeiro erro. A carga depende de uma conexão SQL Server configurada em `src/config/.env` e de estações previamente cadastradas para os operadores.
 
 A opção `4` executa `Get_dados.py`: consulta estações e dados climáticos, aplica o limite `API_REQUESTS_PER_MINUTE` e acrescenta os resultados ao JSON cumulativo. Também é possível executar com `python Get_dados.py`. O módulo `src/ingestion/api_ingestion.py` permanece como conector genérico separado para endpoints que já atendam aos contratos ambiental ou meteorológico definidos nele; ele não é o coletor da Agritempo.
 
@@ -270,13 +275,15 @@ Os testes SQLite exercitam parsers, loaders, constraints, configuração e write
 
 Com o Python global, a coleta de `tests/test_lgpd.py` falha se `cryptography` não estiver instalado nele.
 
-O teste de integração LGPD com SQL Server é opt-in e exige um banco descartável vazio. Configure `RUN_SQLSERVER_LGPD_TESTS=1` e `SQLSERVER_LGPD_TEST_URL`; o nome do banco precisa terminar em `_test`, `_tests`, `_disposable` ou `_scratch`. O teste aborta sem criar objetos se as tabelas necessárias já existirem, cria apenas tabelas temporárias de teste e as remove ao final. Execute somente contra uma instância descartável:
+O teste de integração LGPD com SQL Server exige um banco descartável vazio, separado de `monitoramento`. As configurações são carregadas automaticamente de `src/config/.env.test`, independentemente do diretório de execução. Esse arquivo local não é versionado; para configurar outra máquina, copie `src/config/.env.test.example` para `src/config/.env.test` e ajuste a conexão. O modelo usa a instância local `localhost\SQLEXPRESS`, autenticação Windows e o banco `monitoramento_lgpd_test`, que deve existir previamente.
 
-```bash
-python -m pytest tests/test_sqlserver_lgpd.py -v
+```powershell
+& '.\.venv\Scripts\python.exe' -m pytest '.\tests\test_sqlserver_lgpd.py' -v
 ```
 
-Sem as duas variáveis de opt-in, esse teste é ignorado e não abre conexão. Ele cria tabelas simplificadas, não usa o DDL real e não roda no banco `monitoramento`.
+Não é necessário exportar variáveis a cada execução. `RUN_SQLSERVER_LGPD_TESTS=1` habilita a integração e `SQLSERVER_LGPD_TEST_URL` define a URL SQLAlchemy. Variáveis já definidas no processo têm prioridade; use `RUN_SQLSERVER_LGPD_TESTS=0` para desabilitar. Sem ativação, apenas a integração é ignorada; os testes da configuração continuam executando. Ativação sem URL gera erro explícito, não `SKIPPED`.
+
+Nunca aponte essa configuração para `monitoramento`. O teste exige um nome com sufixo `_test`, `_tests`, `_disposable` ou `_scratch`, recusa tabelas preexistentes em `dbo`, aplica o DDL oficial (sem o `USE monitoramento`) e remove suas tabelas ao final. O banco permanece disponível e vazio para a próxima execução. Não execute duas integrações simultaneamente na mesma base. A configuração normal da aplicação em `src/config/.env` não é usada como fallback.
 
 ### Integridade relacional no SQL Server
 
@@ -321,12 +328,23 @@ Para cada parâmetro ambiental, o sistema calcula média, mediana, desvio padrã
 - A tabela `operadores` guarda apenas `cpf_hash` (HMAC-SHA-256) e `nome_completo_cifrado` (Fernet). O módulo `src/security/pii.py` oferece as funções de proteção; `inserir_operadores()` recebe registros de uma fonte aprovada com os campos `cpf` e `nome_completo`. Nenhum cadastro fictício ou arquivo com valores pessoais é fornecido.
 - Defina `HMAC_SECRET_KEY` e `ENCRYPTION_KEY` no ambiente do processo autorizado. Gere uma chave Fernet com `python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"` e um segredo HMAC forte com `python -c "import secrets; print(secrets.token_urlsafe(32))"`. Não grave chaves no banco, no código, em logs ou no controle de versão. O arquivo `src/config/.env.example` ainda não existe; use a lista de variáveis da seção Configuração como modelo.
 - HMAC permite comparar CPFs normalizados sem armazená-los, mas não é anonimização jurídica. A troca da chave HMAC muda todos os identificadores; como o CPF original não é persistido, planeje a rotação e a reidentificação com a fonte autorizada antes de trocar a chave. A rotação da chave Fernet também requer recriptografia ou uma estratégia de chaves versionadas.
-- A posse da chave Fernet permite descriptografar nomes; este projeto ainda não implementa autorização por usuário ou auditoria de descriptografia. Restrinja a chave e o processo/conta que a lê. A chave, isoladamente, não implementa controle de acesso.
+- A descriptografia exige principal técnico e callback de autorização e audita sucesso/negação sem nome, ciphertext ou chave. Não há provedor de identidade de usuário final; a aplicação chamadora deve vincular a autorização a uma identidade autenticada. Restrinja a chave e o processo/conta que a lê.
 - Atenção: `src/config/.env` já está versionado neste repositório. A regra no `.gitignore` não remove arquivos já rastreados. Antes de armazenar chaves reais, remova esse arquivo do índice do Git e revise/rotacione quaisquer segredos que tenham sido publicados.
 - O arquivo `logs/execucao_relatorio.log` é local e está coberto pelo `.gitignore`.
 - Configure e proteja `SILVER_DIR` conforme a política de retenção do Data Lake; os arquivos Parquet contêm dados ambientais e não devem receber campos pessoais de operadores.
 - Revise mensagens e dados registrados antes de incluir logs em chamados ou compartilhá-los.
 - O dashboard e os scripts de carga compartilham a conexão definida em `src/config/.env`.
+
+### Catálogo de dados pessoais — ID 32
+
+`dbo.catalogo_dados` inventaria os campos de `dbo.operadores`, sem guardar valores pessoais:
+
+| Campo lógico | Coluna armazenada | Classificação | Finalidade | Proteção e política de acesso |
+| --- | --- | --- | --- | --- |
+| `cpf` | `cpf_hash` | Dado pessoal | Cadastro e identificação de operadores de campo | HMAC-SHA-256; chave restrita ao processo autorizado, digest não reversível |
+| `nome_completo` | `nome_completo_cifrado` | Dado pessoal | Cadastro e identificação de operadores de campo | Fernet; descriptografia autorizada por principal, tentativas auditadas sem PII |
+
+`inserir_catalogo_lgpd` insere ou atualiza os metadados em transação, preservando o ID e a data de criação em reexecuções. A opção 5 do menu executa essa carga. Os testes conferem todos os metadados e, no SQLExpress descartável com o DDL oficial, validam reexecução, correção de metadados desatualizados e rejeição de duplicidade/classificação inválida. Essa homologação não publica o catálogo nem altera dados no banco `monitoramento`.
 
 ## Equipe
 
