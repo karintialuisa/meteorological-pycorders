@@ -260,7 +260,9 @@ def test_selecionar_cidade_e_estacao_keeps_all_when_zero_selected(monkeypatch):
 
 
 def test_main_stops_cleanly_when_no_sql_data_is_available(monkeypatch):
-    monkeypatch.setattr(relatorios, "configure_logging", lambda root: None)
+    monkeypatch.setattr(
+        relatorios, "configure_logging", lambda root, categoria="execucao": None
+    )
     monkeypatch.setattr(
         relatorios,
         "carregar_dados_sql",

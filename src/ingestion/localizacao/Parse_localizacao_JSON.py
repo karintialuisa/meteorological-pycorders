@@ -290,7 +290,7 @@ if __name__ == "__main__":
     import sys
 
     sys.path.append(str(Path(__file__).resolve().parents[2]))
-    configure_logging(Path(__file__).resolve().parents[3])
+    configure_logging(Path(__file__).resolve().parents[3], categoria="tratamento")
     carregar_operadores()
     logging.info("%s LISTA DE TABELAS %s", "=" * 30, "=" * 30)
     

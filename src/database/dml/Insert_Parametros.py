@@ -127,6 +127,6 @@ def inserir_parametros(
 
 
 if __name__ == "__main__":
-    configure_logging()
+    configure_logging(categoria="insercao")
     resultado = inserir_parametros()
     logging.info("Resultado da carga de parametros: inseridos=%s atualizados=%s", *resultado)

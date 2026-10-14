@@ -37,6 +37,12 @@ def get_silver_dir() -> Path:
     return path if path.is_absolute() else PROJECT_ROOT / path
 
 
+def get_api_raw_dir() -> Path:
+    """Retorna o diretório existente de leituras para respostas REST brutas."""
+    path = Path(os.getenv("API_RAW_DIR") or "src/ingestion/leituras").expanduser()
+    return path if path.is_absolute() else PROJECT_ROOT / path
+
+
 def create_db_engine():
     """Cria a engine SQL Server usando as configurações locais."""
     server = get_env("DB_HOST")
@@ -52,8 +58,19 @@ def create_db_engine():
     return create_engine(f"mssql+pyodbc:///?odbc_connect={params}")
 
 
-def configure_logging(project_root: Path | None = None) -> None:
-    """Registra logs no console e no arquivo definido por LOGS_DIR."""
+def configure_logging(
+    project_root: Path | None = None, categoria: str = "execucao"
+) -> None:
+    """Registra logs no console e no arquivo correspondente à categoria."""
+    arquivos_log = {
+        "execucao": "execucao_relatorio.log",
+        "tratamento": "tratamento_dados.log",
+        "insercao": "insercao_dados.log",
+        "analise": "relatorios_calculos.log",
+    }
+    if categoria not in arquivos_log:
+        raise ValueError(f"Categoria de log desconhecida: {categoria}")
+
     root = project_root or PROJECT_ROOT
     logs_dir = Path(get_env("LOGS_DIR"))
     if not logs_dir.is_absolute():
@@ -66,7 +83,7 @@ def configure_logging(project_root: Path | None = None) -> None:
         datefmt="%d-%m-%Y %H:%M",
         handlers=[
             logging.FileHandler(
-                logs_dir / "execucao_relatorio.log", encoding="utf-8"
+                logs_dir / arquivos_log[categoria], encoding="utf-8"
             ),
             logging.StreamHandler(sys.stdout),
         ],

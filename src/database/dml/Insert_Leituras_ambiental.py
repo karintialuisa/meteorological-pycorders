@@ -296,5 +296,5 @@ def inserir_dados():
 
 
 if __name__ == "__main__":
-    configure_logging(BASE_DIR)
+    configure_logging(BASE_DIR, categoria="insercao")
     inserir_dados()

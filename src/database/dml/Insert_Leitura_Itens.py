@@ -220,5 +220,5 @@ def inserir_leitura_itens(
 
 
 if __name__ == "__main__":
-    configure_logging()
+    configure_logging(categoria="insercao")
     raise SystemExit("Informe os itens chamando inserir_leitura_itens().")

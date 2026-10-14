@@ -231,5 +231,5 @@ def inserir_dados():
 
 
 if __name__ == "__main__":
-    configure_logging(Path(__file__).resolve().parents[3])
+    configure_logging(Path(__file__).resolve().parents[3], categoria="insercao")
     inserir_dados()

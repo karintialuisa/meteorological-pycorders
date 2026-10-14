@@ -4,4 +4,5 @@ __pycache__/
 .pytest_cache/
 reports/*.tmp
 logs/*.log
+src/ingestion/leituras/api_*.jsonl
 src/config/.env

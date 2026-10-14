@@ -342,7 +342,7 @@ def main():
     cálculo das estatísticas por variável e impressão dos resultados em tabela.
     """
 
-    configure_logging(BASE_DIR)
+    configure_logging(BASE_DIR, categoria="analise")
     logging.info("Iniciando a geração dos Relatórios Estatísticos...")
 
     # 1. CARREGA OS DATAFRAMES DO BANCO RELACIONAL

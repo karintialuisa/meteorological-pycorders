@@ -13,12 +13,13 @@ A aplicação trata arquivos JSON de leituras ambientais, meteorológicas e de l
 O pipeline contempla:
 
 - Leitura e normalização de JSONs de estados, municípios, estações e leituras.
+- Coleta dos dados meteorológicos de temperatura do ar da API Agritempo, com bearer no `.env`, limite de requisições e acumulação dos resultados no mesmo JSON.
 - Carga incremental de estados, cidades, estações, qualidade da água e meteorologia.
 - Resolução e validação de chaves entre os arquivos JSON e o SQL Server.
 - Relatórios interativos por cidade e estação, com média, mediana, desvio padrão, variância amostral, IQR e contagem de outliers por parâmetro.
 - API FastAPI para listar cidades e consultar leituras carregadas dos JSONs.
 - Dashboard Streamlit para consultar no SQL Server e visualizar indicadores, tabelas e séries temporais.
-- Registro de eventos no console e em `logs/execucao_relatorio.log`.
+- Logs separados para tratamento, inserção no banco e relatórios/cálculos, além do log de execução do menu.
 
 ## Tecnologias
 
@@ -34,6 +35,7 @@ O pipeline contempla:
 
 ```text
 meteorological-pycorders/
+├── Get_dados.py                    # Coleta meteorologia da API Agritempo
 ├── src/
 │   ├── config/
 │   │   ├── .env                     # Configuração local, não versionar
@@ -57,6 +59,7 @@ meteorological-pycorders/
 │   │   └── dql/
 │   │       └── consultas-essenciais.sql
 │   ├── ingestion/
+│   │   ├── api_ingestion.py         # Consumo REST e preservação das respostas brutas
 │   │   ├── leituras/
 │   │   │   ├── Parse_LeituraAmbiental.py
 │   │   │   ├── Parse_LeituraMetereologica.py
@@ -80,7 +83,7 @@ meteorological-pycorders/
 
 ## Responsabilidades dos módulos
 
-- `src/ingestion/leituras`: transforma os JSONs ambientais e meteorológicos em DataFrames.
+- `src/ingestion/leituras`: guarda os JSONs de entrada e transforma leituras ambientais e meteorológicas em DataFrames; respostas REST brutas são salvas aqui por padrão.
 - `src/ingestion/localizacao`: normaliza estados, municípios e estações.
 - `src/database/ddl`: contém `create-database.sql`, `create-tables.sql`, `schema.sql` e `delete-data-table.sql`.
 - `src/database/dml`: carrega localização e leituras; `seed.sql` contém dados SQL auxiliares.
@@ -88,7 +91,7 @@ meteorological-pycorders/
 - `src/analytics`: consulta leituras relacionais e gera relatórios estatísticos por parâmetro e estação.
 - `src/api`: expõe cidades e leituras dos arquivos JSON pelos endpoints HTTP.
 - `src/dashboard.py`: apresenta dados persistidos no SQL Server em tabelas, métricas e gráficos.
-- `src/config/settings.py`: concentra leitura do `.env`, caminhos JSON, conexão SQL Server e configuração de logs.
+- `src/config/settings.py`: concentra leitura do `.env`, caminhos JSON, conexão SQL Server e configuração dos logs por categoria.
 - `tests/test_database_insertions.py`: exercita inserções de localização e leituras sem conectar ao SQL Server.
 
 ## Pré-requisitos
@@ -143,7 +146,16 @@ Configure `src/config/.env` com as variáveis abaixo. Esse arquivo é local e ig
    INGESTION_LOCALIZACAO_ESTADOS=src/ingestion/localizacao/estado.json
    INGESTION_LOCALIZACAO_MUNICIPIOS=src/ingestion/localizacao/municipio.json
    INGESTION_LOCALIZACAO_ESTACOES=src/ingestion/localizacao/estacoes.json
+   AGRITEMPO_BEARER_TOKEN=adicione_o_token_fornecido_pela_fonte
+   API_REQUESTS_PER_MINUTE=30
+   API_RAW_DIR=src/ingestion/leituras
    ```
+
+`Get_dados.py` usa a API Agritempo da Embrapa. O bearer deve ficar somente em `src/config/.env`; não o coloque no código nem o versione. O escopo atual dessa fonte é meteorológico, com os dados de temperatura do ar disponíveis no retorno climático. O contrato em `src/ingestion/api_ingestion.py` valida o envelope, os dados da estação e cada observação diária, exigindo data, ID e temperaturas mínima/máxima numéricas, finitas e coerentes entre si. Estações sem série climática são aceitas.
+
+Para consumo analítico, a projeção usa somente `temperatura_minima` e `temperatura_maxima` (incluindo os indicadores de estimativa). `temperatura_media` e as demais variáveis que venham da API permanecem no JSON bruto como resposta original, mas não entram nessa projeção; a média será calculada posteriormente nos relatórios.
+
+Bronze, Silver e Gold são nomes de etapas, não uma exigência de criar pastas com esses nomes. A coleta da Agritempo acumula os resultados no mesmo `dados_agritempo.json`, dentro do diretório de `API_RAW_DIR` (por padrão, `src/ingestion/leituras`). Novas execuções preservam os resultados anteriores e acrescentam os novos; não é criada uma pasta `data/bronze`.
 
 ## Execução
 
@@ -156,6 +168,8 @@ Para abrir o menu e executar as cargas ou relatórios:
    ```
 
 No menu, a opção de carga executa as inserções de localização, leituras ambientais e leituras meteorológicas. A opção de relatório permite selecionar cidade e estação. A carga depende de uma conexão SQL Server configurada em `src/config/.env`.
+
+A opção `4` executa `Get_dados.py`: consulta estações e dados climáticos, aplica o limite `API_REQUESTS_PER_MINUTE` e acrescenta os resultados ao JSON cumulativo. Também é possível executar com `python Get_dados.py`. O módulo `src/ingestion/api_ingestion.py` permanece como conector genérico separado para endpoints que já atendam aos contratos ambiental ou meteorológico definidos nele; ele não é o coletor da Agritempo.
 
 Para iniciar a API que lê os JSONs (não consulta o banco):
 
@@ -173,7 +187,14 @@ streamlit run src/dashboard.py
 
 O dashboard consulta o SQL Server usando servidor, porta, banco e autenticação definidos em `src/config/.env`.
 
-Os logs são gravados em `logs/execucao_relatorio.log`. `LOGS_DIR` pode apontar para outro caminho; caminhos relativos são resolvidos a partir da raiz do projeto. O arquivo de log é gerado localmente e ignorado pelo Git. O único parâmetro de conexão fixo no código é `ODBC Driver 17 for SQL Server`; servidor, porta, banco e autenticação vêm do `.env`.
+`LOGS_DIR` define o diretório dos logs; caminhos relativos são resolvidos a partir da raiz do projeto. Os arquivos são separados por tipo de saída:
+
+- `logs/tratamento_dados.log`: ingestão REST e execução isolada dos parsers/tratamentos.
+- `logs/insercao_dados.log`: cargas e inserções no banco, incluindo eventos de validação ocorridos durante a carga.
+- `logs/relatorios_calculos.log`: consultas, cálculos e relatórios estatísticos.
+- `logs/execucao_relatorio.log`: menu e orquestração geral.
+
+Os logs são gerados localmente e ignorados pelo Git. O único parâmetro de conexão fixo no código é `ODBC Driver 17 for SQL Server`; servidor, porta, banco e autenticação vêm do `.env`.
 
 ## Fluxo de processamento
 

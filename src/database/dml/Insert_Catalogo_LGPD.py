@@ -69,6 +69,6 @@ def inserir_catalogo_lgpd(engine=None) -> int:
 
 
 if __name__ == "__main__":
-    configure_logging()
+    configure_logging(categoria="insercao")
     inserted = inserir_catalogo_lgpd()
     print(f"Catalogo LGPD atualizado: {inserted} campos.")

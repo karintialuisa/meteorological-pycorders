@@ -258,5 +258,5 @@ def inserir_leituras(
 
 
 if __name__ == "__main__":
-    configure_logging()
+    configure_logging(categoria="insercao")
     raise SystemExit("Informe os registros chamando inserir_leituras().")

@@ -20,6 +20,7 @@ MENU = {
     "1": "ETL JSON -> BD",
     "2": "Gerar relatórios estatísticos dos dados",
     "3": "Cancelar operação",
+    "4": "Coletar meteorologia Agritempo -> JSON",
 }
 
 
@@ -105,6 +106,9 @@ def main():
             executar_script(
                 script_rel, interativo=True
             )
+
+        elif opcao == "4":
+            executar_script("Get_dados.py")
 
         else:
             logging.warning("Opção inválida. Digite 1, 2 ou 3.")
