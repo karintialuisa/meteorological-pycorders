@@ -243,5 +243,40 @@ def test_main_dispatches_rest_ingestion(main_module, monkeypatch):
     assert calls == [("Get_dados.py", False)]
 
 
+# projeto_final.pdf secoes 3.2/3.3 -> features.csv IDs 32-34, 38 e 39.
+def test_main_dispatches_cadastro_scripts_in_dependency_order(main_module, monkeypatch):
+    options = iter(["5", "3"])
+    calls = []
+    monkeypatch.setattr(main_module, "exibir_menu", lambda: next(options))
+    monkeypatch.setattr(
+        main_module,
+        "executar_script",
+        lambda path, interativo=False: calls.append(path) or True,
+    )
+
+    main_module.main()
+
+    assert calls == [
+        "src/database/dml/Insert_Parametros.py",
+        "src/database/dml/Insert_Catalogo_LGPD.py",
+        "src/database/dml/Insert_Operadores.py",
+    ]
+
+
+def test_main_stops_cadastro_after_a_script_fails(main_module, monkeypatch):
+    options = iter(["5", "3"])
+    calls = []
+    monkeypatch.setattr(main_module, "exibir_menu", lambda: next(options))
+    monkeypatch.setattr(
+        main_module,
+        "executar_script",
+        lambda path, interativo=False: calls.append(path) and False,
+    )
+
+    main_module.main()
+
+    assert calls == ["src/database/dml/Insert_Parametros.py"]
+
+
 if __name__ == "__main__":
     raise SystemExit(pytest.main([__file__, "-v"]))

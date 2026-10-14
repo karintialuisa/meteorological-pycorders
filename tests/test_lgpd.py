@@ -8,7 +8,10 @@ from cryptography.fernet import Fernet, InvalidToken
 from sqlalchemy import text
 
 from src.database.dml.Insert_Catalogo_LGPD import inserir_catalogo_lgpd
-from src.database.dml.Insert_Operadores import inserir_operadores
+from src.database.dml.Insert_Operadores import (
+    _converter_status_operador,
+    inserir_operadores,
+)
 from src.ingestion.localizacao import Parse_localizacao_JSON as localizacao
 from src.security.pii import decrypt_name, encrypt_name, hash_cpf, normalize_cpf
 
@@ -67,6 +70,20 @@ def test_hash_cpf_is_deterministic_and_keyed():
 def test_hash_cpf_rejects_empty_key():
     with pytest.raises(ValueError, match="chave HMAC"):
         hash_cpf(_synthetic_cpf(), "")
+
+
+@pytest.mark.parametrize(
+    "hmac_secret,encryption_key,invalid_key",
+    [
+        ("replace-with-a-random-secret", "valid-fernet-key-placeholder", "HMAC_SECRET_KEY"),
+        ("valid-hmac-secret", "replace-with-a-generated-fernet-key", "ENCRYPTION_KEY"),
+    ],
+)
+def test_operator_loader_rejects_placeholder_keys_before_database_access(
+    hmac_secret, encryption_key, invalid_key
+):
+    with pytest.raises(ValueError, match=invalid_key):
+        inserir_operadores([], hmac_secret, encryption_key, engine=object())
 
 
 def test_encrypt_name_can_be_decrypted_with_the_same_key():
@@ -330,7 +347,7 @@ def test_json_loader_rejects_invalid_operator_fixtures(
         encoding="utf-8",
     )
 
-    assert len(invalid_operators) == 6
+    assert len(invalid_operators) == 4
     assert localizacao.carregar_operadores(
         path, banco_teste, "test-hmac-secret", Fernet.generate_key().decode("ascii")
     ) == (0, 0)
@@ -338,3 +355,63 @@ def test_json_loader_rejects_invalid_operator_fixtures(
     assert any("estacao_id=AMB-001" in record.message for record in caplog.records)
     with banco_teste.connect() as connection:
         assert connection.execute(text("SELECT COUNT(*) FROM operadores")).scalar_one() == 0
+
+
+# projeto_final.pdf secao 3.3 (Operadores - tabela cadastral) -> features.csv IDs 10 e 38.
+@pytest.mark.parametrize(
+    ("status", "esperado"),
+    [
+        ("ativo", 1),
+        ("ATIVA", 1),
+        (" active ", 1),
+        ("true", 1),
+        (True, 1),
+        (1, 1),
+        ("inativo", 0),
+        ("pendente", 0),
+        ("", 0),
+        (None, 0),
+        (0, 0),
+        (False, 0),
+    ],
+)
+def test_status_operador_grava_um_somente_para_ativo(status, esperado):
+    assert _converter_status_operador(status) == esperado
+
+
+@pytest.mark.parametrize("status", ["", "pendente", None])
+def test_json_loader_grava_status_nao_reconhecido_como_inativo_com_aviso(
+    banco_teste, tmp_path, caplog, status
+):
+    _seed_operator_stations(banco_teste)
+    caplog.set_level(logging.INFO)
+    cpf = _synthetic_cpf()
+    path = tmp_path / "operadores.json"
+    path.write_text(
+        json.dumps({
+            "date": "2026-10-14",
+            "operadores": [{
+                "cpf": cpf,
+                "nome": "Operador Confidencial",
+                "estacao_id": "AMB-011",
+                "status": status,
+            }],
+        }),
+        encoding="utf-8",
+    )
+
+    assert localizacao.carregar_operadores(
+        path, banco_teste, "test-hmac-secret", Fernet.generate_key().decode("ascii")
+    ) == (1, 0)
+
+    with banco_teste.connect() as connection:
+        stored_status = connection.execute(text("SELECT status FROM operadores")).scalar_one()
+    assert stored_status == 0
+    assert any(
+        record.levelno == logging.WARNING
+        and "Status de operador" in record.message
+        and "estacao_id=AMB-011" in record.message
+        for record in caplog.records
+    )
+    assert all("Operador Confidencial" not in record.message for record in caplog.records)
+    assert all(cpf not in record.message for record in caplog.records)

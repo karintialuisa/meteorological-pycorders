@@ -41,6 +41,7 @@ meteorological-pycorders/
 ├── src/
 │   ├── config/
 │   │   ├── .env                     # Configuração local, não versionar
+│   │   ├── .env.example             # Modelo sem segredos
 │   │   ├── requirements.txt
 │   │   └── settings.py              # Ambiente, logs, caminhos JSON e conexão SQL
 │   ├── analytics/
@@ -173,7 +174,11 @@ Configure `src/config/.env` com as variáveis abaixo. Esse arquivo é local e ig
    AGRITEMPO_BEARER_TOKEN=adicione_o_token_fornecido_pela_fonte
    API_REQUESTS_PER_MINUTE=30
    API_RAW_DIR=src/ingestion/leituras
+   HMAC_SECRET_KEY=gere_um_segredo_aleatorio_longo
+   ENCRYPTION_KEY=gere_uma_chave_fernet
    ```
+
+`src/config/.env.example` é um modelo sem segredos. Copie-o para `src/config/.env` e substitua os marcadores antes de executar cargas que protegem dados de operadores. A opção 5 do menu executa os cadastros de parâmetros, catálogo LGPD e operadores; para operadores, as chaves HMAC e Fernet devem ser reais. O loader recusa valores que começam com `replace-with`.
 
 `Get_dados.py` usa a API Agritempo da Embrapa. O bearer deve ficar somente em `src/config/.env`; não o coloque no código nem o versione. O escopo atual dessa fonte é meteorológico, com os dados de temperatura do ar disponíveis no retorno climático. O contrato em `src/ingestion/api_ingestion.py` valida o envelope, os dados da estação e cada observação diária, exigindo data, ID e temperaturas mínima/máxima numéricas, finitas e coerentes entre si. Estações sem série climática são aceitas.
 
@@ -183,7 +188,7 @@ Bronze, Silver e Gold são nomes de etapas, não uma exigência de criar pastas 
 
 ## Execução
 
-Prepare o banco em uma instância SQL Server dedicada. Execute `src/database/ddl/create-database.sql` apenas quando o banco `monitoramento` ainda não existir; o comando `CREATE DATABASE` falha se o nome já estiver em uso. Em seguida, execute `src/database/ddl/create-tables.sql` pelo SSMS ou `sqlcmd`, pois o arquivo contém separadores `GO`. O script cria tabelas ausentes, mas não remove nem recria tabelas existentes e não migra constraints para um schema já criado. Colunas acrescentadas depois à definição (por exemplo `qualidade_agua.turbidez`) também não chegam a tabelas já criadas; confira o catálogo do banco antes de executar as cargas.
+Prepare o banco em uma instância SQL Server dedicada. Execute `src/database/ddl/create-database.sql` apenas quando o banco `monitoramento` ainda não existir; o comando `CREATE DATABASE` falha se o nome já estiver em uso. Em seguida, execute `src/database/ddl/create-tables.sql` pelo SSMS ou `sqlcmd`, pois o arquivo contém separadores `GO`. O script cria tabelas ausentes, mas não remove nem recria tabelas existentes e não migra constraints para um schema já criado. Em um banco criado com uma versão anterior do script, confira o catálogo antes das cargas, pois colunas acrescentadas depois à definição (como `qualidade_agua.turbidez`) não chegam a tabelas já criadas.
 
 Para abrir o menu e executar as cargas ou relatórios:
 
@@ -191,7 +196,7 @@ Para abrir o menu e executar as cargas ou relatórios:
    python -m src.main
    ```
 
-No menu, a opção de carga executa as inserções de localização, leituras ambientais e leituras meteorológicas. A opção de relatório permite selecionar cidade e estação. A carga depende de uma conexão SQL Server configurada em `src/config/.env`.
+No menu, a opção 1 executa as inserções de localização, leituras ambientais e leituras meteorológicas. A opção 2 abre relatórios; a opção 5 executa os cadastros de parâmetros, catálogo LGPD e operadores, nessa ordem, interrompendo ao primeiro erro. A carga depende de uma conexão SQL Server configurada em `src/config/.env` e de estações previamente cadastradas para os operadores.
 
 A opção `4` executa `Get_dados.py`: consulta estações e dados climáticos, aplica o limite `API_REQUESTS_PER_MINUTE` e acrescenta os resultados ao JSON cumulativo. Também é possível executar com `python Get_dados.py`. O módulo `src/ingestion/api_ingestion.py` permanece como conector genérico separado para endpoints que já atendam aos contratos ambiental ou meteorológico definidos nele; ele não é o coletor da Agritempo.
 
