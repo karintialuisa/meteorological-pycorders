@@ -9,8 +9,9 @@ sys.path.append(str(Path(__file__).resolve().parents[2]))
 from config.settings import configure_logging, create_db_engine
 
 
-# 3.2 LGPD (item 32): inventaria CPF e nome completo com classificacao,
-# finalidade, protecao e politica de acesso.
+# Referencia: projeto_final.pdf, secao 3.2 (LGPD de operadores);
+# features.csv IDs 32 (catalogo), 33 (pseudonimizacao), 34 (criptografia) e 38 (Operadores).
+# Inventaria CPF e nome completo com classificacao, finalidade, protecao e politica de acesso.
 METADADOS_CATALOGO = (
     {
         "schema_name": "dbo",
@@ -30,7 +31,9 @@ METADADOS_CATALOGO = (
         "classificacao": "Dado pessoal",
         "finalidade": "Cadastro e identificacao de operadores de campo",
         "protecao": "Fernet",
-        "politica_acesso": "Descriptografia somente por processo autorizado com a chave",
+        "politica_acesso": (
+            "Descriptificacao autorizada por principal; tentativas auditadas sem PII"
+        ),
     },
 )
 
@@ -68,6 +71,6 @@ def inserir_catalogo_lgpd(engine=None) -> int:
 
 
 if __name__ == "__main__":
-    configure_logging()
+    configure_logging(categoria="insercao")
     inserted = inserir_catalogo_lgpd()
     print(f"Catalogo LGPD atualizado: {inserted} campos.")

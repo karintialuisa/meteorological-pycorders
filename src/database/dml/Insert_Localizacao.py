@@ -189,7 +189,7 @@ def inserir_estacoes(connection, estado_ids):
 
 
 if __name__ == "__main__":
-    configure_logging(BASE_DIR)
+    configure_logging(BASE_DIR, categoria="insercao")
     with create_db_engine().begin() as connection:
         limpar_localizacao(connection)
         estado_ids = inserir_localizacao(connection)

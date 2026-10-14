@@ -180,6 +180,6 @@ if __name__ == "__main__":
     import sys
 
     sys.path.append(str(Path(__file__).resolve().parents[2]))
-    configure_logging(Path(__file__).resolve().parents[3])
+    configure_logging(Path(__file__).resolve().parents[3], categoria="tratamento")
     df = tabela_metereologica()
     logging.info("Preview do DataFrame tratado:\n%s", df.head())

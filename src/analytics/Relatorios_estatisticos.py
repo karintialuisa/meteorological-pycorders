@@ -24,6 +24,7 @@ COLUNAS_AGUA = {
     "ph": "pH da Água",
     "oxigenio": "Oxigênio Dissolvido (mg/L)",
     "condutividade": "Condutividade (µS/cm)",
+    "turbidez": "Turbidez da Água (NTU)",
 }
 
 COLUNAS_METEOROLOGICAS = {
@@ -41,7 +42,8 @@ QUERY_AGUA = """
         q.temperatura_agua,
         q.ph,
         q.oxigenio,
-        q.condutividade
+        q.condutividade,
+        q.turbidez
     FROM qualidade_agua AS q
     INNER JOIN estacao AS e ON e.id = q.id_estacao
     INNER JOIN cidade AS c ON c.id = e.id_cidade
@@ -340,7 +342,7 @@ def main():
     cálculo das estatísticas por variável e impressão dos resultados em tabela.
     """
 
-    configure_logging(BASE_DIR)
+    configure_logging(BASE_DIR, categoria="analise")
     logging.info("Iniciando a geração dos Relatórios Estatísticos...")
 
     # 1. CARREGA OS DATAFRAMES DO BANCO RELACIONAL

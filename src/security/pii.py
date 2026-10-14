@@ -2,9 +2,16 @@
 
 import hashlib
 import hmac
+import logging
 import re
+from collections.abc import Callable
 
-from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet, InvalidToken
+
+
+_NAME_DECRYPTION_ACTION = "decrypt_operator_name"
+_PRINCIPAL_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}\Z")
+_security_logger = logging.getLogger("security.pii")
 
 
 def normalize_cpf(cpf: str) -> str:
@@ -30,7 +37,8 @@ def _cpf_check_digit(digits: list[int], weights: range) -> int:
     return 0 if remainder < 2 else 11 - remainder
 
 
-# 3.2 SHA-256 (item 33): HMAC-SHA-256 pseudonimiza o CPF com chave secreta.
+# Referencia: projeto_final.pdf, secao 3.2 (anonimizacao irreversivel);
+# features.csv ID 33. HMAC e pseudonimizacao, nao anonimizacao juridica.
 def hash_cpf(cpf: str, secret_key: str | bytes) -> str:
     """Gera HMAC-SHA-256 deterministico para permitir comparacao do CPF."""
     key = secret_key.encode("utf-8") if isinstance(secret_key, str) else secret_key
@@ -41,7 +49,8 @@ def hash_cpf(cpf: str, secret_key: str | bytes) -> str:
     return hmac.new(key, normalized_cpf.encode("ascii"), hashlib.sha256).hexdigest()
 
 
-# 3.2 LGPD (item 34): Fernet permite recuperar o nome somente com a chave autorizada.
+# Referencia: projeto_final.pdf, secao 3.2 (criptografia reversivel);
+# features.csv ID 34. Recuperacao exige a chave Fernet autorizada.
 def encrypt_name(name: str, encryption_key: str | bytes) -> str:
     """Cifra o nome usando uma chave Fernet fornecida pelo chamador."""
     if not isinstance(name, str) or not name.strip():
@@ -51,7 +60,48 @@ def encrypt_name(name: str, encryption_key: str | bytes) -> str:
     return Fernet(key).encrypt(name.strip().encode("utf-8")).decode("ascii")
 
 
-def decrypt_name(ciphertext: str, encryption_key: str | bytes) -> str:
-    """Recupera o nome usando a chave Fernet autorizada."""
+def decrypt_name(
+    ciphertext: str,
+    encryption_key: str | bytes,
+    *,
+    principal: str,
+    authorize: Callable[[str, str], bool],
+) -> str:
+    """Recupera o nome após autorização explícita e audita a tentativa.
+
+    O chamador fornece o principal autenticado e a política de autorização da
+    aplicação. O principal deve ser um identificador técnico, não PII.
+    """
+    if not isinstance(principal, str) or not _PRINCIPAL_PATTERN.fullmatch(principal):
+        _security_logger.warning(
+            "Descriptografia de nome negada: principal=invalid action=%s outcome=denied",
+            _NAME_DECRYPTION_ACTION,
+        )
+        raise PermissionError("Principal invalido para descriptografia")
+
+    if not authorize(principal, _NAME_DECRYPTION_ACTION):
+        _security_logger.warning(
+            "Descriptografia de nome negada: principal=%s action=%s outcome=denied",
+            principal,
+            _NAME_DECRYPTION_ACTION,
+        )
+        raise PermissionError("Principal sem autorizacao para descriptografia")
+
     key = encryption_key.encode("ascii") if isinstance(encryption_key, str) else encryption_key
-    return Fernet(key).decrypt(ciphertext.encode("ascii")).decode("utf-8")
+    try:
+        name = Fernet(key).decrypt(ciphertext.encode("ascii")).decode("utf-8")
+    except InvalidToken:
+        _security_logger.warning(
+            "Descriptografia de nome autorizada mas malsucedida: "
+            "principal=%s action=%s outcome=failed",
+            principal,
+            _NAME_DECRYPTION_ACTION,
+        )
+        raise
+
+    _security_logger.info(
+        "Descriptografia de nome autorizada: principal=%s action=%s outcome=success",
+        principal,
+        _NAME_DECRYPTION_ACTION,
+    )
+    return name

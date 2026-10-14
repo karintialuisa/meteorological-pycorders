@@ -1,4 +1,7 @@
-/*USE monitoramento;
+/*
+--usado apenas para limpar todas as tabelas do banco de dados monitoramento
+--script de execução manual
+USE monitoramento;
 1. Desativa temporariamente as restrições de chave estrangeira
 EXEC sp_msforeachtable "ALTER TABLE ? NOCHECK CONSTRAINT all";
 

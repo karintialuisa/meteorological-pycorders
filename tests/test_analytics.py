@@ -10,6 +10,7 @@ from sqlalchemy import text
 path = Path(__file__).resolve().parents[1] 
 sys.path.append(str(path))  
 from src.analytics import Relatorios_estatisticos as relatorios
+from src.ingestion.leituras import Parse_LeituraAmbiental as ambiental
 
 def test_carregar_json_accepts_object_and_list_shapes(tmp_path):
     object_file = tmp_path / "object.json"
@@ -149,6 +150,28 @@ def test_identificar_outliers_iqr_returns_empty_for_values_inside_limits():
     assert result.empty
 
 
+def test_fixture_turbidity_anomalies_are_reported_as_iqr_outliers(monkeypatch):
+    fixture = (
+        Path(__file__).resolve().parents[1]
+        / "src"
+        / "ingestion"
+        / "leituras"
+        / "leituras_ambientais.json"
+    )
+    monkeypatch.setattr(ambiental, "get_path", lambda key: fixture)
+    readings = ambiental.tabela_ambiental()
+
+    outliers = relatorios.identificar_outliers_iqr(
+        readings, {"turbidez": "Turbidez da Água (NTU)"}
+    )
+
+    assert set(outliers["id_leitura_origem"]) == {
+        "LEIT-AMB-000002",
+        "LEIT-AMB-000014",
+    }
+    assert sorted(outliers["Valor da leitura"].tolist()) == [75.0, 120.0]
+
+
 def test_carregar_dados_sql_returns_station_context_and_measurements(banco_teste):
     with banco_teste.begin() as connection:
         connection.execute(
@@ -173,10 +196,9 @@ def test_carregar_dados_sql_returns_station_context_and_measurements(banco_teste
             text(
                 "INSERT INTO qualidade_agua "
                 "(id, id_leitura_origem, id_estacao, data_leitura, "
-                "temperatura_agua, ph, "
-                "oxigenio, condutividade) "
-                "VALUES (1, 'LEIT-AMB-TEST-001', 20, '2026-01-01', "
-                "21.5, 7.2, 8.1, 120.0)"
+                "temperatura_agua, ph, oxigenio, condutividade, turbidez) "
+                "VALUES (1, 'W-ANALYTICS-1', 20, '2026-01-01', "
+                "21.5, 7.2, 8.1, 120.0, 2.8)"
             )
         )
         connection.execute(
@@ -194,6 +216,7 @@ def test_carregar_dados_sql_returns_station_context_and_measurements(banco_teste
     assert water.loc[0, "estacao_id"] == 20
     assert water.loc[0, "estacao"] == "Estacao Centro"
     assert water.loc[0, "temperatura_agua"] == 21.5
+    assert water.loc[0, "turbidez"] == 2.8
     assert weather.loc[0, "estacao_id"] == 20
     assert weather.loc[0, "estacao"] == "Estacao Centro"
     assert weather.loc[0, "temperatura_ar"] == 24.0
@@ -237,7 +260,9 @@ def test_selecionar_cidade_e_estacao_keeps_all_when_zero_selected(monkeypatch):
 
 
 def test_main_stops_cleanly_when_no_sql_data_is_available(monkeypatch):
-    monkeypatch.setattr(relatorios, "configure_logging", lambda root: None)
+    monkeypatch.setattr(
+        relatorios, "configure_logging", lambda root, categoria="execucao": None
+    )
     monkeypatch.setattr(
         relatorios,
         "carregar_dados_sql",

@@ -137,6 +137,7 @@ def test_ambiental_load_resolves_station_and_persists_reading(
                 "ph": 7.2,
                 "oxigenio": 8.1,
                 "condutividade": 120.0,
+                "turbidez": 2.8,
             }, {
                 "id_leitura_origem": "LEIT-AMB-LOAD-002",
                 "estacao_id": 901,
@@ -145,6 +146,7 @@ def test_ambiental_load_resolves_station_and_persists_reading(
                 "ph": 7.0,
                 "oxigenio": 8.0,
                 "condutividade": 110.0,
+                "turbidez": 3.1,
             }]
         ),
     )
@@ -164,12 +166,12 @@ def test_ambiental_load_resolves_station_and_persists_reading(
     with banco_teste.connect() as connection:
         reading = connection.execute(
             text(
-                "SELECT id_estacao, temperatura_agua, ph "
+                "SELECT id_estacao, temperatura_agua, ph, turbidez "
                 "FROM qualidade_agua"
             )
         ).one()
 
-    assert reading == (20, 21.5, 7.2)
+    assert reading == (20, 21.5, 7.2, 2.8)
     assert any(
         "rejeitada por estação sem correspondência" in record.message
         for record in caplog.records
@@ -192,6 +194,7 @@ def test_ambiental_load_is_idempotent_and_keeps_first_conflicting_reading(
                     "ph": 7.2,
                     "oxigenio": 8.1,
                     "condutividade": 120.0,
+                    "turbidez": 2.8,
                 }]
             ),
             pd.DataFrame(
@@ -203,6 +206,7 @@ def test_ambiental_load_is_idempotent_and_keeps_first_conflicting_reading(
                     "ph": 7.2,
                     "oxigenio": 8.1,
                     "condutividade": 120.0,
+                    "turbidez": 2.8,
                 }]
             ),
             pd.DataFrame(
@@ -210,10 +214,11 @@ def test_ambiental_load_is_idempotent_and_keeps_first_conflicting_reading(
                     "id_leitura_origem": "LEIT-AMB-IDEMPOTENT-001",
                     "estacao_id": 900,
                     "data_leitura": "2026-05-20T12:00:00+00:00",
-                    "temperatura_agua": 28.0,
-                    "ph": 8.2,
-                    "oxigenio": 4.1,
-                    "condutividade": 220.0,
+                    "temperatura_agua": 21.5,
+                    "ph": 7.2,
+                    "oxigenio": 8.1,
+                    "condutividade": 120.0,
+                    "turbidez": 75.0,
                 }]
             ),
         ]
@@ -237,12 +242,12 @@ def test_ambiental_load_is_idempotent_and_keeps_first_conflicting_reading(
     with banco_teste.connect() as connection:
         readings_in_database = connection.execute(
             text(
-                "SELECT id_leitura_origem, temperatura_agua "
+                "SELECT id_leitura_origem, temperatura_agua, turbidez "
                 "FROM qualidade_agua"
             )
         ).all()
 
-    assert readings_in_database == [("LEIT-AMB-IDEMPOTENT-001", 21.5)]
+    assert readings_in_database == [("LEIT-AMB-IDEMPOTENT-001", 21.5, 2.8)]
     assert any("Retransmissão ignorada" in record.message for record in caplog.records)
     assert any(
         "Retransmissão conflitante ignorada" in record.message

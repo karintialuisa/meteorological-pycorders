@@ -15,7 +15,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from config.settings import PROJECT_ROOT, get_silver_dir
 
 
-# Itens 35-36: a Silver aceita somente os datasets de leitura e grava Parquet/Snappy.
+# Referencia: projeto_final.pdf, secao 3.2 (persistencia e compressao);
+# features.csv IDs 35 (Parquet) e 36 (Snappy).
+# Leituras temporais de parametros: projeto_final.pdf, secao 2; features.csv IDs 4-9.
+# A Silver aceita somente os datasets de leitura e grava Parquet/Snappy.
 CONTRATOS_DATASETS = {
     "qualidade_agua": {
         "chave": ["id_leitura_origem"],
@@ -27,8 +30,15 @@ CONTRATOS_DATASETS = {
             "ph",
             "oxigenio",
             "condutividade",
+            "turbidez",
         ],
-        "numericas": ["temperatura_agua", "ph", "oxigenio", "condutividade"],
+        "numericas": [
+            "temperatura_agua",
+            "ph",
+            "oxigenio",
+            "condutividade",
+            "turbidez",
+        ],
         "relacoes": ["id_estacao"],
     },
     "leitura_meteorologica": {
@@ -169,6 +179,7 @@ def _resumo_qualidade(
             | (preparado["ph"] > 14)
             | (preparado["oxigenio"] < 0)
             | (preparado["condutividade"] < 0)
+            | (preparado["turbidez"] < 0)
             | _mascara_infinita(preparado, contrato["numericas"])
         ).fillna(False)
     else:
@@ -286,11 +297,21 @@ def persistir_silver(
 
             if destino.exists():
                 existente = pd.read_parquet(destino, engine="pyarrow")
-                if list(existente.columns) != list(lote_novo.columns):
-                    raise ValueError(
-                        f"Schema Silver incompativel na particao {data_particao}"
-                    )
+                colunas_combinadas = list(
+                    dict.fromkeys([*existente.columns, *lote_novo.columns])
+                )
+                for coluna in colunas_combinadas:
+                    if coluna not in existente:
+                        existente[coluna] = float("nan")
+                    if coluna not in lote_novo:
+                        lote_novo[coluna] = float("nan")
+                existente = existente[colunas_combinadas]
+                lote_novo = lote_novo[colunas_combinadas]
                 combinado = pd.concat([existente, lote_novo], ignore_index=True)
+                for coluna in contrato["numericas"]:
+                    combinado[coluna] = pd.to_numeric(
+                        combinado[coluna], errors="coerce"
+                    )
             else:
                 combinado = lote_novo
 

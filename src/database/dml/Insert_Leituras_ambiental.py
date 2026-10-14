@@ -112,7 +112,7 @@ def filtrar_retransmissoes(
 
     consulta = text(
         "SELECT id_leitura_origem, id_estacao, data_leitura, "
-        "temperatura_agua, ph, oxigenio, condutividade "
+        "temperatura_agua, ph, oxigenio, condutividade, turbidez "
         "FROM qualidade_agua WHERE id_leitura_origem IN :ids"
     ).bindparams(bindparam("ids", expanding=True))
     existentes = {}
@@ -129,6 +129,7 @@ def filtrar_retransmissoes(
         "ph",
         "oxigenio",
         "condutividade",
+        "turbidez",
     ]
 
     def normalizar(coluna, valor):
@@ -295,5 +296,5 @@ def inserir_dados():
 
 
 if __name__ == "__main__":
-    configure_logging(BASE_DIR)
+    configure_logging(BASE_DIR, categoria="insercao")
     inserir_dados()

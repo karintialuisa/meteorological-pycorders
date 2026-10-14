@@ -39,6 +39,18 @@ def test_get_silver_dir_resolves_default_relative_and_absolute(monkeypatch, tmp_
     assert settings.get_silver_dir() == absolute_path
 
 
+def test_get_api_raw_dir_uses_existing_ingestion_path(monkeypatch, tmp_path):
+    monkeypatch.delenv("API_RAW_DIR", raising=False)
+    assert settings.get_api_raw_dir() == settings.PROJECT_ROOT / "src" / "ingestion" / "leituras"
+
+    monkeypatch.setenv("API_RAW_DIR", "data/raw-api")
+    assert settings.get_api_raw_dir() == settings.PROJECT_ROOT / "data" / "raw-api"
+
+    absolute_path = tmp_path / "api-raw"
+    monkeypatch.setenv("API_RAW_DIR", str(absolute_path))
+    assert settings.get_api_raw_dir() == absolute_path
+
+
 def test_create_db_engine_builds_sql_server_connection(monkeypatch):
     values = {
         "DB_HOST": "sql.example.test",
@@ -78,6 +90,32 @@ def test_configure_logging_creates_log_directory(monkeypatch, tmp_path):
         handler.baseFilename.endswith("execucao_relatorio.log")
         for handler in captured["handlers"]
     )
+    for handler in captured["handlers"]:
+        handler.close()
+
+
+@pytest.mark.parametrize(
+    "categoria,arquivo",
+    [
+        ("tratamento", "tratamento_dados.log"),
+        ("insercao", "insercao_dados.log"),
+        ("analise", "relatorios_calculos.log"),
+    ],
+)
+def test_configure_logging_selects_file_by_category(
+    monkeypatch, tmp_path, categoria, arquivo
+):
+    captured = {}
+    monkeypatch.setattr(settings, "get_env", lambda key: "logs")
+    monkeypatch.setattr(
+        settings.logging,
+        "basicConfig",
+        lambda **kwargs: captured.update(kwargs),
+    )
+
+    settings.configure_logging(tmp_path, categoria=categoria)
+
+    assert any(handler.baseFilename.endswith(arquivo) for handler in captured["handlers"])
     for handler in captured["handlers"]:
         handler.close()
 
@@ -188,6 +226,56 @@ def test_main_stops_etl_after_a_script_fails(main_module, monkeypatch):
     main_module.main()
 
     assert calls == ["locations.py"]
+
+
+def test_main_dispatches_rest_ingestion(main_module, monkeypatch):
+    options = iter(["4", "3"])
+    calls = []
+    monkeypatch.setattr(main_module, "exibir_menu", lambda: next(options))
+    monkeypatch.setattr(
+        main_module,
+        "executar_script",
+        lambda path, interativo=False: calls.append((path, interativo)) or True,
+    )
+
+    main_module.main()
+
+    assert calls == [("Get_dados.py", False)]
+
+
+# projeto_final.pdf secoes 3.2/3.3 -> features.csv IDs 32-34, 38 e 39.
+def test_main_dispatches_cadastro_scripts_in_dependency_order(main_module, monkeypatch):
+    options = iter(["5", "3"])
+    calls = []
+    monkeypatch.setattr(main_module, "exibir_menu", lambda: next(options))
+    monkeypatch.setattr(
+        main_module,
+        "executar_script",
+        lambda path, interativo=False: calls.append(path) or True,
+    )
+
+    main_module.main()
+
+    assert calls == [
+        "src/database/dml/Insert_Parametros.py",
+        "src/database/dml/Insert_Catalogo_LGPD.py",
+        "src/database/dml/Insert_Operadores.py",
+    ]
+
+
+def test_main_stops_cadastro_after_a_script_fails(main_module, monkeypatch):
+    options = iter(["5", "3"])
+    calls = []
+    monkeypatch.setattr(main_module, "exibir_menu", lambda: next(options))
+    monkeypatch.setattr(
+        main_module,
+        "executar_script",
+        lambda path, interativo=False: calls.append(path) and False,
+    )
+
+    main_module.main()
+
+    assert calls == ["src/database/dml/Insert_Parametros.py"]
 
 
 if __name__ == "__main__":
