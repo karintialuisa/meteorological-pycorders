@@ -32,7 +32,7 @@ METADADOS_CATALOGO = (
         "finalidade": "Cadastro e identificacao de operadores de campo",
         "protecao": "Fernet",
         "politica_acesso": (
-            "Descriptificacao autorizada por principal; tentativas auditadas sem PII"
+            "Descriptografia autorizada por principal; tentativas auditadas sem PII"
         ),
     },
 )

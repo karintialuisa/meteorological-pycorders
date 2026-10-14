@@ -328,12 +328,23 @@ Para cada parâmetro ambiental, o sistema calcula média, mediana, desvio padrã
 - A tabela `operadores` guarda apenas `cpf_hash` (HMAC-SHA-256) e `nome_completo_cifrado` (Fernet). O módulo `src/security/pii.py` oferece as funções de proteção; `inserir_operadores()` recebe registros de uma fonte aprovada com os campos `cpf` e `nome_completo`. Nenhum cadastro fictício ou arquivo com valores pessoais é fornecido.
 - Defina `HMAC_SECRET_KEY` e `ENCRYPTION_KEY` no ambiente do processo autorizado. Gere uma chave Fernet com `python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"` e um segredo HMAC forte com `python -c "import secrets; print(secrets.token_urlsafe(32))"`. Não grave chaves no banco, no código, em logs ou no controle de versão. O arquivo `src/config/.env.example` ainda não existe; use a lista de variáveis da seção Configuração como modelo.
 - HMAC permite comparar CPFs normalizados sem armazená-los, mas não é anonimização jurídica. A troca da chave HMAC muda todos os identificadores; como o CPF original não é persistido, planeje a rotação e a reidentificação com a fonte autorizada antes de trocar a chave. A rotação da chave Fernet também requer recriptografia ou uma estratégia de chaves versionadas.
-- A posse da chave Fernet permite descriptografar nomes; este projeto ainda não implementa autorização por usuário ou auditoria de descriptografia. Restrinja a chave e o processo/conta que a lê. A chave, isoladamente, não implementa controle de acesso.
+- A descriptografia exige principal técnico e callback de autorização e audita sucesso/negação sem nome, ciphertext ou chave. Não há provedor de identidade de usuário final; a aplicação chamadora deve vincular a autorização a uma identidade autenticada. Restrinja a chave e o processo/conta que a lê.
 - Atenção: `src/config/.env` já está versionado neste repositório. A regra no `.gitignore` não remove arquivos já rastreados. Antes de armazenar chaves reais, remova esse arquivo do índice do Git e revise/rotacione quaisquer segredos que tenham sido publicados.
 - O arquivo `logs/execucao_relatorio.log` é local e está coberto pelo `.gitignore`.
 - Configure e proteja `SILVER_DIR` conforme a política de retenção do Data Lake; os arquivos Parquet contêm dados ambientais e não devem receber campos pessoais de operadores.
 - Revise mensagens e dados registrados antes de incluir logs em chamados ou compartilhá-los.
 - O dashboard e os scripts de carga compartilham a conexão definida em `src/config/.env`.
+
+### Catálogo de dados pessoais — ID 32
+
+`dbo.catalogo_dados` inventaria os campos de `dbo.operadores`, sem guardar valores pessoais:
+
+| Campo lógico | Coluna armazenada | Classificação | Finalidade | Proteção e política de acesso |
+| --- | --- | --- | --- | --- |
+| `cpf` | `cpf_hash` | Dado pessoal | Cadastro e identificação de operadores de campo | HMAC-SHA-256; chave restrita ao processo autorizado, digest não reversível |
+| `nome_completo` | `nome_completo_cifrado` | Dado pessoal | Cadastro e identificação de operadores de campo | Fernet; descriptografia autorizada por principal, tentativas auditadas sem PII |
+
+`inserir_catalogo_lgpd` insere ou atualiza os metadados em transação, preservando o ID e a data de criação em reexecuções. A opção 5 do menu executa essa carga. Os testes conferem todos os metadados e, no SQLExpress descartável com o DDL oficial, validam reexecução, correção de metadados desatualizados e rejeição de duplicidade/classificação inválida. Essa homologação não publica o catálogo nem altera dados no banco `monitoramento`.
 
 ## Equipe
 

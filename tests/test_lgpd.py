@@ -155,27 +155,22 @@ def test_decrypt_name_requires_safe_principal_identifier(caplog):
     assert "forged-log-entry" not in caplog.text
 
 
-def test_catalog_seed_is_idempotent_and_classifies_both_fields(banco_teste):
+def test_catalog_seed_is_idempotent_and_classifies_both_fields(
+    banco_teste, catalogo_lgpd_esperado
+):
     assert inserir_catalogo_lgpd(banco_teste) == 2
     assert inserir_catalogo_lgpd(banco_teste) == 2
 
     with banco_teste.connect() as connection:
         fields = connection.execute(
             text(
-                "SELECT campo_logico, coluna_armazenada, classificacao, protecao "
+                "SELECT schema_name, tabela, campo_logico, coluna_armazenada, "
+                "classificacao, finalidade, protecao, politica_acesso "
                 "FROM catalogo_dados ORDER BY campo_logico"
             )
         ).all()
 
-    assert fields == [
-        ("cpf", "cpf_hash", "Dado pessoal", "HMAC-SHA-256"),
-        (
-            "nome_completo",
-            "nome_completo_cifrado",
-            "Dado pessoal",
-            "Fernet",
-        ),
-    ]
+    assert fields == catalogo_lgpd_esperado
 
 
 def test_operator_loader_persists_only_protected_values(banco_teste):

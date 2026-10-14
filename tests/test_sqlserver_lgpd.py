@@ -155,7 +155,9 @@ def _authorize_operator_loader(principal: str, action: str) -> bool:
         "ou no ambiente para executar a integracao SQL Server."
     ),
 )
-def test_catalog_and_operator_protection_on_disposable_sql_server(caplog):
+def test_catalog_and_operator_protection_on_disposable_sql_server(
+    caplog, catalogo_lgpd_esperado
+):
     caplog.set_level(logging.INFO)
 
     from cryptography.fernet import Fernet
@@ -216,8 +218,54 @@ def test_catalog_and_operator_protection_on_disposable_sql_server(caplog):
                     )
                 )
 
+            catalog_query = text(
+                "SELECT schema_name, tabela, campo_logico, coluna_armazenada, "
+                "classificacao, finalidade, protecao, politica_acesso "
+                "FROM dbo.catalogo_dados ORDER BY campo_logico"
+            )
+            identity_query = text(
+                "SELECT id, campo_logico, criado_em "
+                "FROM dbo.catalogo_dados ORDER BY campo_logico"
+            )
             assert inserir_catalogo_lgpd(engine) == 2
+            with engine.connect() as connection:
+                assert connection.execute(catalog_query).all() == catalogo_lgpd_esperado
+                original_identity = connection.execute(identity_query).all()
+            assert all(row.criado_em is not None for row in original_identity)
+
             assert inserir_catalogo_lgpd(engine) == 2
+            with engine.connect() as connection:
+                assert connection.execute(catalog_query).all() == catalogo_lgpd_esperado
+                assert connection.execute(identity_query).all() == original_identity
+
+            with engine.begin() as connection:
+                connection.execute(text(
+                    "UPDATE dbo.catalogo_dados SET finalidade = 'Desatualizada', "
+                    "politica_acesso = 'Desatualizada'"
+                ))
+            assert inserir_catalogo_lgpd(engine) == 2
+            with engine.connect() as connection:
+                assert connection.execute(catalog_query).all() == catalogo_lgpd_esperado
+                assert connection.execute(identity_query).all() == original_identity
+
+            with pytest.raises(IntegrityError):
+                with engine.begin() as connection:
+                    connection.execute(text(
+                        "INSERT INTO dbo.catalogo_dados "
+                        "(schema_name, tabela, campo_logico, coluna_armazenada, "
+                        "classificacao, finalidade, protecao, politica_acesso) "
+                        "SELECT schema_name, tabela, campo_logico, coluna_armazenada, "
+                        "classificacao, finalidade, protecao, politica_acesso "
+                        "FROM dbo.catalogo_dados WHERE campo_logico = 'cpf'"
+                    ))
+            with pytest.raises(IntegrityError):
+                with engine.begin() as connection:
+                    connection.execute(text(
+                        "UPDATE dbo.catalogo_dados SET classificacao = 'Nao pessoal' "
+                        "WHERE campo_logico = 'cpf'"
+                    ))
+            with engine.connect() as connection:
+                assert connection.execute(catalog_query).all() == catalogo_lgpd_esperado
             cpf = _cpf_sintetico()
             hmac_secret = "sqlserver-disposable-test-secret"
             encryption_key = Fernet.generate_key().decode("ascii")
