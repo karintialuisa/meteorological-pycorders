@@ -10,6 +10,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import pandas as pd
+import pyarrow.parquet as parquet
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from config.settings import PROJECT_ROOT, get_silver_dir
@@ -99,16 +100,52 @@ def _chaves(df: pd.DataFrame, colunas: list[str]):
         )
 
 
-def _ler_chaves_existentes(
-    pasta_dataset: Path, colunas_chave: list[str]
-) -> set[tuple[object, ...]]:
-    chaves = set()
+def _assinatura_payload(
+    linha: pd.Series, colunas_payload: list[str], numericas: list[str]
+) -> dict[str, object]:
+    assinatura = {}
+    for coluna in colunas_payload:
+        valor = linha[coluna]
+        if pd.isna(valor):
+            assinatura[coluna] = None
+        elif coluna == "data_leitura":
+            assinatura[coluna] = _normalizar_valor_chave(coluna, valor)
+        elif coluna in numericas:
+            assinatura[coluna] = round(float(valor), 3)
+        elif pd.api.types.is_number(valor):
+            assinatura[coluna] = _normalizar_valor_chave(coluna, valor)
+        else:
+            assinatura[coluna] = str(valor).strip()
+    return assinatura
+
+
+def _ler_registros_existentes(
+    pasta_dataset: Path,
+    colunas_chave: list[str],
+    colunas_payload: list[str],
+    numericas: list[str],
+) -> dict[tuple[object, ...], tuple[object, ...]]:
+    registros = {}
+    colunas = list(dict.fromkeys([*colunas_chave, *colunas_payload]))
     for caminho in pasta_dataset.glob("data_leitura=*/part-00000.parquet"):
+        colunas_disponiveis = [
+            coluna
+            for coluna in colunas
+            if coluna in parquet.ParquetFile(caminho).schema.names
+        ]
         existentes = pd.read_parquet(
-            caminho, columns=colunas_chave, engine="pyarrow"
+            caminho, columns=colunas_disponiveis, engine="pyarrow"
         )
-        chaves.update(_chaves(existentes, colunas_chave))
-    return chaves
+        payload_disponivel = [
+            coluna for coluna in colunas_payload if coluna in colunas_disponiveis
+        ]
+        for _, linha in existentes.iterrows():
+            chave = tuple(
+                _normalizar_valor_chave(coluna, linha[coluna])
+                for coluna in colunas_chave
+            )
+            registros[chave] = _assinatura_payload(linha, payload_disponivel, numericas)
+    return registros
 
 
 def _gravar_parquet_atomico(df: pd.DataFrame, destino: Path) -> None:
@@ -154,7 +191,10 @@ def _gravar_json_atomico(conteudo: dict, destino: Path) -> None:
 
 
 def _resumo_qualidade(
-    df: pd.DataFrame, dataset: str, contrato: dict
+    df: pd.DataFrame,
+    dataset: str,
+    contrato: dict,
+    rejeicoes_consistencia: int = 0,
 ) -> tuple[pd.DataFrame, dict[str, dict[str, int]]]:
     linhas_recebidas = len(df)
     preparado = df.copy()
@@ -166,6 +206,7 @@ def _resumo_qualidade(
 
     incompletas = _mascara_vazia(preparado, contrato["obrigatorias"])
     tempestividade_invalida = preparado["data_leitura"].isna()
+    # 3.2 Consistência: relações ausentes ou contraditórias são rejeitadas e auditadas antes da persistência.
     consistencia_invalida = _mascara_vazia(preparado, contrato["relacoes"])
 
     if dataset == "qualidade_agua":
@@ -213,13 +254,20 @@ def _resumo_qualidade(
             "linhas_rejeitadas": quantidade_rejeitada,
         }
 
+    metricas_consistencia = metricas(consistencia_invalida)
+    metricas_consistencia["linhas_avaliadas"] += rejeicoes_consistencia
+    metricas_consistencia["linhas_rejeitadas"] += rejeicoes_consistencia
+    metricas_consistencia["linhas_aprovadas"] = (
+        metricas_consistencia["linhas_avaliadas"]
+        - metricas_consistencia["linhas_rejeitadas"]
+    )
     metricas_dimensoes = {
         "completeness": metricas(incompletas),
         "uniqueness": metricas(pd.Series(False, index=preparado.index)),
         "accuracy": metricas(acuracia_invalida),
         "validity": metricas(validade_invalida),
         "timeliness": metricas(tempestividade_invalida),
-        "consistency": metricas(consistencia_invalida),
+        "consistency": metricas_consistencia,
     }
     return limpas, metricas_dimensoes
 
@@ -228,6 +276,8 @@ def persistir_silver(
     df: pd.DataFrame,
     dataset: str,
     diretorio_silver: str | Path | None = None,
+    *,
+    rejeicoes_consistencia: int = 0,
 ) -> dict[str, object]:
     """Mescla leituras por chave natural e grava particoes diarias na Silver.
 
@@ -251,11 +301,41 @@ def persistir_silver(
     pasta_dataset.mkdir(parents=True, exist_ok=True)
 
     # 3.2 Auditoria (itens 26-31): mede qualidade antes de qualquer persistencia.
-    limpas, metricas = _resumo_qualidade(df, dataset, contrato)
+    limpas, metricas = _resumo_qualidade(
+        df, dataset, contrato, rejeicoes_consistencia
+    )
     chave = contrato["chave"]
     duplicadas_lote = limpas.duplicated(subset=chave, keep="first")
     linhas_avaliadas_unicidade = len(limpas)
     duplicatas_no_lote = int(duplicadas_lote.sum())
+    payload = [coluna for coluna in limpas.columns if coluna not in chave]
+    conflitos_payload = pd.Series(False, index=limpas.index)
+    for valores_chave in (
+        limpas.loc[duplicadas_lote, chave]
+        .drop_duplicates()
+        .itertuples(index=False, name=None)
+    ):
+        mascara_grupo = pd.Series(True, index=limpas.index)
+        for coluna, valor in zip(chave, valores_chave):
+            mascara_grupo &= limpas[coluna].eq(valor)
+        grupo = limpas.loc[mascara_grupo]
+        assinatura_primeira = tuple(grupo.iloc[0][payload].tolist())
+        for indice, linha in grupo.iloc[1:].iterrows():
+            if tuple(linha[payload].tolist()) != assinatura_primeira:
+                conflitos_payload.loc[indice] = True
+    quantidade_conflitos_payload = int(conflitos_payload.sum())
+    if quantidade_conflitos_payload:
+        logging.warning(
+            "Silver/%s: retransmissoes com payload conflitante rejeitadas=%s",
+            dataset,
+            quantidade_conflitos_payload,
+        )
+        metricas["consistency"]["linhas_rejeitadas"] += (
+            quantidade_conflitos_payload
+        )
+        metricas["consistency"]["linhas_aprovadas"] -= (
+            quantidade_conflitos_payload
+        )
     if duplicadas_lote.any():
         logging.warning(
             "Silver/%s: retransmissoes no lote removidas=%s",
@@ -264,7 +344,11 @@ def persistir_silver(
         )
     limpas = limpas.drop_duplicates(subset=chave, keep="first").copy()
 
-    chaves_existentes = _ler_chaves_existentes(pasta_dataset, chave)
+    colunas_payload = [coluna for coluna in limpas.columns if coluna not in chave]
+    registros_existentes = _ler_registros_existentes(
+        pasta_dataset, chave, colunas_payload, contrato["numericas"]
+    )
+    chaves_existentes = set(registros_existentes)
     duplicadas_persistidas = limpas.apply(
         lambda linha: tuple(
             _normalizar_valor_chave(coluna, linha[coluna]) for coluna in chave
@@ -272,6 +356,28 @@ def persistir_silver(
         in chaves_existentes,
         axis=1,
     )
+    conflitos_persistidos = 0
+    for _, linha in limpas.loc[duplicadas_persistidas].iterrows():
+        chave_linha = tuple(
+            _normalizar_valor_chave(coluna, linha[coluna]) for coluna in chave
+        )
+        assinatura = _assinatura_payload(
+            linha, colunas_payload, contrato["numericas"]
+        )
+        assinatura_existente = registros_existentes[chave_linha]
+        if any(
+            assinatura[coluna] != valor
+            for coluna, valor in assinatura_existente.items()
+        ):
+            conflitos_persistidos += 1
+    if conflitos_persistidos:
+        logging.warning(
+            "Silver/%s: retransmissoes conflitantes contra Parquet rejeitadas=%s",
+            dataset,
+            conflitos_persistidos,
+        )
+        metricas["consistency"]["linhas_rejeitadas"] += conflitos_persistidos
+        metricas["consistency"]["linhas_aprovadas"] -= conflitos_persistidos
     quantidade_persistidas_ignoradas = int(duplicadas_persistidas.sum())
     if quantidade_persistidas_ignoradas:
         logging.info(

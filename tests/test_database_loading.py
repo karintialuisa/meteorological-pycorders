@@ -76,6 +76,50 @@ def test_resolver_id_cidade_uses_station_relationship(banco_teste):
     assert "estado" not in result.columns
 
 
+def test_resolver_id_cidade_rejects_conflicting_source_location(
+    banco_teste, caplog
+):
+    seed_location(banco_teste)
+    readings = pd.DataFrame(
+        [{"id_estacao": 20, "cidade": "Campinas", "estado": "SP"}]
+    )
+
+    with banco_teste.connect() as connection:
+        result = meteorologica.resolver_id_cidade(readings, connection)
+
+    assert result.empty
+    assert result.attrs["silver_consistency_rejections"] == 1
+    assert any(
+        "localizacao divergente" in record.message.lower()
+        for record in caplog.records
+    )
+
+
+def test_resolver_id_cidade_rejects_station_state_conflicting_with_city(
+    banco_teste,
+):
+    seed_location(banco_teste)
+    with banco_teste.begin() as connection:
+        connection.execute(
+            text(
+                "INSERT INTO estado (id, codigo_ibge, sigla, nome) "
+                "VALUES (2, 33, 'RJ', 'Rio de Janeiro')"
+            )
+        )
+        connection.execute(
+            text("UPDATE estacao SET id_estado = 2 WHERE id = 20")
+        )
+    readings = pd.DataFrame(
+        [{"id_estacao": 20, "cidade": "Sao Paulo", "estado": "SP"}]
+    )
+
+    with banco_teste.connect() as connection:
+        result = meteorologica.resolver_id_cidade(readings, connection)
+
+    assert result.empty
+    assert result.attrs["silver_consistency_rejections"] == 1
+
+
 def test_resolver_id_estacao_filters_station_not_in_database(
     banco_teste, monkeypatch, caplog
 ):
@@ -94,6 +138,7 @@ def test_resolver_id_estacao_filters_station_not_in_database(
         result = ambiental.resolver_id_estacao(readings, connection)
 
     assert result.empty
+    assert result.attrs["silver_consistency_rejections"] == 1
     assert any(
         "rejeitada por estação sem correspondência" in record.message
         for record in caplog.records
@@ -234,6 +279,14 @@ def test_ambiental_load_is_idempotent_and_keeps_first_conflicting_reading(
     monkeypatch.setattr(ambiental, "tabela_cidade", pd.DataFrame)
     monkeypatch.setattr(ambiental, "tabela_estado", pd.DataFrame)
     monkeypatch.setattr(ambiental, "create_db_engine", lambda: banco_teste)
+    rejeicoes_silver = []
+    persistir_original = ambiental.persistir_silver
+
+    def capturar_auditoria_silver(df, dataset, *args, **kwargs):
+        rejeicoes_silver.append(kwargs.get("rejeicoes_consistencia", 0))
+        return persistir_original(df, dataset, *args, **kwargs)
+
+    monkeypatch.setattr(ambiental, "persistir_silver", capturar_auditoria_silver)
 
     ambiental.inserir_dados()
     ambiental.inserir_dados()
@@ -253,10 +306,53 @@ def test_ambiental_load_is_idempotent_and_keeps_first_conflicting_reading(
         "Retransmissão conflitante ignorada" in record.message
         for record in caplog.records
     )
+    assert 1 in rejeicoes_silver
+
+
+def test_ambiental_conflict_count_excludes_identical_retransmissions(connection):
+    readings = pd.DataFrame(
+        [
+            {
+                "id_leitura_origem": "WATER-MIXED-001",
+                "id_estacao": 20,
+                "data_leitura": "2026-05-20T12:00:00Z",
+                "temperatura_agua": 21.0,
+                "ph": 7.0,
+                "oxigenio": 8.0,
+                "condutividade": 110.0,
+                "turbidez": 2.5,
+            },
+            {
+                "id_leitura_origem": "WATER-MIXED-001",
+                "id_estacao": 20,
+                "data_leitura": "2026-05-20T12:00:00Z",
+                "temperatura_agua": 21.0,
+                "ph": 7.0,
+                "oxigenio": 8.0,
+                "condutividade": 110.0,
+                "turbidez": 2.5,
+            },
+            {
+                "id_leitura_origem": "WATER-MIXED-001",
+                "id_estacao": 20,
+                "data_leitura": "2026-05-20T12:00:00Z",
+                "temperatura_agua": 21.0,
+                "ph": 7.0,
+                "oxigenio": 8.0,
+                "condutividade": 110.0,
+                "turbidez": 3.5,
+            },
+        ]
+    )
+
+    result = ambiental.filtrar_retransmissoes(readings, connection)
+
+    assert len(result) == 1
+    assert result.attrs["silver_consistency_rejections"] == 1
 
 
 def test_meteorological_load_is_idempotent_and_keeps_first_reading(
-    banco_teste, monkeypatch
+    banco_teste, monkeypatch, caplog
 ):
     seed_location(banco_teste)
     rows = iter(
@@ -313,6 +409,54 @@ def test_meteorological_load_is_idempotent_and_keeps_first_reading(
     assert len(readings_in_database) == 1
     assert readings_in_database[0][0] == 20
     assert readings_in_database[0][2] == 24.0
+    assert any(
+        "retransmissao meteorologica conflitante" in record.message.lower()
+        for record in caplog.records
+    )
+
+
+def test_meteorological_conflict_count_excludes_identical_retransmissions(
+    connection,
+):
+    readings = pd.DataFrame(
+        [
+            {
+                "id_estacao": 20,
+                "id_cidade": 10,
+                "data_leitura": "2026-05-20T12:00:00Z",
+                "temperatura_ar": 24.0,
+                "umidade": 65.0,
+                "chuva": 0.0,
+                "vento": 4.5,
+                "condicao": "Nublado",
+            },
+            {
+                "id_estacao": 20,
+                "id_cidade": 10,
+                "data_leitura": "2026-05-20T12:00:00Z",
+                "temperatura_ar": 24.0,
+                "umidade": 65.0,
+                "chuva": 0.0,
+                "vento": 4.5,
+                "condicao": "Nublado",
+            },
+            {
+                "id_estacao": 20,
+                "id_cidade": 10,
+                "data_leitura": "2026-05-20T12:00:00Z",
+                "temperatura_ar": 29.0,
+                "umidade": 65.0,
+                "chuva": 0.0,
+                "vento": 4.5,
+                "condicao": "Nublado",
+            },
+        ]
+    )
+
+    result = meteorologica.filtrar_retransmissoes(readings, connection)
+
+    assert len(result) == 1
+    assert result.attrs["silver_consistency_rejections"] == 1
 
 
 def test_database_rejects_duplicate_natural_keys(banco_teste):
@@ -409,12 +553,14 @@ def test_ambiental_load_skips_insert_when_all_stations_are_unresolved(
         "tabela_ambiental",
         lambda: pd.DataFrame(
             [{
+                "id_leitura_origem": "LEIT-AMB-UNRESOLVED-901",
                 "estacao_id": 901,
                 "data_leitura": "2026-05-20T12:00:00+00:00",
                 "temperatura_agua": 19.0,
                 "ph": 7.0,
                 "oxigenio": 8.0,
                 "condutividade": 110.0,
+                "turbidez": 2.5,
             }]
         ),
     )
@@ -494,8 +640,8 @@ def test_meteorological_load_rejects_missing_wind(
         lambda: pd.DataFrame(
             [{
                 "estacao_id": "MET-RECIFE-01",
-                "cidade": "Recife",
-                "estado": "Pernambuco",
+                "cidade": "Sao Paulo",
+                "estado": "Sao Paulo",
                 "data_leitura": "2026-05-20T12:00:00",
                 "temperatura_ar": 24.0,
                 "umidade": 65.0,
@@ -535,8 +681,8 @@ def test_meteorological_load_rejects_missing_rain(
         lambda: pd.DataFrame(
             [{
                 "estacao_id": "MET-RECIFE-01",
-                "cidade": "Recife",
-                "estado": "Pernambuco",
+                "cidade": "Sao Paulo",
+                "estado": "Sao Paulo",
                 "data_leitura": "2026-05-20T12:00:00",
                 "temperatura_ar": 24.0,
                 "umidade": 65.0,
@@ -576,8 +722,8 @@ def test_meteorological_load_rejects_missing_humidity(
         lambda: pd.DataFrame(
             [{
                 "estacao_id": "MET-RECIFE-01",
-                "cidade": "Recife",
-                "estado": "Pernambuco",
+                "cidade": "Sao Paulo",
+                "estado": "Sao Paulo",
                 "data_leitura": "2026-05-20T12:00:00",
                 "temperatura_ar": 24.0,
                 "umidade": float("nan"),

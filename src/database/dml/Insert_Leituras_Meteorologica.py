@@ -1,4 +1,5 @@
 import logging
+import unicodedata
 """Carga das leituras meteorológicas no banco de dados.
 
 Este módulo lê os dados tratados do JSON meteorológico, resolve os IDs de cidade
@@ -21,6 +22,35 @@ from ingestion.leituras.Persistir_Silver import persistir_silver
 tabeladestino = "leitura_meteorologica"
 modocarga = "append"
 TAMANHO_LOTE_CHAVES = 400
+COLUNAS_COMPARACAO_RETRANSMISSAO = [
+    "id_cidade",
+    "temperatura_ar",
+    "umidade",
+    "chuva",
+    "vento",
+    "condicao",
+]
+
+
+def _normalizar_localidade(valor: object) -> str:
+    texto = "" if pd.isna(valor) else str(valor).strip().casefold()
+    decomposicao = unicodedata.normalize("NFKD", texto)
+    return "".join(
+        caractere
+        for caractere in decomposicao
+        if not unicodedata.combining(caractere)
+    )
+
+
+def _normalizar_valor_retransmissao(coluna: str, valor: object) -> object:
+    if pd.isna(valor):
+        return None
+    if coluna == "data_leitura":
+        instante = pd.to_datetime(valor, utc=True, errors="coerce")
+        return None if pd.isna(instante) else instante.isoformat()
+    if coluna in COLUNAS_COMPARACAO_RETRANSMISSAO and coluna != "condicao":
+        return round(float(valor), 3)
+    return str(valor).strip()
 
 
 def validar_unicidade_persistida(connection) -> None:
@@ -43,8 +73,12 @@ def filtrar_retransmissoes(
 ) -> pd.DataFrame:
     """Remove retransmissoes por estacao e instante, inclusive ja persistidas."""
     chave = ["id_estacao", "data_leitura"]
+    rejeicoes_consistencia = int(
+        df_leituras.attrs.get("silver_consistency_rejections", 0)
+    )
     df_leituras = df_leituras.copy()
     if df_leituras.empty:
+        df_leituras.attrs["silver_consistency_rejections"] = rejeicoes_consistencia
         return df_leituras
 
     df_leituras["data_leitura"] = pd.to_datetime(
@@ -64,6 +98,7 @@ def filtrar_retransmissoes(
     colunas_comparacao = [
         coluna for coluna in df_leituras.columns if coluna not in chave
     ]
+    conflitos_lote = 0
     for id_estacao, data_leitura in (
         df_leituras.loc[duplicadas_lote, chave]
         .drop_duplicates()
@@ -73,12 +108,24 @@ def filtrar_retransmissoes(
             df_leituras["id_estacao"].eq(id_estacao)
             & df_leituras["data_leitura"].eq(data_leitura)
         ]
-        if len(grupo[colunas_comparacao].drop_duplicates()) > 1:
+        primeira = grupo.iloc[0]
+        quantidade_conflitante = sum(
+            any(
+                _normalizar_valor_retransmissao(coluna, leitura[coluna])
+                != _normalizar_valor_retransmissao(coluna, primeira[coluna])
+                for coluna in colunas_comparacao
+            )
+            for _, leitura in grupo.iloc[1:].iterrows()
+        )
+        if quantidade_conflitante:
+            conflitos_lote += quantidade_conflitante
             logging.warning(
                 "Retransmissao meteorologica conflitante no lote; "
-                "mantendo primeira: id_estacao=%s, data_leitura=%s",
+                "rejeitando versoes divergentes e mantendo primeira: "
+                "id_estacao=%s, data_leitura=%s, rejeitadas=%s",
                 id_estacao,
                 data_leitura,
+                quantidade_conflitante,
             )
     if duplicadas_lote.any():
         logging.info(
@@ -86,6 +133,7 @@ def filtrar_retransmissoes(
             int(duplicadas_lote.sum()),
         )
     df_leituras = df_leituras.drop_duplicates(subset=chave, keep="first")
+    rejeicoes_consistencia += conflitos_lote
 
     consulta_existentes = []
     chaves = list(df_leituras[chave].itertuples(index=False, name=None))
@@ -107,42 +155,69 @@ def filtrar_retransmissoes(
                 parametros[nome_data] = timestamp.isoformat()
 
             consulta = text(
-                "SELECT id_estacao, data_leitura FROM leitura_meteorologica WHERE "
+                "SELECT id_estacao, data_leitura, id_cidade, temperatura_ar, "
+                "umidade, chuva, vento, condicao "
+                "FROM leitura_meteorologica WHERE "
                 + " OR ".join(condicoes)
             )
             consulta_existentes.extend(connection.execute(consulta, parametros))
         else:
             ids_estacao = sorted({int(id_estacao) for id_estacao, _ in lote})
             consulta = text(
-                "SELECT id_estacao, data_leitura FROM leitura_meteorologica "
+                "SELECT id_estacao, data_leitura, id_cidade, temperatura_ar, "
+                "umidade, chuva, vento, condicao FROM leitura_meteorologica "
                 "WHERE id_estacao IN :ids_estacao"
             ).bindparams(bindparam("ids_estacao", expanding=True))
             consulta_existentes.extend(
                 connection.execute(consulta, {"ids_estacao": ids_estacao})
             )
 
-    chaves_existentes = {
+    registros_existentes = {
         (
             int(row.id_estacao),
             pd.to_datetime(row.data_leitura, utc=True).isoformat(),
-        )
+        ): row._mapping
         for row in consulta_existentes
     }
-    novas = df_leituras.apply(
-        lambda leitura: (
+    novas = []
+    conflitos_persistidos = 0
+    ignoradas = 0
+    for _, leitura in df_leituras.iterrows():
+        chave_leitura = (
             int(leitura["id_estacao"]),
             pd.Timestamp(leitura["data_leitura"]).isoformat(),
         )
-        not in chaves_existentes,
-        axis=1,
-    )
-    ignoradas = int((~novas).sum())
+        existente = registros_existentes.get(chave_leitura)
+        if existente is None:
+            novas.append(True)
+            continue
+
+        novas.append(False)
+        payload_conflitante = any(
+            _normalizar_valor_retransmissao(coluna, leitura[coluna])
+            != _normalizar_valor_retransmissao(coluna, existente[coluna])
+            for coluna in COLUNAS_COMPARACAO_RETRANSMISSAO
+        )
+        if payload_conflitante:
+            conflitos_persistidos += 1
+            logging.warning(
+                "Retransmissao meteorologica conflitante ignorada; "
+                "mantendo registro existente: id_estacao=%s, data_leitura=%s",
+                leitura["id_estacao"],
+                leitura["data_leitura"],
+            )
+        else:
+            ignoradas += 1
+
     if ignoradas:
         logging.info(
             "Retransmissoes meteorologicas ja persistidas ignoradas: quantidade=%s",
             ignoradas,
         )
-    return df_leituras.loc[novas].reset_index(drop=True)
+    rejeicoes_consistencia += conflitos_persistidos
+    resultado = df_leituras.loc[novas].reset_index(drop=True)
+    resultado.attrs["silver_consistency_rejections"] = rejeicoes_consistencia
+    return resultado
 
 def resolver_id_cidade(df_leituras: pd.DataFrame, connection) -> pd.DataFrame:
     """Resolve a cidade a partir da estação já cadastrada no banco.
@@ -159,12 +234,21 @@ def resolver_id_cidade(df_leituras: pd.DataFrame, connection) -> pd.DataFrame:
 
     cidades_estacoes_banco = pd.read_sql(
         text(
-            "SELECT id AS id_estacao, id_cidade "
-            "FROM estacao"
+            "SELECT estacao.id AS id_estacao, estacao.id_cidade, "
+            "estacao.id_estado AS id_estado_estacao, "
+            "cidade.id_estado AS id_estado_cidade, "
+            "cidade.nome AS nome_cidade, estado.nome AS nome_estado, "
+            "estado.sigla AS sigla_estado "
+            "FROM estacao "
+            "JOIN cidade ON cidade.id = estacao.id_cidade "
+            "JOIN estado ON estado.id = cidade.id_estado"
         ),
         connection,
     )
 
+    rejeicoes_consistencia = int(
+        df_leituras.attrs.get("silver_consistency_rejections", 0)
+    )
     df_leituras = df_leituras.merge(
         cidades_estacoes_banco,
         on="id_estacao",
@@ -179,7 +263,50 @@ def resolver_id_cidade(df_leituras: pd.DataFrame, connection) -> pd.DataFrame:
             f"{sorted(sem_cidade.unique())}"
         )
 
-    return df_leituras.drop(columns=["cidade", "estado"], errors="ignore")
+    divergente = pd.Series(False, index=df_leituras.index)
+    divergente |= df_leituras["id_estado_estacao"].ne(
+        df_leituras["id_estado_cidade"]
+    )
+    if "cidade" in df_leituras.columns:
+        cidade_origem = df_leituras["cidade"].map(_normalizar_localidade)
+        cidade_cadastro = df_leituras["nome_cidade"].map(_normalizar_localidade)
+        cidade_informada = cidade_origem.ne("")
+        divergente |= cidade_informada & cidade_origem.ne(cidade_cadastro)
+    if "estado" in df_leituras.columns:
+        estado_origem = df_leituras["estado"].map(_normalizar_localidade)
+        estado_nome = df_leituras["nome_estado"].map(_normalizar_localidade)
+        estado_sigla = df_leituras["sigla_estado"].map(_normalizar_localidade)
+        estado_informado = estado_origem.ne("")
+        divergente |= (
+            estado_informado
+            & estado_origem.ne(estado_nome)
+            & estado_origem.ne(estado_sigla)
+        )
+
+    quantidade_divergente = int(divergente.sum())
+    if quantidade_divergente:
+        logging.warning(
+            "Leituras meteorologicas rejeitadas por localizacao divergente "
+            "do cadastro: quantidade=%s, estacoes=%s",
+            quantidade_divergente,
+            sorted(df_leituras.loc[divergente, "id_estacao"].unique().tolist()),
+        )
+        rejeicoes_consistencia += quantidade_divergente
+
+    resultado = df_leituras.loc[~divergente].drop(
+        columns=[
+            "cidade",
+            "estado",
+            "nome_cidade",
+            "nome_estado",
+            "sigla_estado",
+            "id_estado_estacao",
+            "id_estado_cidade",
+        ],
+        errors="ignore",
+    )
+    resultado.attrs["silver_consistency_rejections"] = rejeicoes_consistencia
+    return resultado
 
 
 def inserir_dados():
@@ -204,11 +331,24 @@ def inserir_dados():
             adquirir_lock_etl(connection, "etl:leitura_meteorologica")
             validar_unicidade_persistida(connection)
             df_dados = filtrar_retransmissoes(df_dados, connection)
+            rejeicoes_consistencia = int(
+                df_dados.attrs.get("silver_consistency_rejections", 0)
+            )
             if df_dados.empty:
+                if rejeicoes_consistencia:
+                    persistir_silver(
+                        df_dados,
+                        "leitura_meteorologica",
+                        rejeicoes_consistencia=rejeicoes_consistencia,
+                    )
                 return
 
             # 3.2 Persistencia (itens 35-36): grava leituras limpas e enriquecidas na Silver.
-            persistir_silver(df_dados, "leitura_meteorologica")
+            persistir_silver(
+                df_dados,
+                "leitura_meteorologica",
+                rejeicoes_consistencia=rejeicoes_consistencia,
+            )
 
             logging.info(
                 "Inserindo %s registros na tabela '%s'...",

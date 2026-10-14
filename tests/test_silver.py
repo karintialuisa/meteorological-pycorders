@@ -118,6 +118,29 @@ def test_water_merge_evolves_legacy_partition_schema(tmp_path):
     assert restored.loc["W-NEW", "turbidez"] == 75.0
 
 
+def test_silver_replay_ignores_fields_missing_from_legacy_schema(tmp_path):
+    partition = tmp_path / "qualidade_agua" / "data_leitura=2026-05-20"
+    partition.mkdir(parents=True)
+    legacy_record = _water_record("W-OLD", "2026-05-20T10:00:00Z")
+    legacy_record.pop("turbidez")
+    legacy_record["data_leitura"] = pd.to_datetime(
+        legacy_record["data_leitura"], utc=True
+    )
+    pd.DataFrame([legacy_record]).to_parquet(
+        partition / "part-00000.parquet", engine="pyarrow", index=False
+    )
+
+    result = persistir_silver(
+        pd.DataFrame([_water_record("W-OLD", "2026-05-20T10:00:00Z")]),
+        "qualidade_agua",
+        tmp_path,
+    )
+
+    consistency = _manifest(result)["dimensoes_qualidade"]["consistency"]
+    assert result["linhas_gravadas"] == 0
+    assert consistency["linhas_rejeitadas"] == 0
+
+
 def test_weather_uses_utc_natural_key_and_writes_quality_manifest(tmp_path):
     rows = pd.DataFrame(
         [
@@ -164,10 +187,72 @@ def test_weather_uses_utc_natural_key_and_writes_quality_manifest(tmp_path):
         "linhas_aprovadas": 1,
         "linhas_rejeitadas": 1,
     }
+    assert manifest["dimensoes_qualidade"]["consistency"] == {
+        "linhas_avaliadas": 2,
+        "linhas_aprovadas": 1,
+        "linhas_rejeitadas": 1,
+    }
     manifest_text = result["manifesto"].read_text(encoding="utf-8")
     assert "SENTINELA_CONFIDENCIAL" not in manifest_text
     assert "cpf" not in manifest_text.lower()
     assert "nome_completo" not in manifest_text.lower()
+
+
+def test_silver_audits_conflicting_payload_against_existing_partition(tmp_path):
+    first = persistir_silver(
+        pd.DataFrame(
+            [_weather_record(20, "2026-05-20T13:00:00Z", temperature=24.0)]
+        ),
+        "leitura_meteorologica",
+        tmp_path,
+    )
+
+    second = persistir_silver(
+        pd.DataFrame(
+            [_weather_record(20, "2026-05-20T13:00:00Z", temperature=29.0)]
+        ),
+        "leitura_meteorologica",
+        tmp_path,
+    )
+
+    partition = (
+        tmp_path
+        / "leitura_meteorologica"
+        / "data_leitura=2026-05-20"
+        / "part-00000.parquet"
+    )
+    restored = pd.read_parquet(partition, engine="pyarrow")
+    consistency = _manifest(second)["dimensoes_qualidade"]["consistency"]
+
+    assert first["linhas_gravadas"] == 1
+    assert second["linhas_gravadas"] == 0
+    assert restored["temperatura_ar"].tolist() == [24.0]
+    assert consistency == {
+        "linhas_avaliadas": 1,
+        "linhas_aprovadas": 0,
+        "linhas_rejeitadas": 1,
+    }
+
+
+def test_silver_counts_relationship_rejections_reported_by_loader(tmp_path):
+    rows = pd.DataFrame(
+        [_water_record("W-REJECTED", "2026-05-20T12:00:00Z")]
+    ).iloc[0:0]
+
+    result = persistir_silver(
+        rows,
+        "qualidade_agua",
+        tmp_path,
+        rejeicoes_consistencia=2,
+    )
+
+    consistency = _manifest(result)["dimensoes_qualidade"]["consistency"]
+    assert result["linhas_gravadas"] == 0
+    assert consistency == {
+        "linhas_avaliadas": 2,
+        "linhas_aprovadas": 0,
+        "linhas_rejeitadas": 2,
+    }
 
 
 def test_quality_manifest_counts_invalid_and_incomplete_rows(tmp_path):
