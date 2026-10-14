@@ -3,6 +3,8 @@ USE monitoramento
 GO
 
 -- REFERENCIAS DE ENTREGA: projeto_final.pdf / features.csv
+-- Instalacao nova. IF OBJECT_ID nao migra constraints de tabelas existentes.
+-- Atualizacoes exigem revisao de schema e Migrar_Leituras explicitamente autorizado.
 -- PDF secao 2, "leituras temporais de parametros" -> features.csv IDs 4-9.
 -- PDF secao 3.3, "Parametros (Tabela de Dominio)" -> features.csv ID 39.
 -- PDF secao 3.3, "Leituras (Tabela Transacional / Cabecalho)" -> ID 40.
@@ -27,7 +29,7 @@ GO
 
 A origem separa os dois contratos legados;
 -- chave_origem usa id_leitura_origem para agua e serializacao sem ambiguidade
--- de id_estacao + instante UTC para meteorologia, preservando as chaves atuais.
+-- de codigo_origem da estacao + instante UTC para meteorologia.
 
 -- dbo.Leitura_Itens: 
     id_leitura BIGINT NOT NULL FK dbo.Leituras(id) ON DELETE CASCADE;
@@ -43,9 +45,9 @@ A origem separa os dois contratos legados;
 impede repetir o mesmo parametro no evento.
 qualidade_agua e leitura_meteorologica sao os contratos legados de leitura.
 Na migracao, parsers, chaves naturais e interfaces de consulta devem ser preservados; 
-a DML passara a gravar o cabecalho e seus itens em uma transacao.
-Os nomes legados devem ser mantidos como interfaces de compatibilidade (views ou adaptacao equivalente de leitura), sem gravar a mesma medicao nas tabelas
-antigas e em Leitura_Itens. Nao fazer dual-write. 
+a DML grava o cabecalho e seus itens em uma transacao.
+As tabelas legadas sao arquivadas pela migracao explicita, sem dual-write.
+Consultas mantidas usam o modelo 3FN; relatorios e dashboard foram retirados.
 Fazer backfill idempotente usando as chaves naturais atuais antes da troca; 
 validar cobertura de consultas.
 id_operador fica NULL para leituras automaticas/historicas sem operador conhecido;
@@ -124,96 +126,6 @@ END;
 GO
 
 -- ============================================================
--- ASSUNTO: LEITURA DA QUALIDADE DA ÁGUA
--- ============================================================
--- 3.2 Unicidade: chaves naturais impedem gravar novamente leituras retransmitidas.
--- Referencia: projeto_final.pdf, secao 2; features.csv IDs 4, 6, 7, 8 e 9.
-
-IF OBJECT_ID('dbo.qualidade_agua', 'U') IS NULL
-BEGIN
-    CREATE TABLE dbo.qualidade_agua (
-        id                      BIGINT IDENTITY(1,1) PRIMARY KEY,
-        id_leitura_origem       VARCHAR(100) NOT NULL,
-        id_estacao              BIGINT NOT NULL,
-        data_leitura            DATETIMEOFFSET NOT NULL,
-        temperatura_agua        NUMERIC(8,3) NULL,
-        ph                      NUMERIC(5,3) NULL,
-        oxigenio                NUMERIC(10,3) NULL,
-        condutividade           NUMERIC(12,3) NULL,
-        turbidez                NUMERIC(12,3) NULL,
-        criado_em               DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-
-        CONSTRAINT fk_qualidade_estacao
-            FOREIGN KEY (id_estacao)
-            REFERENCES estacao(id)
-            ON DELETE CASCADE,
-
-        CONSTRAINT uq_qualidade_agua_id_leitura_origem
-            UNIQUE (id_leitura_origem),
-
-        CONSTRAINT ck_qualidade_ph
-            CHECK (ph IS NULL OR ph BETWEEN 0 AND 14),
-
-        CONSTRAINT ck_qualidade_oxigenio
-            CHECK (oxigenio IS NULL OR oxigenio >= 0),
-
-        CONSTRAINT ck_qualidade_condutividade
-            CHECK (condutividade IS NULL OR condutividade >= 0),
-
-        CONSTRAINT ck_qualidade_turbidez
-            CHECK (turbidez IS NULL OR turbidez >= 0)
-        );
-    END;
-GO
-
--- ============================================================
--- ASSUNTO: METEOROLOGIA OBSERVADA
--- ============================================================
--- Referencia: projeto_final.pdf, secao 2; features.csv IDs 5 e 4-9 (leituras temporais).
-
-IF OBJECT_ID('dbo.leitura_meteorologica', 'U') IS NULL
-BEGIN
-CREATE TABLE dbo.leitura_meteorologica (
-    id                      BIGINT IDENTITY(1,1) PRIMARY KEY,
-    id_cidade               BIGINT NOT NULL,
-    id_estacao              BIGINT NOT NULL,
-    temperatura_ar          NUMERIC(8,3) NOT NULL,
-    umidade                 NUMERIC(5,2) NOT NULL,
-    chuva                   NUMERIC(10,3) NOT NULL,
-    vento                   NUMERIC(10,3) NOT NULL,
-    condicao                VARCHAR(100) NOT NULL,
-    data_leitura            DATETIMEOFFSET NOT NULL, 
-    criado_em               DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-
-    CONSTRAINT fk_meteorologica
-        FOREIGN KEY (id_cidade)
-        REFERENCES cidade(id),
-
-    CONSTRAINT fk_meteorologica_estacao
-        FOREIGN KEY (id_estacao)
-        REFERENCES estacao(id)
-        ON DELETE CASCADE,
-
-    CONSTRAINT uq_leitura_meteorologica_estacao_data
-        UNIQUE (id_estacao, data_leitura),
-
-    CONSTRAINT ck_meteo_umidade
-        CHECK (umidade BETWEEN 0 AND 100),
-
-    CONSTRAINT ck_meteo_chuva
-        CHECK (chuva >= 0),
-
-    CONSTRAINT ck_meteo_vento
-        CHECK (vento >= 0)
-
-    );
-
-    CREATE INDEX idx_leitura_meteorologica_id
-    ON leitura_meteorologica (id_cidade);
-END;
-GO
-
--- ============================================================
 -- ASSUNTO: OPERADORES
 -- Receber registros de uma fonte aprovada, protegê-los antes da gravação e persistir os campos protegidos.
 -- Referencia: projeto_final.pdf, secao 1 (origem dos dados) -> features.csv ID 10;
@@ -239,14 +151,6 @@ BEGIN
             ON DELETE CASCADE
     );
 END;
-GO
-
-IF COL_LENGTH('dbo.operadores', 'status') IS NULL
-    ALTER TABLE dbo.operadores ADD status BIT NULL;
-GO
-
-IF COL_LENGTH('dbo.operadores', 'id_estacao') IS NULL
-    ALTER TABLE dbo.operadores ADD id_estacao BIGINT NULL;
 GO
 
 -- ============================================================
