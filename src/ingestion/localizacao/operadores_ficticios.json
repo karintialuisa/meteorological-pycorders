@@ -1,0 +1,11 @@
+{
+  "date": "2026-10-14",
+  "operadores": [
+    {
+      "cpf": "98765432100",
+      "nome": "Operador Fictício de Demonstração",
+      "estacao_id": "AMB-011",
+      "status": "ativo"
+    }
+  ]
+}

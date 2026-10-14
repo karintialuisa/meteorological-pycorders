@@ -6,6 +6,7 @@ permite a seleção de cidade e estação e calcula estatísticas por parâmetro
 
 import json
 import logging
+import math
 import sys
 from pathlib import Path
 import pandas as pd
@@ -214,6 +215,71 @@ def identificar_outliers_iqr(
             registros["Valor da leitura"] = valores.loc[mascara_outlier]
             registros["Limite inferior"] = limite_inferior
             registros["Limite superior"] = limite_superior
+            registros_outliers.append(registros)
+
+    if not registros_outliers:
+        return pd.DataFrame()
+
+    return pd.concat(registros_outliers, ignore_index=True)
+
+
+def identificar_outliers_zscore(
+    df: pd.DataFrame,
+    mapa_colunas: dict,
+    limiar: float = 3.0,
+) -> pd.DataFrame:
+    """Retorna leituras com Z-Score absoluto igual ou acima do limiar."""
+    try:
+        limiar = float(limiar)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("O limiar do Z-Score deve ser um número positivo.") from exc
+    if not math.isfinite(limiar) or limiar <= 0:
+        raise ValueError("O limiar do Z-Score deve ser um número positivo finito.")
+
+    colunas_grupo = [
+        coluna
+        for coluna in ("estacao_id", "estacao", "Estação ID", "Estação")
+        if coluna in df.columns
+    ]
+    grupos = (
+        df.groupby(colunas_grupo, sort=False, dropna=False).indices.values()
+        if colunas_grupo
+        else [range(len(df))]
+    )
+    registros_outliers = []
+
+    for posicoes in grupos:
+        grupo = df.iloc[list(posicoes)]
+        for coluna, nome_indicador in mapa_colunas.items():
+            if coluna not in grupo.columns:
+                continue
+
+            valores = pd.to_numeric(grupo[coluna], errors="coerce")
+            valores_validos = valores.dropna()
+            if len(valores_validos) < 2:
+                continue
+
+            media = valores_validos.mean()
+            desvio_padrao = valores_validos.std(ddof=1)
+            if pd.isna(desvio_padrao) or desvio_padrao == 0:
+                continue
+
+            escores = (valores - media) / desvio_padrao
+            mascara_outlier = escores.abs().ge(limiar).fillna(False)
+            if not mascara_outlier.any():
+                continue
+
+            posicoes_outlier = mascara_outlier.to_numpy()
+            registros = grupo.iloc[posicoes_outlier].copy()
+            registros["Indicador"] = nome_indicador
+            registros["Valor da leitura"] = valores.iloc[
+                posicoes_outlier
+            ].to_numpy()
+            registros["Média"] = media
+            registros["Desvio Padrão"] = desvio_padrao
+            registros["Z-Score"] = escores.iloc[posicoes_outlier].to_numpy()
+            registros["Limiar"] = limiar
+            registros["Anomalia Z-Score"] = True
             registros_outliers.append(registros)
 
     if not registros_outliers:

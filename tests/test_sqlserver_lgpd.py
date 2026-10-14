@@ -1,5 +1,6 @@
 """Testes opt-in de LGPD em banco SQL Server descartavel e dedicado."""
 
+import json
 import logging
 import os
 import re
@@ -155,13 +156,18 @@ def _authorize_operator_loader(principal: str, action: str) -> bool:
         "ou no ambiente para executar a integracao SQL Server."
     ),
 )
-def test_catalog_and_operator_protection_on_disposable_sql_server(caplog):
+def test_catalog_and_operator_protection_on_disposable_sql_server(
+    caplog, monkeypatch
+):
     caplog.set_level(logging.INFO)
 
     from cryptography.fernet import Fernet
 
     from src.database.dml.Insert_Catalogo_LGPD import inserir_catalogo_lgpd
-    from src.database.dml.Insert_Operadores import inserir_operadores
+    from src.database.dml.Insert_Operadores import (
+        carregar_operadores,
+        inserir_operadores,
+    )
     from src.security.pii import decrypt_name, hash_cpf
 
     database = _database_name(TEST_URL)
@@ -211,6 +217,15 @@ def test_catalog_and_operator_protection_on_disposable_sql_server(caplog):
                         "INSERT INTO dbo.estacao "
                         "(codigo_origem, nome, status, id_cidade, id_estado) "
                         "VALUES ('LGPD-TEST-STATION', 'Estacao LGPD Teste', 1, "
+                        "(SELECT id FROM dbo.cidade WHERE codigo_ibge = 9999999), "
+                        "(SELECT id FROM dbo.estado WHERE sigla = 'ZZ'))"
+                    )
+                )
+                connection.execute(
+                    text(
+                        "INSERT INTO dbo.estacao "
+                        "(codigo_origem, nome, status, id_cidade, id_estado) "
+                        "VALUES ('AMB-011', 'Estacao Ficticia', 1, "
                         "(SELECT id FROM dbo.cidade WHERE codigo_ibge = 9999999), "
                         "(SELECT id FROM dbo.estado WHERE sigla = 'ZZ'))"
                     )
@@ -272,6 +287,58 @@ def test_catalog_and_operator_protection_on_disposable_sql_server(caplog):
                         ),
                         {"cpf_hash": stored.cpf_hash},
                     )
+
+            fixture_path = (
+                Path(__file__).resolve().parents[1]
+                / "src"
+                / "ingestion"
+                / "localizacao"
+                / "operadores_ficticios.json"
+            )
+            fixture_operator = json.loads(
+                fixture_path.read_text(encoding="utf-8")
+            )["operadores"][0]
+            monkeypatch.setenv("OPERADORES_JSON_PATH", str(fixture_path))
+
+            assert carregar_operadores(
+                engine=engine,
+                hmac_secret=hmac_secret,
+                encryption_key=encryption_key,
+            ) == (1, 0)
+            assert carregar_operadores(
+                engine=engine,
+                hmac_secret=hmac_secret,
+                encryption_key=encryption_key,
+            ) == (0, 0)
+
+            with engine.connect() as connection:
+                stored_fixture = connection.execute(
+                    text(
+                        "SELECT o.cpf_hash, o.nome_completo_cifrado, o.status, "
+                        "e.codigo_origem FROM dbo.operadores AS o "
+                        "JOIN dbo.estacao AS e ON e.id = o.id_estacao "
+                        "WHERE o.cpf_hash = :cpf_hash"
+                    ),
+                    {"cpf_hash": hash_cpf(fixture_operator["cpf"], hmac_secret)},
+                ).one()
+
+            assert fixture_operator["cpf"] not in stored_fixture.cpf_hash
+            assert (
+                fixture_operator["nome"]
+                not in stored_fixture.nome_completo_cifrado
+            )
+            assert decrypt_name(
+                stored_fixture.nome_completo_cifrado,
+                encryption_key,
+                principal="operator-loader",
+                authorize=_authorize_operator_loader,
+            ) == fixture_operator["nome"]
+            assert (stored_fixture.status, stored_fixture.codigo_origem) == (
+                1,
+                "AMB-011",
+            )
+            assert fixture_operator["cpf"] not in caplog.text
+            assert fixture_operator["nome"] not in caplog.text
         finally:
             if objects_created:
                 _drop_project_tables(engine)

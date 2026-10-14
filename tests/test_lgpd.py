@@ -319,6 +319,61 @@ def test_json_loader_delegates_operator_upsert_and_logs_station_changes(
     assert all(cpf not in record.message for record in caplog.records)
 
 
+def test_json_loader_uses_configured_fictitious_fixture_without_pii(
+    banco_teste, tmp_path, monkeypatch, caplog
+):
+    _seed_operator_stations(banco_teste)
+    caplog.set_level(logging.INFO)
+    fixture_path = (
+        Path(__file__).resolve().parents[1]
+        / "src"
+        / "ingestion"
+        / "localizacao"
+        / "operadores_ficticios.json"
+    )
+    payload = json.loads(fixture_path.read_text(encoding="utf-8"))
+    operator = payload["operadores"][0]
+    key = Fernet.generate_key().decode("ascii")
+    hmac_secret = "test-hmac-secret"
+    monkeypatch.setenv(
+        "OPERADORES_JSON_PATH",
+        "src/ingestion/localizacao/operadores_ficticios.json",
+    )
+    monkeypatch.chdir(tmp_path)
+
+    assert localizacao.carregar_operadores(
+        engine=banco_teste,
+        hmac_secret=hmac_secret,
+        encryption_key=key,
+    ) == (1, 0)
+    assert localizacao.carregar_operadores(
+        engine=banco_teste,
+        hmac_secret=hmac_secret,
+        encryption_key=key,
+    ) == (0, 0)
+
+    with banco_teste.connect() as connection:
+        stored = connection.execute(
+            text(
+                "SELECT cpf_hash, nome_completo_cifrado, status, id_estacao "
+                "FROM operadores"
+            )
+        ).one()
+        count = connection.execute(
+            text("SELECT COUNT(*) FROM operadores")
+        ).scalar_one()
+
+    assert stored.cpf_hash == hash_cpf(operator["cpf"], hmac_secret)
+    assert operator["cpf"] not in stored.cpf_hash
+    assert operator["nome"] not in stored.nome_completo_cifrado
+    assert _authorized_test_decryption(stored.nome_completo_cifrado, key) == operator[
+        "nome"
+    ]
+    assert (stored.status, stored.id_estacao, count) == (1, 20, 1)
+    assert operator["cpf"] not in caplog.text
+    assert operator["nome"] not in caplog.text
+
+
 def test_json_loader_rejects_invalid_and_incomplete_records_with_context(
     banco_teste, tmp_path, caplog
 ):

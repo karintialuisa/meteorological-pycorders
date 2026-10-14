@@ -150,6 +150,64 @@ def test_identificar_outliers_iqr_returns_empty_for_values_inside_limits():
     assert result.empty
 
 
+def test_identificar_outliers_zscore_groups_by_station_and_parameter():
+    readings = pd.DataFrame(
+        {
+            "ID": list(range(1, 23)),
+            "estacao_id": [10] * 11 + [20] * 11,
+            "temperature": [0] * 10 + [20] + [100] * 10 + [120],
+            "humidity": [50] * 22,
+        }
+    )
+
+    result = relatorios.identificar_outliers_zscore(
+        readings,
+        {"temperature": "Temperatura", "humidity": "Umidade"},
+    )
+
+    assert result["ID"].tolist() == [11, 22]
+    assert result["Indicador"].tolist() == ["Temperatura", "Temperatura"]
+    station_values = pd.Series([0] * 10 + [20], dtype=float)
+    expected_zscore = (
+        station_values.iloc[-1] - station_values.mean()
+    ) / station_values.std(ddof=1)
+    assert result["Z-Score"].tolist() == pytest.approx(
+        [expected_zscore, expected_zscore]
+    )
+    assert result["Anomalia Z-Score"].tolist() == [True, True]
+
+
+def test_identificar_outliers_zscore_includes_threshold_boundary():
+    values = pd.Series([0] * 10 + [20], dtype=float)
+    readings = pd.DataFrame(
+        {"ID": range(1, 12), "temperature": values}
+    )
+    boundary = (values.iloc[-1] - values.mean()) / values.std(ddof=1)
+
+    result = relatorios.identificar_outliers_zscore(
+        readings, {"temperature": "Temperatura"}, limiar=boundary
+    )
+
+    assert result["ID"].tolist() == [11]
+    assert result.iloc[0]["Z-Score"] == pytest.approx(boundary)
+
+
+def test_identificar_outliers_zscore_skips_invalid_small_and_constant_groups():
+    readings = pd.DataFrame(
+        {
+            "ID": [1, 2, 3, 4, 5],
+            "estacao_id": [10, 10, 20, 30, 30],
+            "temperature": ["invalid", None, 5, 7, 7],
+        }
+    )
+
+    result = relatorios.identificar_outliers_zscore(
+        readings, {"temperature": "Temperatura"}
+    )
+
+    assert result.empty
+
+
 def test_fixture_turbidity_anomalies_are_reported_as_iqr_outliers(monkeypatch):
     fixture = (
         Path(__file__).resolve().parents[1]

@@ -3,7 +3,10 @@ import streamlit as st
 from datetime import datetime, date
 
 from config.settings import create_db_engine
-from analytics.Relatorios_estatisticos import identificar_outliers_iqr
+from analytics.Relatorios_estatisticos import (
+    identificar_outliers_iqr,
+    identificar_outliers_zscore,
+)
 
 # --- CONFIGURAÇÃO DA PÁGINA ---
 st.set_page_config(
@@ -282,6 +285,41 @@ def exibir_relatorio_outliers(df, mapa_colunas: dict, chave: str, contexto: list
         exibir_tabela_paginada(tabela_outliers, f"outliers_{chave}")
 
 
+def exibir_relatorio_zscore(
+    df, mapa_colunas: dict, chave: str, contexto: list
+) -> None:
+    outliers = identificar_outliers_zscore(df, mapa_colunas)
+
+    with st.expander(f"Possíveis outliers por Z-Score ({len(outliers)} leituras)"):
+        st.caption(
+            "Sinalizadas leituras com |Z-Score| ≥ 3, calculado por estação e "
+            "parâmetro com desvio padrão amostral. É um alerta estatístico, "
+            "não confirmação de erro."
+        )
+        if outliers.empty:
+            st.info("Nenhuma leitura atingiu o limiar de Z-Score.")
+            return
+
+        colunas_relatorio = contexto + [
+            "Indicador",
+            "Valor da leitura",
+            "Média",
+            "Desvio Padrão",
+            "Z-Score",
+            "Limiar",
+        ]
+        tabela_outliers = outliers[colunas_relatorio].copy()
+        for coluna in ("Valor da leitura", "Média", "Desvio Padrão"):
+            tabela_outliers[coluna] = tabela_outliers[coluna].map(
+                lambda valor: f"{valor:.2f}"
+            )
+        for coluna in ("Z-Score", "Limiar"):
+            tabela_outliers[coluna] = tabela_outliers[coluna].map(
+                lambda valor: f"{valor:.3f}"
+            )
+        exibir_tabela_paginada(tabela_outliers, f"zscore_{chave}")
+
+
 # --- CONEXÃO COM O SQL SERVER EXPRESS ---
 @st.cache_resource
 def get_database_engine():
@@ -454,6 +492,7 @@ if data_inicio and data_fim:
 query_agua = """
     SELECT 
         q.id AS [ID],
+        e.id AS [estacao_id],
         e.nome AS [Estação],
         c.nome AS [Cidade],
         est.sigla AS [UF],
@@ -477,6 +516,8 @@ query_agua += " ORDER BY e.nome ASC, q.data_leitura DESC"
 query_meteo = """
     SELECT 
         m.id AS [ID],
+        st.id AS [estacao_id],
+        st.nome AS [Estação],
         c.nome AS [Cidade],
         e.sigla AS [UF],
         FORMAT(m.data_leitura, 'dd/MM/yyyy HH:mm') AS [Data/Hora],
@@ -486,6 +527,7 @@ query_meteo = """
         CAST(m.vento AS FLOAT) AS [Vento],
         m.condicao AS [Condição do Tempo]
     FROM leitura_meteorologica m
+    JOIN estacao st ON m.id_estacao = st.id
     JOIN cidade c ON m.id_cidade = c.id
     JOIN estado e ON c.id_estado = e.id
 """
@@ -552,6 +594,18 @@ with aba1:
             st.caption(f"**Mediana:** {turbidez_agua.median():.2f} NTU | **Desv. Padrão:** {turbidez_agua.std():.2f} | **IQR:** {iqr_turbidez:.2f}")
 
         exibir_relatorio_outliers(
+            df_agua,
+            {
+                "Temperatura": "Temperatura da água",
+                "pH": "pH",
+                "Oxigênio": "Oxigênio dissolvido",
+                "Condutividade": "Condutividade",
+                "Turbidez": "Turbidez da água",
+            },
+            "agua",
+            ["ID", "Estação", "Cidade", "UF", "Data/Hora"],
+        )
+        exibir_relatorio_zscore(
             df_agua,
             {
                 "Temperatura": "Temperatura da água",
@@ -638,6 +692,17 @@ with aba2:
             },
             "meteorologia",
             ["ID", "Cidade", "UF", "Data/Hora"],
+        )
+        exibir_relatorio_zscore(
+            df_meteo,
+            {
+                "Temperatura": "Temperatura do ar",
+                "Umidade": "Umidade",
+                "Chuva": "Chuva",
+                "Vento": "Vento",
+            },
+            "meteorologia",
+            ["ID", "Estação", "Cidade", "UF", "Data/Hora"],
         )
 
         st.markdown("---")

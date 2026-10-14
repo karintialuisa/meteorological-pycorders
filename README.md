@@ -176,9 +176,13 @@ Configure `src/config/.env` com as variáveis abaixo. Esse arquivo é local e ig
    API_RAW_DIR=src/ingestion/leituras
    HMAC_SECRET_KEY=gere_um_segredo_aleatorio_longo
    ENCRYPTION_KEY=gere_uma_chave_fernet
+   # Opcional: selecione a fixture fictícia para demonstração local.
+   # OPERADORES_JSON_PATH=src/ingestion/localizacao/operadores_ficticios.json
    ```
 
 `src/config/.env.example` é um modelo sem segredos. Copie-o para `src/config/.env` e substitua os marcadores antes de executar cargas que protegem dados de operadores. A opção 5 do menu executa os cadastros de parâmetros, catálogo LGPD e operadores; para operadores, as chaves HMAC e Fernet devem ser reais. O loader recusa valores que começam com `replace-with`.
+
+`OPERADORES_JSON_PATH` é opcional. Para demonstrar o cadastro com dados inteiramente fictícios, descomente a variável e use `src/ingestion/localizacao/operadores_ficticios.json`; a opção 5 usará esse arquivo. Sem a variável, o loader mantém o caminho atual. Para uma fonte operacional autorizada, configure um caminho externo ao repositório e não versione arquivos com CPF ou nome em claro. A fixture fictícia não substitui a aprovação formal da fonte real.
 
 `Get_dados.py` usa a API Agritempo da Embrapa. O bearer deve ficar somente em `src/config/.env`; não o coloque no código nem o versione. O escopo atual dessa fonte é meteorológico, com os dados de temperatura do ar disponíveis no retorno climático. O contrato em `src/ingestion/api_ingestion.py` valida o envelope, os dados da estação e cada observação diária, exigindo data, ID e temperaturas mínima/máxima numéricas, finitas e coerentes entre si. Estações sem série climática são aceitas.
 
