@@ -52,7 +52,10 @@ def migrar_legado(engine, *, arquivar: bool = False) -> dict[str, int]:
                     raise ValueError(f"preflight: politica de exclusao incompativel: {tabela}")
         if set(schema.get_pk_constraint("leitura_itens", schema="dbo" if mssql else None)["constrained_columns"]) != {"id_leitura", "id_parametro"}:
             raise ValueError("preflight: PK composta de itens ausente")
-        unicas = schema.get_unique_constraints("leituras", schema="dbo" if mssql else None)
+        unicas = (
+            [index for index in schema.get_indexes("leituras", schema="dbo") if index["unique"]]
+            if mssql else schema.get_unique_constraints("leituras")
+        )
         if not any(set(constraint["column_names"]) == {"origem", "chave_origem"} for constraint in unicas):
             raise ValueError("preflight: unicidade de leitura ausente")
         if mssql:

@@ -564,6 +564,18 @@ def test_meteorological_offsets_have_same_natural_key(banco_teste):
     assert counts(banco_teste) == (1, 5, 0, 0)
 
 
+def test_silver_output_uses_only_approved_columns_and_normalized_values(banco_teste):
+    seed_location(banco_teste)
+    output = carregar_dataframe(pd.DataFrame([
+        meteo(cpf="nao-exportar", nome_completo="nao-exportar", condicao=" Nublado ")
+    ]), "leitura_meteorologica", banco_teste)
+    assert set(output.columns) == {
+        "id_estacao", "id_cidade", "data_leitura", "temperatura_ar",
+        "umidade", "chuva", "vento", "condicao",
+    }
+    assert output["condicao"].tolist() == ["Nublado"]
+
+
 @pytest.mark.parametrize("registro,origem", [
     (water(estacao_id="AUSENTE"), "qualidade_agua"),
     (water(operador_cpf_hash="a"*64), "qualidade_agua"),

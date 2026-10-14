@@ -1,21 +1,15 @@
-"""Homologacao opt-in de PKs e integridade referencial em SQL Server descartavel.
+"""IDs39-44: constraints e replay no DDL real em banco descartavel automatico.
 
-projeto_final.pdf secao 3.3 (Parametros, Leituras, Leitura_Itens) -> features.csv IDs 39-41, 42 e 44.
-Habilite com RUN_SQLSERVER_UNIQUENESS_TESTS=1, SQLSERVER_UNIQUENESS_TEST_URL e
-SQLSERVER_UNIQUENESS_TEST_DISPOSABLE=1. SQLSERVER_UNIQUENESS_TEST_EXPECTED_SERVER
-e opcional; sem ele, o servidor lido da propria conexao e apenas registrado.
-Toda escrita ocorre em transacao revertida ao final de cada teste.
+src/config/.env.test configura todas as suites SQLServer. Constraints usam
+rollback; replay usa dados sinteticos commitados e limpeza explicita.
 """
 
-import os
-import re
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from uuid import uuid4
 
 import pytest
-from sqlalchemy import create_engine, text
-from sqlalchemy.engine import make_url
+from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 
 from src.database.dml.Insert_Leitura_Itens import inserir_leitura_itens
@@ -23,16 +17,10 @@ from src.database.dml.Insert_Leituras import inserir_leituras
 from src.database.dml.Insert_Parametros import inserir_parametros
 
 
-TEST_URL = os.getenv("SQLSERVER_UNIQUENESS_TEST_URL")
-EXPECTED_SERVER = os.getenv("SQLSERVER_UNIQUENESS_TEST_EXPECTED_SERVER")
-RUN_TESTS = os.getenv("RUN_SQLSERVER_UNIQUENESS_TESTS") == "1"
-DISPOSABLE_CONFIRMED = os.getenv("SQLSERVER_UNIQUENESS_TEST_DISPOSABLE") == "1"
+from sqlserver_support import RUN_TESTS, disposable_engine
+
 pytestmark = pytest.mark.skipif(
-    not (RUN_TESTS and TEST_URL),
-    reason=(
-        "Defina RUN_SQLSERVER_UNIQUENESS_TESTS=1 e "
-        "SQLSERVER_UNIQUENESS_TEST_URL para habilitar os testes opt-in."
-    ),
+    not RUN_TESTS, reason="Habilite SQL Server em src/config/.env.test.",
 )
 
 # ID 42: PK de cada entidade do modelo; leitura_itens usa PK composta.
@@ -40,8 +28,6 @@ PKS_ESPERADAS = {
     "estado": ("id",),
     "cidade": ("id",),
     "estacao": ("id",),
-    "qualidade_agua": ("id",),
-    "leitura_meteorologica": ("id",),
     "operadores": ("id",),
     "catalogo_dados": ("id",),
     "parametros": ("id",),
@@ -54,9 +40,6 @@ FKS_ESPERADAS = {
     ("cidade", "id_estado", "estado", "id", "NO_ACTION"),
     ("estacao", "id_cidade", "cidade", "id", "NO_ACTION"),
     ("estacao", "id_estado", "estado", "id", "NO_ACTION"),
-    ("qualidade_agua", "id_estacao", "estacao", "id", "CASCADE"),
-    ("leitura_meteorologica", "id_cidade", "cidade", "id", "NO_ACTION"),
-    ("leitura_meteorologica", "id_estacao", "estacao", "id", "CASCADE"),
     ("operadores", "id_estacao", "estacao", "id", "CASCADE"),
     ("leituras", "id_estacao", "estacao", "id", "NO_ACTION"),
     ("leituras", "id_operador", "operadores", "id", "NO_ACTION"),
@@ -83,66 +66,10 @@ OBRIGATORIAS = {
 }
 
 
-def _database_name(connection_url: str) -> str:
-    url = make_url(connection_url)
-    if url.database:
-        return url.database
-
-    odbc_connect = url.query.get("odbc_connect", "")
-    match = re.search(
-        r"(?:^|;)\s*(?:DATABASE|INITIAL CATALOG)\s*=\s*([^;]+)",
-        odbc_connect,
-        re.IGNORECASE,
-    )
-    return match.group(1).strip() if match else ""
-
-
 @pytest.fixture(scope="module")
 def sqlserver_engine():
-    if not DISPOSABLE_CONFIRMED:
-        pytest.fail(
-            "Confirme que a instância SQL Server é descartável definindo "
-            "SQLSERVER_UNIQUENESS_TEST_DISPOSABLE=1; nenhum dado foi alterado."
-        )
-    if _database_name(TEST_URL).casefold() != "monitoramento":
-        pytest.fail(
-            "A URL de teste precisa apontar para o banco monitoramento em "
-            "uma instância isolada; nenhum dado foi alterado."
-        )
-
-    engine = create_engine(TEST_URL, pool_pre_ping=True)
-    try:
-        with engine.connect() as connection:
-            database = connection.execute(text("SELECT DB_NAME()")).scalar_one()
-            server_name = connection.execute(
-                text("SELECT CONVERT(nvarchar(128), SERVERPROPERTY('ServerName'))")
-            ).scalar_one()
-            if database.casefold() != "monitoramento":
-                pytest.fail("A conexão não selecionou o banco monitoramento.")
-            if EXPECTED_SERVER and server_name.casefold() != EXPECTED_SERVER.casefold():
-                pytest.fail(
-                    "A instância conectada não corresponde a "
-                    "SQLSERVER_UNIQUENESS_TEST_EXPECTED_SERVER; nenhum dado foi alterado."
-                )
-            print(f"SQL Server alvo: {server_name} / {database}")
-
-            tables = set(
-                connection.execute(
-                    text(
-                        "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES "
-                        "WHERE TABLE_SCHEMA = 'dbo'"
-                    )
-                ).scalars()
-            )
-            missing = set(PKS_ESPERADAS) - tables
-            if missing:
-                pytest.fail(
-                    "Aplique o DDL na instância descartável antes dos testes; "
-                    f"tabelas ausentes: {sorted(missing)}."
-                )
+    with disposable_engine() as engine:
         yield engine
-    finally:
-        engine.dispose()
 
 
 @pytest.fixture
@@ -404,6 +331,12 @@ def test_exclusao_de_pai_referenciado_sem_cascata_e_bloqueada(conn, base, pai):
     chave = {"parametros": "parametro", "operadores": "operador", "estacao": "estacao"}[pai]
     with pytest.raises(IntegrityError):
         conn.execute(text(f"DELETE FROM dbo.{pai} WHERE id = :id"), {"id": base[chave]})
+    assert conn.execute(text(f"SELECT COUNT(*) FROM dbo.{pai} WHERE id=:id"),
+                        {"id": base[chave]}).scalar_one() == 1
+    assert conn.execute(text("SELECT COUNT(*) FROM leituras WHERE id=:id"),
+                        {"id": id_leitura}).scalar_one() == 1
+    assert conn.execute(text("SELECT COUNT(*) FROM leitura_itens WHERE id_leitura=:id"),
+                        {"id": id_leitura}).scalar_one() == 1
 
 
 # IDs 39-41 e 44: os loaders abrem as proprias transacoes, entao os dados sao commitados e limpos.

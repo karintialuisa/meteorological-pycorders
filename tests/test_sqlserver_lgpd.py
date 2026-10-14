@@ -7,31 +7,13 @@ import re
 from pathlib import Path
 
 import pytest
-from dotenv import dotenv_values
-from sqlalchemy import create_engine, text
+from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.engine import make_url
-
-
-TEST_CONFIG_PATH = (
-    Path(__file__).resolve().parents[1] / "src" / "config" / ".env.test"
+from sqlserver_support import (
+    TEST_CONFIG_PATH, load_test_config as _load_test_config,
+    database_name as _database_name, apply_ddl as _apply_project_ddl,
+    drop_project_tables as _drop_project_tables, disposable_engine,
 )
-
-
-def _load_test_config(path: Path) -> tuple[bool, str | None]:
-    """Le apenas a configuracao de teste, sem alterar o ambiente do processo."""
-    values = dotenv_values(path, interpolate=False)
-    enabled = os.getenv(
-        "RUN_SQLSERVER_LGPD_TESTS", values.get("RUN_SQLSERVER_LGPD_TESTS") or "0"
-    )
-    if enabled not in {"0", "1"}:
-        raise ValueError("RUN_SQLSERVER_LGPD_TESTS deve ser 0 ou 1")
-    url = os.getenv("SQLSERVER_LGPD_TEST_URL", values.get("SQLSERVER_LGPD_TEST_URL"))
-    if enabled == "1" and (not url or not url.strip()):
-        raise ValueError(
-            "SQLSERVER_LGPD_TEST_URL obrigatoria quando RUN_SQLSERVER_LGPD_TESTS=1"
-        )
-    return enabled == "1", url
 
 
 RUN_TESTS, TEST_URL = _load_test_config(TEST_CONFIG_PATH)
@@ -91,62 +73,14 @@ def _cpf_sintetico(prefix: str = "123456789") -> str:
     return f"{prefix}{first}{second}"
 
 
-def _database_name(connection_url: str) -> str:
-    url = make_url(connection_url)
-    if url.database:
-        return url.database
-
-    odbc_connect = url.query.get("odbc_connect", "")
-    match = re.search(
-        r"(?:^|;)\s*(?:DATABASE|INITIAL CATALOG)\s*=\s*([^;]+)",
-        odbc_connect,
-        re.IGNORECASE,
-    )
-    return match.group(1).strip() if match else ""
-
-
-def _apply_project_ddl(engine) -> None:
-    ddl_path = (
-        Path(__file__).resolve().parents[1]
-        / "src"
-        / "database"
-        / "ddl"
-        / "create-tables.sql"
-    )
-    ddl = ddl_path.read_text(encoding="utf-8-sig")
-    ddl = re.sub(
-        r"(?im)^\s*USE\s+\[?monitoramento\]?\s*;?\s*\r?\n\s*GO\s*$",
-        "",
-        ddl,
-        count=1,
-    )
-    batches = re.split(r"(?im)^\s*GO\s*$", ddl)
-    with engine.begin() as connection:
-        for batch in batches:
-            if batch.strip():
-                connection.exec_driver_sql(batch)
-
-
-def _drop_project_tables(engine) -> None:
-    table_names = (
-        "leitura_itens",
-        "leituras",
-        "operadores",
-        "parametros",
-        "leitura_meteorologica",
-        "qualidade_agua",
-        "estacao",
-        "cidade",
-        "estado",
-        "catalogo_dados",
-    )
-    with engine.begin() as connection:
-        for table_name in table_names:
-            connection.exec_driver_sql(f"DROP TABLE IF EXISTS dbo.{table_name}")
-
-
 def _authorize_operator_loader(principal: str, action: str) -> bool:
     return principal == "operator-loader" and action == "decrypt_operator_name"
+
+
+@pytest.fixture
+def lgpd_engine():
+    with disposable_engine(initialize=False) as engine:
+        yield engine
 
 
 def _assert_operator_schema(engine):
@@ -309,7 +243,7 @@ def _assert_operator_json_loading(engine, tmp_path, caplog):
     ),
 )
 def test_catalog_and_operator_protection_on_disposable_sql_server(
-    caplog, catalogo_lgpd_esperado, tmp_path
+    caplog, catalogo_lgpd_esperado, tmp_path, lgpd_engine
 ):
     caplog.set_level(logging.INFO)
 
@@ -326,7 +260,7 @@ def test_catalog_and_operator_protection_on_disposable_sql_server(
             "_disposable ou _scratch; nenhum objeto foi alterado."
         )
 
-    engine = create_engine(TEST_URL)
+    engine = lgpd_engine
     objects_created = False
     try:
         with engine.connect() as connection:
