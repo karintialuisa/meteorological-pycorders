@@ -102,14 +102,22 @@ def carregar_dataframe(df: pd.DataFrame, origem: str, engine) -> pd.DataFrame:
                     text("SELECT id, id_cidade FROM estacao WHERE codigo_origem=:codigo"),
                     {"codigo": cabecalho["codigo_estacao"]},
                 ).one()
-            silver = dict(registro)
+            valores = {
+                item["codigo_parametro"]: (
+                    item["valor_texto"] if item["valor_texto"] is not None else item["valor_numerico"]
+                )
+                for item in itens
+            }
+            silver = {
+                coluna: valores.get(codigo)
+                for coluna, codigo in MAPEAMENTO[origem].items()
+            }
+            silver["data_leitura"] = cabecalho["data_leitura"]
             silver["id_estacao"] = estacao.id
+            if origem == "qualidade_agua":
+                silver["id_leitura_origem"] = cabecalho["chave_origem"]
             if origem == "leitura_meteorologica":
                 silver["id_cidade"] = estacao.id_cidade
-            silver.pop("estacao_id", None)
-            silver.pop("operador_cpf_hash", None)
-            silver.pop("cidade", None)
-            silver.pop("estado", None)
             aprovados.append(silver)
         except ValueError as error:
             logging.warning(
