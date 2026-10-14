@@ -1,5 +1,6 @@
 """Testes opt-in de LGPD em banco SQL Server descartavel e dedicado."""
 
+import json
 import logging
 import os
 import re
@@ -78,8 +79,8 @@ def test_enabled_config_without_url_fails_explicitly(tmp_path, monkeypatch):
         _load_test_config(path)
 
 
-def _cpf_sintetico() -> str:
-    digits = [int(char) for char in "123456789"]
+def _cpf_sintetico(prefix: str = "123456789") -> str:
+    digits = [int(char) for char in prefix]
 
     def check_digit(values, weights):
         remainder = sum(value * weight for value, weight in zip(values, weights)) % 11
@@ -87,7 +88,7 @@ def _cpf_sintetico() -> str:
 
     first = check_digit(digits, range(10, 1, -1))
     second = check_digit(digits + [first], range(11, 1, -1))
-    return f"123456789{first}{second}"
+    return f"{prefix}{first}{second}"
 
 
 def _database_name(connection_url: str) -> str:
@@ -148,6 +149,158 @@ def _authorize_operator_loader(principal: str, action: str) -> bool:
     return principal == "operator-loader" and action == "decrypt_operator_name"
 
 
+def _assert_operator_schema(engine):
+    with engine.connect() as connection:
+        columns = connection.execute(text(
+            "SELECT c.name, t.name, c.max_length, c.is_nullable, c.is_identity "
+            "FROM sys.columns c JOIN sys.types t ON c.user_type_id = t.user_type_id "
+            "WHERE c.object_id = OBJECT_ID('dbo.operadores') ORDER BY c.column_id"
+        )).all()
+        assert columns == [
+            ("id", "bigint", 8, False, True),
+            ("cpf_hash", "char", 64, False, False),
+            ("nome_completo_cifrado", "varchar", -1, False, False),
+            ("status", "bit", 1, True, False),
+            ("id_estacao", "bigint", 8, False, False),
+            ("criado_em", "datetimeoffset", 10, False, False),
+        ]
+        keys = connection.execute(text(
+            "SELECT i.is_primary_key, i.is_unique, i.is_disabled, c.name "
+            "FROM sys.indexes i JOIN sys.index_columns ic "
+            "ON ic.object_id = i.object_id AND ic.index_id = i.index_id "
+            "JOIN sys.columns c ON c.object_id = ic.object_id "
+            "AND c.column_id = ic.column_id "
+            "WHERE i.object_id = OBJECT_ID('dbo.operadores') AND ic.key_ordinal > 0"
+        )).all()
+        assert sorted(keys) == sorted([
+            (True, True, False, "id"), (False, True, False, "cpf_hash"),
+        ])
+        fk = connection.execute(text(
+            "SELECT COL_NAME(f.parent_object_id, fc.parent_column_id), "
+            "OBJECT_NAME(f.referenced_object_id), "
+            "COL_NAME(f.referenced_object_id, fc.referenced_column_id), "
+            "f.is_disabled, f.is_not_trusted, f.delete_referential_action_desc "
+            "FROM sys.foreign_keys f JOIN sys.foreign_key_columns fc "
+            "ON fc.constraint_object_id = f.object_id "
+            "WHERE f.parent_object_id = OBJECT_ID('dbo.operadores')"
+        )).all()
+        assert fk == [("id_estacao", "estacao", "id", False, False, "CASCADE")]
+        check = connection.execute(text(
+            "SELECT definition, is_disabled, is_not_trusted "
+            "FROM sys.check_constraints "
+            "WHERE parent_object_id = OBJECT_ID('dbo.operadores')"
+        )).one()
+        assert "len([cpf_hash])=(64)" in check.definition.lower().replace(" ", "")
+        assert not check.is_disabled and not check.is_not_trusted
+        default = connection.execute(text(
+            "SELECT d.definition FROM sys.default_constraints d "
+            "JOIN sys.columns c ON c.object_id = d.parent_object_id "
+            "AND c.column_id = d.parent_column_id "
+            "WHERE d.parent_object_id = OBJECT_ID('dbo.operadores') "
+            "AND c.name = 'criado_em'"
+        )).scalar_one()
+        assert "sysdatetimeoffset()" in default.lower()
+
+    for values in [
+        {"hash": None, "name": "ciphertext", "station": 1},
+        {"hash": "f" * 64, "name": None, "station": 1},
+        {"hash": "f" * 64, "name": "ciphertext", "station": None},
+        {"hash": "f" * 64, "name": "ciphertext", "station": -1},
+        {"hash": "short", "name": "ciphertext", "station": 1},
+    ]:
+        with pytest.raises(IntegrityError):
+            with engine.begin() as connection:
+                connection.execute(text(
+                    "INSERT INTO dbo.operadores "
+                    "(cpf_hash, nome_completo_cifrado, id_estacao) "
+                    "VALUES (:hash, :name, :station)"
+                ), values)
+
+
+def _assert_operator_json_loading(engine, tmp_path, caplog):
+    from cryptography.fernet import Fernet
+    from src.database.dml.Insert_Operadores import carregar_operadores
+    from src.security.pii import decrypt_name, hash_cpf
+
+    key = Fernet.generate_key().decode("ascii")
+    secret = "json-operator-test-secret"
+    cpf = _cpf_sintetico("987654321")
+    path = tmp_path / "operadores.json"
+    operator = {
+        "cpf": cpf, "nome": "Operador JSON Sintetico",
+        "estacao_id": "LGPD-TEST-STATION", "status": "ativo",
+    }
+    query = text(
+        "SELECT id, cpf_hash, nome_completo_cifrado, status, id_estacao, criado_em "
+        "FROM dbo.operadores WHERE cpf_hash = :hash"
+    )
+
+    def load(records):
+        path.write_text(
+            json.dumps({"date": "2026-10-14", "operadores": records}),
+            encoding="utf-8",
+        )
+        return carregar_operadores(path, engine, secret, key)
+
+    def stored():
+        with engine.connect() as connection:
+            return connection.execute(query, {"hash": hash_cpf(cpf, secret)}).one()
+
+    with engine.begin() as connection:
+        connection.execute(text(
+            "INSERT INTO dbo.estacao "
+            "(codigo_origem, nome, status, id_cidade, id_estado) "
+            "SELECT 'LGPD-SECOND-STATION', 'Segunda Estacao Teste', 1, "
+            "id_cidade, id_estado FROM dbo.estacao "
+            "WHERE codigo_origem = 'LGPD-TEST-STATION'"
+        ))
+    assert load([operator]) == (1, 0)
+    initial = stored()
+    assert len(initial.cpf_hash) == 64
+    assert initial.status == 1 and initial.criado_em is not None
+    with engine.connect() as connection:
+        stations = dict(connection.execute(text(
+            "SELECT codigo_origem, id FROM dbo.estacao"
+        )).all())
+    assert initial.id_estacao == stations[operator["estacao_id"]]
+    assert load([operator]) == (0, 0)
+    assert stored() == initial
+
+    updated = {**operator, "nome": "Nome JSON Atualizado",
+               "status": "inativo", "estacao_id": "LGPD-SECOND-STATION"}
+    assert load([updated]) == (0, 1)
+    after = stored()
+    assert (after.id, after.cpf_hash, after.criado_em) == (
+        initial.id, initial.cpf_hash, initial.criado_em,
+    )
+    assert after.status == 0
+    assert after.id_estacao == stations["LGPD-SECOND-STATION"]
+    assert after.nome_completo_cifrado != initial.nome_completo_cifrado
+    assert decrypt_name(
+        after.nome_completo_cifrado, key, principal="operator-loader",
+        authorize=_authorize_operator_loader,
+    ) == updated["nome"]
+
+    for status in (None, "desconhecido"):
+        assert load([
+            {**updated, "cpf": "123", "status": "ativo"},
+            {**updated, "nome": None, "status": "ativo"},
+            {**updated, "estacao_id": "UNKNOWN", "status": "ativo"},
+            {**updated, "status": status},
+        ]) == (0, 0)
+        assert stored() == after
+    assert any(record.levelno == logging.ERROR for record in caplog.records)
+    assert "Status de operador ausente ou nao reconhecido" in caplog.text
+    assert "estacao_id=UNKNOWN" in caplog.text
+    with engine.connect() as connection:
+        assert connection.execute(text(
+            "SELECT COUNT(*) FROM dbo.operadores WHERE cpf_hash = :hash"
+        ), {"hash": initial.cpf_hash}).scalar_one() == 1
+    for value in (cpf, operator["nome"], updated["nome"], key, secret,
+                  initial.nome_completo_cifrado, after.nome_completo_cifrado):
+        assert value not in caplog.text
+
+
 @pytest.mark.skipif(
     not RUN_TESTS,
     reason=(
@@ -156,7 +309,7 @@ def _authorize_operator_loader(principal: str, action: str) -> bool:
     ),
 )
 def test_catalog_and_operator_protection_on_disposable_sql_server(
-    caplog, catalogo_lgpd_esperado
+    caplog, catalogo_lgpd_esperado, tmp_path
 ):
     caplog.set_level(logging.INFO)
 
@@ -320,6 +473,8 @@ def test_catalog_and_operator_protection_on_disposable_sql_server(
                         ),
                         {"cpf_hash": stored.cpf_hash},
                     )
+            _assert_operator_schema(engine)
+            _assert_operator_json_loading(engine, tmp_path, caplog)
         finally:
             if objects_created:
                 _drop_project_tables(engine)

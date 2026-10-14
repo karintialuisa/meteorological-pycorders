@@ -346,6 +346,25 @@ Para cada parâmetro ambiental, o sistema calcula média, mediana, desvio padrã
 
 `inserir_catalogo_lgpd` insere ou atualiza os metadados em transação, preservando o ID e a data de criação em reexecuções. A opção 5 do menu executa essa carga. Os testes conferem todos os metadados e, no SQLExpress descartável com o DDL oficial, validam reexecução, correção de metadados desatualizados e rejeição de duplicidade/classificação inválida. Essa homologação não publica o catálogo nem altera dados no banco `monitoramento`.
 
+### Operadores em 3FN — ID 38
+
+`dbo.operadores` representa um operador por CPF pseudonimizado, vinculado a uma estação. Seus atributos dependem da chave do operador; dados geográficos e atributos da estação permanecem em seus cadastros próprios, referenciados por FK, sem repetição na tabela de operadores.
+
+| Coluna | Definição |
+| --- | --- |
+| `id` | BIGINT IDENTITY, chave primária |
+| `cpf_hash` | CHAR(64) NOT NULL, UNIQUE e CHECK de tamanho; HMAC-SHA-256 |
+| `nome_completo_cifrado` | VARCHAR(MAX) NOT NULL; ciphertext Fernet |
+| `status` | BIT nullable no DDL; a carga JSON grava 1 para ativo e 0 nos demais casos |
+| `id_estacao` | BIGINT NOT NULL; FK para `estacao.id` com ON DELETE CASCADE |
+| `criado_em` | DATETIMEOFFSET NOT NULL com default SYSDATETIMEOFFSET |
+
+`carregar_operadores` recebe JSON com `date` e uma lista `operadores`. Cada item usa `cpf`, `nome`, `estacao_id` (código de origem, não ID do banco) e `status`. A carga resolve a estação por `codigo_origem` e protege CPF/nome antes de persistir. Estação desconhecida, CPF inválido ou nome ausente impedem a gravação do registro, com erro contextual sem PII; os demais registros do lote continuam. Status ausente/desconhecido gera WARNING e grava 0.
+
+A reexecução mantém uma linha por hash e preserva ID, data de criação e ciphertext quando nada muda. Alterações de nome, status ou estação atualizam a mesma linha; a comparação de nome utiliza descriptografia autorizada e auditada. O JSON original pode conter PII e exige acesso restrito; a proteção da tabela não anonimiza o arquivo de origem.
+
+A integração automática SQLExpress usa JSON temporário sintético e o DDL oficial para validar estrutura, carga, replay, atualização, rejeições e ausência de CPF/nome/chaves/ciphertext nos logs. O aceite é técnico, em `monitoramento_lgpd_test`: não publica dados em `monitoramento`, não aprova a fonte operacional (ID 10) e não encerra a integridade global do pipeline (ID 44).
+
 ## Equipe
 
 | Integrante | Responsabilidade principal |
