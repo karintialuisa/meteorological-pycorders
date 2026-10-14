@@ -95,7 +95,9 @@ meteorological-pycorders/
     ├── test_silver.py
     ├── test_sqlserver_lgpd.py           # Opt-in
     ├── test_sqlserver_relational_integrity.py  # Opt-in
-    └── test_sqlserver_uniqueness.py     # Opt-in
+    ├── test_sqlserver_uniqueness.py     # Opt-in
+    ├── test_sqlserver_migration.py      # Backfill/cutover no DDL real
+    └── sqlserver_support.py             # Configuracao e lifecycle compartilhados
 ```
 
 ## Responsabilidades dos módulos
@@ -255,7 +257,7 @@ Os testes SQLite exercitam parsers, loaders, constraints, configuração e write
 
 Com o Python global, a coleta de `tests/test_lgpd.py` falha se `cryptography` não estiver instalado nele.
 
-O teste de integração LGPD com SQL Server exige um banco descartável vazio, separado de `monitoramento`. As configurações são carregadas automaticamente de `src/config/.env.test`, independentemente do diretório de execução. Esse arquivo local não é versionado; para configurar outra máquina, copie `src/config/.env.test.example` para `src/config/.env.test` e ajuste a conexão. O modelo usa a instância local `localhost\SQLEXPRESS`, autenticação Windows e o banco `monitoramento_lgpd_test`, que deve existir previamente.
+As integrações LGPD, integridade, unicidade e migração com SQL Server exigem um banco descartável vazio, separado de `monitoramento`. Todas compartilham a configuração carregada automaticamente de `src/config/.env.test`, independentemente do diretório de execução. Esse arquivo local não é versionado; para configurar outra máquina, copie `src/config/.env.test.example` para `src/config/.env.test` e ajuste a conexão. O modelo usa a instância local `localhost\SQLEXPRESS`, autenticação Windows e o banco `monitoramento_lgpd_test`, que deve existir previamente.
 
 ```powershell
 & '.\.venv\Scripts\python.exe' -m pytest '.\tests\test_sqlserver_lgpd.py' -v
@@ -263,7 +265,7 @@ O teste de integração LGPD com SQL Server exige um banco descartável vazio, s
 
 Não é necessário exportar variáveis a cada execução. `RUN_SQLSERVER_LGPD_TESTS=1` habilita a integração e `SQLSERVER_LGPD_TEST_URL` define a URL SQLAlchemy. Variáveis já definidas no processo têm prioridade; use `RUN_SQLSERVER_LGPD_TESTS=0` para desabilitar. Sem ativação, apenas a integração é ignorada; os testes da configuração continuam executando. Ativação sem URL gera erro explícito, não `SKIPPED`.
 
-Nunca aponte essa configuração para `monitoramento`. O teste exige um nome com sufixo `_test`, `_tests`, `_disposable` ou `_scratch`, recusa tabelas preexistentes em `dbo`, aplica o DDL oficial (sem o `USE monitoramento`) e remove suas tabelas ao final. O banco permanece disponível e vazio para a próxima execução. Não execute duas integrações simultaneamente na mesma base. A configuração normal da aplicação em `src/config/.env` não é usada como fallback.
+Nunca aponte essa configuração para `monitoramento`. O lifecycle exige um nome com sufixo `_test`, `_tests`, `_disposable` ou `_scratch`, recusa tabelas preexistentes em `dbo`, aplica o DDL oficial (sem o `USE monitoramento`) e remove suas tabelas ao final. O banco permanece disponível e vazio para a próxima execução. Um application lock exclusivo serializa as suítes que compartilham a base, com erro explícito em caso de timeout. A configuração normal da aplicação em `src/config/.env` não é usada como fallback.
 
 ### Integridade relacional no SQL Server
 
@@ -272,7 +274,8 @@ As suítes SQL de integridade e unicidade validam PKs, FKs, nulabilidade, CHECKs
 ```powershell
 & '.\.venv\Scripts\python.exe' -m pytest `
   '.\tests\test_sqlserver_relational_integrity.py' `
-  '.\tests\test_sqlserver_uniqueness.py' -v -s
+  '.\tests\test_sqlserver_uniqueness.py' `
+  '.\tests\test_sqlserver_migration.py' -v -s
 ```
 
 Os testes de constraints usam transações revertidas ao final. Os testes de replay confirmam dados sintéticos (os loaders controlam as próprias transações) e os removem em `finally`, falhando se restar alguma linha. As FKs não são desabilitadas nem removidas para limpar dados; uma falha de limpeza deve falhar o teste. Nunca execute contra um banco com dados reais.
@@ -284,15 +287,15 @@ Os testes de constraints usam transações revertidas ao final. Os testes de rep
 | `estado`                | Unidades federativas e código IBGE              |
 | `cidade`                | Municípios vinculados a um estado               |
 | `estacao`               | Estações vinculadas a cidade e estado           |
-| `qualidade_agua`        | Leituras de água vinculadas à estação           |
-| `leitura_meteorologica` | Leituras meteorológicas vinculadas à cidade     |
 | `operadores`            | Operadores de campo com `cpf_hash` (HMAC-SHA-256), `nome_completo_cifrado` (Fernet) e estação |
 | `catalogo_dados`        | Inventário LGPD dos campos pessoais, com finalidade, proteção e política de acesso |
 | `parametros`            | Domínio dos parâmetros medidos: código único, nome e unidade |
 | `leituras`              | Cabeçalho da leitura: origem, chave de origem, estação, operador opcional e data/hora |
 | `leitura_itens`         | Valor medido por parâmetro em cada leitura; PK composta `(id_leitura, id_parametro)` |
 
-`leituras` e `leitura_itens` seguem o modelo previsto no projeto: cada item guarda exatamente um valor, numérico ou textual, e a exclusão de uma leitura remove seus itens. As cargas ambientais e meteorológicas escrevem nesse modelo canônico, sem dual-write nas tabelas antigas. O ID 44 permanece em andamento até a homologação completa de integridade no SQL Server.
+`leituras` e `leitura_itens` seguem o modelo previsto no projeto: cada item guarda exatamente um valor, numérico ou textual, e a exclusão de uma leitura remove seus itens. As cargas ambientais e meteorológicas escrevem nesse modelo canônico, sem dual-write nas tabelas antigas. As tabelas `qualidade_agua` e `leitura_meteorologica` existem somente no schema legado e são arquivadas após reconciliação; os datasets Silver mantêm esses nomes.
+
+ID 44 homologado em 2026-10-14: suíte completa com **194 testes PASSED, nenhum SKIPPED**, incluindo SQLExpress `WINAPpbE3Y0yOD8\SQLEXPRESS` em `monitoramento_lgpd_test`. Foram verificados FKs/PKs/CHECKs, carga atômica, replay/conflitos, quatro cargas concorrentes, exclusões bloqueadas preservando dados, cascatas, backfill/arquivamento, rollback de falha técnica, precisão/nulos/instantes e consultas 3FN. O lifecycle confirmou a base descartável vazia ao final. O banco `monitoramento` não foi alterado; a implantação real não faz parte desse aceite.
 
 ### Cargas canônicas e migração do legado — ID 44
 
@@ -383,7 +386,7 @@ Este runbook documenta o procedimento; nenhuma migração foi executada em `moni
 
 A reexecução mantém uma linha por hash e preserva ID, data de criação e ciphertext quando nada muda. Alterações de nome, status ou estação atualizam a mesma linha; a comparação de nome utiliza descriptografia autorizada e auditada. O JSON original pode conter PII e exige acesso restrito; a proteção da tabela não anonimiza o arquivo de origem.
 
-A integração automática SQLExpress usa JSON temporário sintético e o DDL oficial para validar estrutura, carga, replay, atualização, rejeições e ausência de CPF/nome/chaves/ciphertext nos logs. O aceite é técnico, em `monitoramento_lgpd_test`: não publica dados em `monitoramento`, não aprova a fonte operacional (ID 10) e não encerra a integridade global do pipeline (ID 44).
+A integração automática SQLExpress usa JSON temporário sintético e o DDL oficial para validar estrutura, carga, replay, atualização, rejeições e ausência de CPF/nome/chaves/ciphertext nos logs. O aceite dos operadores é técnico, em `monitoramento_lgpd_test`: não publica dados em `monitoramento` nem aprova a fonte operacional (ID 10). O ID 44 tem homologação própria nas suítes de integridade, unicidade e migração.
 
 ## Equipe
 
