@@ -2,9 +2,16 @@
 
 import hashlib
 import hmac
+import logging
 import re
+from collections.abc import Callable
 
-from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet, InvalidToken
+
+
+_NAME_DECRYPTION_ACTION = "decrypt_operator_name"
+_PRINCIPAL_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}\Z")
+_security_logger = logging.getLogger("security.pii")
 
 
 def normalize_cpf(cpf: str) -> str:
@@ -53,7 +60,48 @@ def encrypt_name(name: str, encryption_key: str | bytes) -> str:
     return Fernet(key).encrypt(name.strip().encode("utf-8")).decode("ascii")
 
 
-def decrypt_name(ciphertext: str, encryption_key: str | bytes) -> str:
-    """Recupera o nome usando a chave Fernet autorizada."""
+def decrypt_name(
+    ciphertext: str,
+    encryption_key: str | bytes,
+    *,
+    principal: str,
+    authorize: Callable[[str, str], bool],
+) -> str:
+    """Recupera o nome após autorização explícita e audita a tentativa.
+
+    O chamador fornece o principal autenticado e a política de autorização da
+    aplicação. O principal deve ser um identificador técnico, não PII.
+    """
+    if not isinstance(principal, str) or not _PRINCIPAL_PATTERN.fullmatch(principal):
+        _security_logger.warning(
+            "Descriptografia de nome negada: principal=invalid action=%s outcome=denied",
+            _NAME_DECRYPTION_ACTION,
+        )
+        raise PermissionError("Principal invalido para descriptografia")
+
+    if not authorize(principal, _NAME_DECRYPTION_ACTION):
+        _security_logger.warning(
+            "Descriptografia de nome negada: principal=%s action=%s outcome=denied",
+            principal,
+            _NAME_DECRYPTION_ACTION,
+        )
+        raise PermissionError("Principal sem autorizacao para descriptografia")
+
     key = encryption_key.encode("ascii") if isinstance(encryption_key, str) else encryption_key
-    return Fernet(key).decrypt(ciphertext.encode("ascii")).decode("utf-8")
+    try:
+        name = Fernet(key).decrypt(ciphertext.encode("ascii")).decode("utf-8")
+    except InvalidToken:
+        _security_logger.warning(
+            "Descriptografia de nome autorizada mas malsucedida: "
+            "principal=%s action=%s outcome=failed",
+            principal,
+            _NAME_DECRYPTION_ACTION,
+        )
+        raise
+
+    _security_logger.info(
+        "Descriptografia de nome autorizada: principal=%s action=%s outcome=success",
+        principal,
+        _NAME_DECRYPTION_ACTION,
+    )
+    return name

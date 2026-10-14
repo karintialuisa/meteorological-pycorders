@@ -650,20 +650,6 @@
       "estacao_id": "AMB-001",
       "status": "ativo",
       "observacoes": "N/A"
-    },
-    {
-      "cpf": "12345678909",
-      "nome": "Registro de teste com status vazio",
-      "estacao_id": "AMB-001",
-      "status": "",
-      "observacoes": "N/A"
-    },
-    {
-      "cpf": "12345678909",
-      "nome": "Registro de teste com status desconhecido",
-      "estacao_id": "AMB-001",
-      "status": "pendente",
-      "observacoes": "N/A"
     }
   ]
 }

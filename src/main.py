@@ -21,6 +21,7 @@ MENU = {
     "2": "Gerar relatórios estatísticos dos dados",
     "3": "Cancelar operação",
     "4": "Coletar meteorologia Agritempo -> JSON",
+    "5": "Cadastrar parâmetros, catálogo LGPD e operadores",
 }
 
 
@@ -110,8 +111,23 @@ def main():
         elif opcao == "4":
             executar_script("Get_dados.py")
 
+        elif opcao == "5":
+            # projeto_final.pdf secoes 3.2/3.3 -> features.csv IDs 32-34, 38 e 39.
+            scripts_cadastro = (
+                "src/database/dml/Insert_Parametros.py",
+                "src/database/dml/Insert_Catalogo_LGPD.py",
+                "src/database/dml/Insert_Operadores.py",
+            )
+            for script in scripts_cadastro:
+                if not executar_script(script):
+                    logging.error(
+                        "Cadastro interrompido após falha em %s.",
+                        Path(script).name,
+                    )
+                    break
+
         else:
-            logging.warning("Opção inválida. Digite 1, 2 ou 3.")
+            logging.warning("Opção inválida. Digite uma opção de 1 a 5.")
 
 
 if __name__ == "__main__":

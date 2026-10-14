@@ -15,6 +15,23 @@ def silver_dir_teste(monkeypatch, tmp_path):
 
 
 @pytest.fixture
+def catalogo_lgpd_esperado():
+    return [
+        (
+            "dbo", "operadores", "cpf", "cpf_hash", "Dado pessoal",
+            "Cadastro e identificacao de operadores de campo", "HMAC-SHA-256",
+            "Chave HMAC restrita ao processo autorizado; digest nao reversivel",
+        ),
+        (
+            "dbo", "operadores", "nome_completo", "nome_completo_cifrado",
+            "Dado pessoal", "Cadastro e identificacao de operadores de campo",
+            "Fernet",
+            "Descriptografia autorizada por principal; tentativas auditadas sem PII",
+        ),
+    ]
+
+
+@pytest.fixture
 def banco_teste():
     engine = create_engine(
         "sqlite+pysqlite:///:memory:",
