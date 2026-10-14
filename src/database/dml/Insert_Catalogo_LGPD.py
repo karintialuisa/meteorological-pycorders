@@ -31,7 +31,9 @@ METADADOS_CATALOGO = (
         "classificacao": "Dado pessoal",
         "finalidade": "Cadastro e identificacao de operadores de campo",
         "protecao": "Fernet",
-        "politica_acesso": "Descriptografia somente por processo autorizado com a chave",
+        "politica_acesso": (
+            "Descriptificacao autorizada por principal; tentativas auditadas sem PII"
+        ),
     },
 )
 

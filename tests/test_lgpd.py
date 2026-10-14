@@ -28,6 +28,17 @@ def _synthetic_cpf(prefix: str = "123456789") -> str:
     return f"{prefix}{first_digit}{second_digit}"
 
 
+def _authorized_test_decryption(ciphertext, key):
+    return decrypt_name(
+        ciphertext,
+        key,
+        principal="lgpd-test",
+        authorize=lambda principal, action: (
+            principal == "lgpd-test" and action == "decrypt_operator_name"
+        ),
+    )
+
+
 def _seed_operator_stations(engine):
     with engine.begin() as connection:
         connection.execute(
@@ -86,20 +97,62 @@ def test_operator_loader_rejects_placeholder_keys_before_database_access(
         inserir_operadores([], hmac_secret, encryption_key, engine=object())
 
 
-def test_encrypt_name_can_be_decrypted_with_the_same_key():
+def test_encrypt_name_can_be_decrypted_with_the_same_key_and_audit(caplog):
+    caplog.set_level(logging.INFO)
     key = Fernet.generate_key()
 
     ciphertext = encrypt_name("Operador de Teste", key)
 
     assert "Operador de Teste" not in ciphertext
-    assert decrypt_name(ciphertext, key) == "Operador de Teste"
+    assert _authorized_test_decryption(ciphertext, key) == "Operador de Teste"
+    assert "principal=lgpd-test" in caplog.text
+    assert "outcome=success" in caplog.text
+    assert "Operador de Teste" not in caplog.text
+    assert ciphertext not in caplog.text
+    assert key.decode("ascii") not in caplog.text
 
 
 def test_decrypt_name_rejects_another_key():
     ciphertext = encrypt_name("Operador de Teste", Fernet.generate_key())
 
     with pytest.raises(InvalidToken):
-        decrypt_name(ciphertext, Fernet.generate_key())
+        _authorized_test_decryption(ciphertext, Fernet.generate_key())
+
+
+def test_decrypt_name_denies_unauthorized_principal_and_audits_without_pii(
+    caplog,
+):
+    key = Fernet.generate_key()
+    ciphertext = encrypt_name("Operador Confidencial", key)
+
+    with pytest.raises(PermissionError, match="sem autorizacao"):
+        decrypt_name(
+            ciphertext,
+            key,
+            principal="untrusted-service",
+            authorize=lambda _principal, _action: False,
+        )
+
+    assert "outcome=denied" in caplog.text
+    assert "untrusted-service" in caplog.text
+    assert "Operador Confidencial" not in caplog.text
+    assert ciphertext not in caplog.text
+    assert key.decode("ascii") not in caplog.text
+
+
+def test_decrypt_name_requires_safe_principal_identifier(caplog):
+    key = Fernet.generate_key()
+    ciphertext = encrypt_name("Operador Confidencial", key)
+
+    with pytest.raises(PermissionError, match="Principal invalido"):
+        decrypt_name(
+            ciphertext,
+            key,
+            principal="user\nforged-log-entry",
+            authorize=lambda _principal, _action: True,
+        )
+
+    assert "forged-log-entry" not in caplog.text
 
 
 def test_catalog_seed_is_idempotent_and_classifies_both_fields(banco_teste):
@@ -149,7 +202,7 @@ def test_operator_loader_persists_only_protected_values(banco_teste):
     assert stored.cpf_hash == hash_cpf(cpf, hmac_secret)
     assert cpf not in stored.cpf_hash
     assert "Operador de Teste" not in stored.nome_completo_cifrado
-    assert decrypt_name(stored.nome_completo_cifrado, key) == "Operador de Teste"
+    assert _authorized_test_decryption(stored.nome_completo_cifrado, key) == "Operador de Teste"
 
 
 def test_operator_loader_updates_existing_operator_without_duplicates(
@@ -182,7 +235,7 @@ def test_operator_loader_updates_existing_operator_without_duplicates(
         ).scalar_one()
 
     assert count == 1
-    assert decrypt_name(ciphertext, key) == "Nome Atualizado"
+    assert _authorized_test_decryption(ciphertext, key) == "Nome Atualizado"
 
 
 def test_operator_loader_rolls_back_batch_when_record_is_invalid(banco_teste):

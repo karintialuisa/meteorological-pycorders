@@ -17,7 +17,7 @@ O pipeline contempla:
 - Carga incremental de estados, cidades, estações, qualidade da água e meteorologia.
 - Resolução e validação de chaves entre os arquivos JSON e o SQL Server.
 - Modelo relacional de leituras com `parametros`, `leituras` e `leitura_itens`, cujas cargas na camada DML validam campos, resolvem chaves por código e são idempotentes.
-- Proteção de dados pessoais de operadores: CPF em HMAC-SHA-256 e nome completo cifrado com Fernet, com catálogo LGPD.
+- Proteção de dados pessoais de operadores: CPF em HMAC-SHA-256 e nome completo cifrado com Fernet, com catálogo LGPD. A descriptografia exige autorização explícita do chamador e registra auditoria sem conteúdo pessoal ou chaves.
 - Relatórios interativos por cidade e estação, com média, mediana, desvio padrão, variância amostral, IQR e contagem de outliers por parâmetro.
 - API FastAPI para listar cidades e consultar leituras carregadas dos JSONs.
 - Dashboard Streamlit para consultar no SQL Server e visualizar indicadores, tabelas e séries temporais.
@@ -275,13 +275,15 @@ Os testes SQLite exercitam parsers, loaders, constraints, configuração e write
 
 Com o Python global, a coleta de `tests/test_lgpd.py` falha se `cryptography` não estiver instalado nele.
 
-O teste de integração LGPD com SQL Server é opt-in e exige um banco descartável vazio. Configure `RUN_SQLSERVER_LGPD_TESTS=1` e `SQLSERVER_LGPD_TEST_URL`; o nome do banco precisa terminar em `_test`, `_tests`, `_disposable` ou `_scratch`. O teste aborta sem criar objetos se as tabelas necessárias já existirem, cria apenas tabelas temporárias de teste e as remove ao final. Execute somente contra uma instância descartável:
+O teste de integração LGPD com SQL Server exige um banco descartável vazio, separado de `monitoramento`. As configurações são carregadas automaticamente de `src/config/.env.test`, independentemente do diretório de execução. Esse arquivo local não é versionado; para configurar outra máquina, copie `src/config/.env.test.example` para `src/config/.env.test` e ajuste a conexão. O modelo usa a instância local `localhost\SQLEXPRESS`, autenticação Windows e o banco `monitoramento_lgpd_test`, que deve existir previamente.
 
-```bash
-python -m pytest tests/test_sqlserver_lgpd.py -v
+```powershell
+& '.\.venv\Scripts\python.exe' -m pytest '.\tests\test_sqlserver_lgpd.py' -v
 ```
 
-Sem as duas variáveis de opt-in, esse teste é ignorado e não abre conexão. Ele cria tabelas simplificadas, não usa o DDL real e não roda no banco `monitoramento`.
+Não é necessário exportar variáveis a cada execução. `RUN_SQLSERVER_LGPD_TESTS=1` habilita a integração e `SQLSERVER_LGPD_TEST_URL` define a URL SQLAlchemy. Variáveis já definidas no processo têm prioridade; use `RUN_SQLSERVER_LGPD_TESTS=0` para desabilitar. Sem ativação, apenas a integração é ignorada; os testes da configuração continuam executando. Ativação sem URL gera erro explícito, não `SKIPPED`.
+
+Nunca aponte essa configuração para `monitoramento`. O teste exige um nome com sufixo `_test`, `_tests`, `_disposable` ou `_scratch`, recusa tabelas preexistentes em `dbo`, aplica o DDL oficial (sem o `USE monitoramento`) e remove suas tabelas ao final. O banco permanece disponível e vazio para a próxima execução. Não execute duas integrações simultaneamente na mesma base. A configuração normal da aplicação em `src/config/.env` não é usada como fallback.
 
 ### Integridade relacional no SQL Server
 

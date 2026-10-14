@@ -118,7 +118,12 @@ def inserir_operadores(
             return
 
         changes = {}
-        if decrypt_name(existing["nome_completo_cifrado"], encryption_key) != operator["nome_completo"].strip():
+        if decrypt_name(
+            existing["nome_completo_cifrado"],
+            encryption_key,
+            principal="operator-loader",
+            authorize=_autorizar_descriptografia_loader,
+        ) != operator["nome_completo"].strip():
             changes["nome_completo_cifrado"] = protected_values["nome_completo_cifrado"]
         new_status = operator.get("status")
         if new_status is not None and new_status != existing["status"]:
@@ -184,6 +189,11 @@ def _validar_chaves_operador(hmac_secret: str, encryption_key: str) -> None:
     ):
         if not valor.strip() or valor.strip().casefold().startswith("replace-with"):
             raise ValueError(f"{nome} deve conter um segredo real, não um placeholder")
+
+
+def _autorizar_descriptografia_loader(principal: str, action: str) -> bool:
+    """Permite a leitura do nome somente ao fluxo interno de carga."""
+    return principal == "operator-loader" and action == "decrypt_operator_name"
 
 
 OPERADORES_JSON = (
