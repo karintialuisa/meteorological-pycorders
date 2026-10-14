@@ -1,22 +1,15 @@
+"""Carga ambiental no modelo 3FN e na Silver, sem dual-write."""
 
-"""Carga das leituras ambientais no banco de dados.
-
-Este módulo lê os dados de qualidade da água tratados em JSON, resolve os IDs
-de estação no banco e insere os registros na tabela qualidade_agua.
-"""
 import logging
-
 import sys
 from pathlib import Path
 
 import pandas as pd
-from sqlalchemy import bindparam, text
-
+from sqlalchemy import text
 
 sys.path.append(str(Path(__file__).resolve().parents[2]))
-from config.settings import PROJECT_ROOT, configure_logging, create_db_engine
-from database.dml.etl_lock import adquirir_lock_etl
-
+from config.settings import configure_logging, create_db_engine
+from database.dml.Persistir_Medicoes import carregar_dataframe
 from ingestion.leituras.Parse_LeituraAmbiental import tabela_ambiental
 from ingestion.leituras.Persistir_Silver import persistir_silver
 from ingestion.localizacao.Parse_localizacao_JSON import (
@@ -63,16 +56,11 @@ def filtrar_retransmissoes(
     df_leituras: pd.DataFrame, connection
 ) -> pd.DataFrame:
     """Remove IDs já persistidos e audita retransmissões conflitantes."""
-    rejeicoes_consistencia = int(
-        df_leituras.attrs.get("silver_consistency_rejections", 0)
-    )
     df_leituras = df_leituras.copy()
     quantidade_recebida = len(df_leituras)
     if "id_leitura_origem" not in df_leituras:
         logging.error("Carga ambiental rejeitada: coluna id_leitura_origem ausente.")
-        resultado = df_leituras.iloc[0:0].copy()
-        resultado.attrs["silver_consistency_rejections"] = rejeicoes_consistencia
-        return resultado
+        return df_leituras.iloc[0:0].copy()
 
     ids = df_leituras["id_leitura_origem"].apply(
         lambda valor: "" if pd.isna(valor) else str(valor).strip()
@@ -94,25 +82,10 @@ def filtrar_retransmissoes(
             quantidade_recebida,
             int(sem_id.sum()),
         )
-        df_leituras.attrs["silver_consistency_rejections"] = rejeicoes_consistencia
         return df_leituras
 
     duplicados_lote = df_leituras["id_leitura_origem"].duplicated(keep="first")
     retransmissoes_lote = int(duplicados_lote.sum())
-    colunas_payload_lote = [
-        coluna for coluna in df_leituras.columns if coluna != "id_leitura_origem"
-    ]
-
-    def normalizar(coluna, valor):
-        if pd.isna(valor):
-            return None
-        if coluna == "data_leitura":
-            data = pd.to_datetime(valor, errors="coerce", utc=True)
-            return None if pd.isna(data) else data.isoformat()
-        if coluna == "id_estacao":
-            return int(valor)
-        return round(float(valor), 3)
-
     if duplicados_lote.any():
         for leitura_id in df_leituras.loc[
             duplicados_lote, "id_leitura_origem"
@@ -120,22 +93,11 @@ def filtrar_retransmissoes(
             grupo = df_leituras.loc[
                 df_leituras["id_leitura_origem"].eq(leitura_id)
             ]
-            primeira = grupo.iloc[0]
-            quantidade_conflitante = sum(
-                any(
-                    normalizar(coluna, leitura[coluna])
-                    != normalizar(coluna, primeira[coluna])
-                    for coluna in colunas_payload_lote
-                )
-                for _, leitura in grupo.iloc[1:].iterrows()
-            )
-            if quantidade_conflitante:
-                rejeicoes_consistencia += quantidade_conflitante
+            if len(grupo.drop(columns="id_leitura_origem").drop_duplicates()) > 1:
                 logging.warning(
                     "Retransmissão conflitante no lote; mantendo primeira leitura: "
-                    "id_leitura_origem=%s, rejeitadas=%s",
+                    "id_leitura_origem=%s",
                     leitura_id,
-                    quantidade_conflitante,
                 )
         df_leituras = df_leituras.drop_duplicates(
             subset=["id_leitura_origem"], keep="first"
@@ -163,9 +125,18 @@ def filtrar_retransmissoes(
         "turbidez",
     ]
 
+    def normalizar(coluna, valor):
+        if pd.isna(valor):
+            return None
+        if coluna == "data_leitura":
+            data = pd.to_datetime(valor, errors="coerce", utc=True)
+            return None if pd.isna(data) else data.isoformat()
+        if coluna == "id_estacao":
+            return int(valor)
+        return round(float(valor), 3)
+
     inserir = []
     retransmissoes = 0
-    conflitos_persistidos = 0
     for leitura in df_leituras.to_dict("records"):
         existente = existentes.get(leitura["id_leitura_origem"])
         if existente is None:
@@ -179,7 +150,6 @@ def filtrar_retransmissoes(
             for coluna in colunas_comparacao
         )
         if conflitante:
-            conflitos_persistidos += 1
             logging.warning(
                 "Retransmissão conflitante ignorada; mantendo registro existente: "
                 "id_leitura_origem=%s",
@@ -191,7 +161,6 @@ def filtrar_retransmissoes(
                 leitura["id_leitura_origem"],
             )
 
-    rejeicoes_consistencia += conflitos_persistidos
     logging.info(
         "Deduplicação ambiental: recebidos=%s, novos=%s, "
         "retransmissoes_ignoradas=%s, rejeitadas_sem_id=%s",
@@ -201,13 +170,8 @@ def filtrar_retransmissoes(
         int(sem_id.sum()),
     )
     if not inserir:
-        resultado = df_leituras.iloc[0:0].copy()
-    else:
-        resultado = pd.DataFrame(
-            inserir, columns=df_leituras.columns
-        ).reset_index(drop=True)
-    resultado.attrs["silver_consistency_rejections"] = rejeicoes_consistencia
-    return resultado
+        return df_leituras.iloc[0:0].copy()
+    return pd.DataFrame(inserir, columns=df_leituras.columns).reset_index(drop=True)
 
 
 
@@ -225,13 +189,8 @@ def resolver_id_estacao(df_leituras: pd.DataFrame, connection) -> pd.DataFrame:
     Returns:
         pd.DataFrame: DataFrame com a coluna de estação convertida para id_estacao.
     """
-    rejeicoes_consistencia = int(
-        df_leituras.attrs.get("silver_consistency_rejections", 0)
-    )
     if df_leituras.empty:
-        resultado = df_leituras.copy()
-        resultado.attrs["silver_consistency_rejections"] = rejeicoes_consistencia
-        return resultado
+        return df_leituras.copy()
 
     df_estacao = tabela_estacao(tabela_cidade(), tabela_estado())[["id", "nome"]]
     df_estacao["id"] = df_estacao["id"].astype("string").str.strip()
@@ -247,25 +206,14 @@ def resolver_id_estacao(df_leituras: pd.DataFrame, connection) -> pd.DataFrame:
     estacoes_banco = pd.read_sql(
         text("SELECT id AS id_estacao, nome FROM estacao"), connection
     )
-    df_estacao = df_estacao.merge(
-        estacoes_banco, on="nome", how="left", validate="one_to_one"
-    )
-
-    df_leituras = df_leituras.copy()
-    df_leituras["estacao_id"] = (
-        df_leituras["estacao_id"].astype("string").str.strip()
-    )
-
-    df_leituras = df_leituras.merge(
-        df_estacao[["id", "id_estacao"]],
-        left_on="estacao_id",
-        right_on="id",
-        how="left",
-        validate="many_to_one",
+    leituras = df_leituras.copy()
+    leituras["estacao_id"] = leituras["estacao_id"].astype("string").str.strip()
+    result = leituras.merge(
+        estacoes, left_on="estacao_id", right_on="codigo_origem",
+        how="left", validate="many_to_one",
     )
 
     sem_estacao = df_leituras.loc[df_leituras["id_estacao"].isna()]
-    rejeicoes_consistencia += len(sem_estacao)
     for leitura in sem_estacao.to_dict("records"):
         logging.warning(
             "Leitura ambiental rejeitada por estação sem correspondência: "
@@ -277,9 +225,7 @@ def resolver_id_estacao(df_leituras: pd.DataFrame, connection) -> pd.DataFrame:
 
     df_leituras = df_leituras.loc[df_leituras["id_estacao"].notna()].copy()
     df_leituras["id_estacao"] = df_leituras["id_estacao"].astype("int64")
-    resultado = df_leituras.drop(columns=["estacao_id", "id"])
-    resultado.attrs["silver_consistency_rejections"] = rejeicoes_consistencia
-    return resultado
+    return df_leituras.drop(columns=["estacao_id", "id"])
 
 
 def inserir_dados():
@@ -298,16 +244,7 @@ def inserir_dados():
 
         with create_db_engine().begin() as connection:
             df_dados = resolver_id_estacao(df_dados, connection)
-            rejeicoes_consistencia = int(
-                df_dados.attrs.get("silver_consistency_rejections", 0)
-            )
             if df_dados.empty:
-                if rejeicoes_consistencia:
-                    persistir_silver(
-                        df_dados,
-                        "qualidade_agua",
-                        rejeicoes_consistencia=rejeicoes_consistencia,
-                    )
                 logging.info("Nenhuma leitura com estação cadastrada para inserir.")
                 return
 
@@ -315,24 +252,11 @@ def inserir_dados():
             adquirir_lock_etl(connection, "etl:qualidade_agua")
             validar_unicidade_persistida(connection)
             df_dados = filtrar_retransmissoes(df_dados, connection)
-            rejeicoes_consistencia = int(
-                df_dados.attrs.get("silver_consistency_rejections", 0)
-            )
             if df_dados.empty:
-                if rejeicoes_consistencia:
-                    persistir_silver(
-                        df_dados,
-                        "qualidade_agua",
-                        rejeicoes_consistencia=rejeicoes_consistencia,
-                    )
                 return
 
             # 3.2 Persistencia (itens 35-36): grava leituras limpas e enriquecidas na Silver.
-            persistir_silver(
-                df_dados,
-                "qualidade_agua",
-                rejeicoes_consistencia=rejeicoes_consistencia,
-            )
+            persistir_silver(df_dados, "qualidade_agua")
 
             logging.info(
                 "Inserindo %s registros na tabela '%s'...",
@@ -355,5 +279,5 @@ def inserir_dados():
 
 
 if __name__ == "__main__":
-    configure_logging(BASE_DIR, categoria="insercao")
+    configure_logging(categoria="insercao")
     inserir_dados()

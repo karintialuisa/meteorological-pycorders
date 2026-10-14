@@ -13,13 +13,13 @@ As configurações da aplicação ficam em `src/config/`. O módulo `settings.py
 
 O driver ODBC continua fixo como `ODBC Driver 17 for SQL Server`, pois depende dessa configuração para conectar neste ambiente. Os demais parâmetros de conexão vêm do `.env`. A antiga implementação separada `src/config/logging_config.py` foi removida; agora há um único módulo de configuração.
 
-Os caminhos dos arquivos de leituras, estados, municípios e estações também vêm do `.env`. Assim, parsers, relatório e API não dependem de caminhos montados diretamente a partir da localização do código.
+Os caminhos dos arquivos de leituras, estados, municípios e estações também vêm do `.env`. Assim, parsers e API não dependem de caminhos montados diretamente a partir da localização do código.
 
 ## Cargas e dados
 
 Os três scripts em `src/database/dml/` fazem a carga de localização, qualidade da água e leituras meteorológicas. As leituras são associadas às chaves das tabelas de localização antes de serem inseridas. A inserção de estados também foi corrigida para renomear as colunas conforme o esquema SQL.
 
-O dashboard compartilha a mesma função de criação da conexão SQL. O menu principal e os scripts individuais usam a configuração comum de logging.
+O menu principal e os scripts individuais usam a configuração comum de logging. O dashboard Streamlit e o módulo de relatórios estatísticos foram removidos; parsers, ingestão REST e API permanecem.
 
 ## Testes
 
@@ -42,9 +42,7 @@ python -m pytest tests -v
 - `src/config/requirements.txt`: lista dependências da aplicação e de testes.
 - `src/config/settings.py`: reúne leitura do `.env`, resolução de caminhos, conexão ao SQL Server e configuração de logs.
 - `src/main.py`: importa configuração e logging pelo módulo unificado.
-- `src/analytics/Relatorios_estatisticos.py`: lê os JSONs configurados e usa a função compartilhada de logging.
 - `src/api/main.py`: carrega os JSONs pelos caminhos configurados no ambiente.
-- `src/dashboard.py`: obtém a engine SQL pela configuração comum.
 - `src/database/dml/Insert_Localizacao.py`: usa a conexão compartilhada e insere estados com os nomes de coluna esperados pelo banco.
 - `src/database/dml/Insert_Leituras_ambiental.py` e `Insert_Leituras_Meteorologica.py`: usam a conexão e o logging compartilhados.
 - `src/ingestion/leituras/Parse_LeituraAmbiental.py` e `Parse_LeituraMetereologica.py`: leem os arquivos indicados no `.env`.

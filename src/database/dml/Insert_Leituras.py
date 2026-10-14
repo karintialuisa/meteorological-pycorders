@@ -3,10 +3,12 @@
 import logging
 import sys
 from collections.abc import Iterable, Mapping
+from contextlib import nullcontext
 from datetime import datetime, timezone
 from pathlib import Path
 
 from sqlalchemy import text
+from sqlalchemy.engine import Connection
 
 sys.path.append(str(Path(__file__).resolve().parents[2]))
 from config.settings import configure_logging, create_db_engine
@@ -113,15 +115,20 @@ def _normalizar_registro(
 
 
 def inserir_leituras(
-    leituras: Iterable[Mapping[str, object]], engine=None
+    leituras: Iterable[Mapping[str, object]], engine=None, *,
+    connection: Connection | None = None, strict: bool = False,
 ) -> tuple[int, int, int]:
     """Persiste cabecalhos; retorna (inseridos, enriquecidos, rejeitados).
 
     Cada registro deve informar origem, codigo_estacao/estacao_id e data_leitura.
     Agua exige id_leitura_origem; meteorologia usa estacao + instante UTC.
     operador_cpf_hash e opcional, mas quando informado deve existir em operadores.
+    connection exige transacao ativa; strict propaga rejeicoes para rollback do evento.
     """
-    target_engine = engine or create_db_engine()
+    if connection is not None and not connection.in_transaction():
+        raise ValueError("connection exige transacao ativa")
+    supplied_connection = connection
+    target_engine = connection.engine if connection is not None else (engine or create_db_engine())
     mssql = target_engine.dialect.name == "mssql"
     leitura_table = "dbo.Leituras" if mssql else "leituras"
     station_table = "dbo.estacao" if mssql else "estacao"
@@ -140,12 +147,14 @@ def inserir_leituras(
                 indice,
                 str(error),
             )
+            if strict:
+                raise
             rejeitados += 1
             continue
 
         try:
             resultado_registro = "retransmissao"
-            with target_engine.begin() as connection:
+            with (nullcontext(supplied_connection) if supplied_connection is not None else target_engine.begin()) as connection:
                 adquirir_lock_etl(connection, "etl:leituras")
                 id_estacao = connection.execute(
                     text(
@@ -235,6 +244,8 @@ def inserir_leituras(
                 leitura["chave_origem"],
                 str(error),
             )
+            if strict:
+                raise
             rejeitados += 1
         except Exception as error:
             logging.error(
@@ -243,7 +254,7 @@ def inserir_leituras(
                 leitura["chave_origem"],
                 type(error).__name__,
             )
-            rejeitados += 1
+            raise
 
     logging.info(
         "Carga de cabecalhos concluida: recebidos=%s inseridos=%s "

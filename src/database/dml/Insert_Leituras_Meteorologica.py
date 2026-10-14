@@ -1,4 +1,7 @@
+"""Carga meteorologica no modelo 3FN e na Silver."""
+
 import logging
+<<<<<<< HEAD
 import unicodedata
 """Carga das leituras meteorológicas no banco de dados.
 
@@ -7,18 +10,22 @@ correspondentes no banco e realiza a inserção dos registros na tabela
 leitura_meteorologica.
 """
 
+=======
+>>>>>>> origin/feature/karintia
 import sys
 from pathlib import Path
+
+import pandas as pd
+from sqlalchemy import text
+
 sys.path.append(str(Path(__file__).resolve().parents[2]))
 from config.settings import configure_logging, create_db_engine
-import pandas as pd
-from sqlalchemy import bindparam, text
-from database.dml.etl_lock import adquirir_lock_etl
-from database.dml.Insert_Leituras_ambiental import resolver_id_estacao
+from database.dml.Persistir_Medicoes import carregar_dataframe
 from ingestion.leituras.Parse_LeituraMetereologica import tabela_metereologica
 from ingestion.leituras.Persistir_Silver import persistir_silver
 
 
+<<<<<<< HEAD
 tabeladestino = "leitura_meteorologica"
 modocarga = "append"
 TAMANHO_LOTE_CHAVES = 400
@@ -368,8 +375,29 @@ def inserir_dados():
     except Exception:
         logging.exception("Erro ao inserir dados")
         raise
+=======
+def resolver_id_cidade(df_leituras: pd.DataFrame, connection) -> pd.DataFrame:
+    estacoes = pd.read_sql(
+        text("SELECT id AS id_estacao, id_cidade FROM estacao"), connection
+    )
+    result = df_leituras.merge(estacoes, on="id_estacao", how="left", validate="many_to_one")
+    if result["id_cidade"].isna().any():
+        raise ValueError("Estações sem cidade cadastrada no banco")
+    return result.drop(columns=["cidade", "estado"], errors="ignore")
+
+
+def inserir_dados():
+    dados = tabela_metereologica()
+    if dados.empty:
+        logging.info("Nenhum dado encontrado para inserir.")
+        return
+    aprovados = carregar_dataframe(dados, "leitura_meteorologica", create_db_engine())
+    if not aprovados.empty:
+        persistir_silver(aprovados, "leitura_meteorologica")
+    logging.info("Carga meteorologica 3FN: aceitos=%s rejeitados=%s", len(aprovados), len(dados) - len(aprovados))
+>>>>>>> origin/feature/karintia
 
 
 if __name__ == "__main__":
-    configure_logging(Path(__file__).resolve().parents[3], categoria="insercao")
+    configure_logging(categoria="insercao")
     inserir_dados()

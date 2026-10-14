@@ -66,7 +66,6 @@ def configure_logging(
         "execucao": "execucao_relatorio.log",
         "tratamento": "tratamento_dados.log",
         "insercao": "insercao_dados.log",
-        "analise": "relatorios_calculos.log",
     }
     if categoria not in arquivos_log:
         raise ValueError(f"Categoria de log desconhecida: {categoria}")
