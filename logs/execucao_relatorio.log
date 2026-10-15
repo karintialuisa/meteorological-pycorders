@@ -7411,7 +7411,11 @@ Menu de opções:
  4. Coletar meteorologia Agritempo -> JSON
 ========================================
 15-10-2026 10:14 - INFO - Aplicação encerrada pelo usuário ao selecionar a opção '3'.
+<<<<<<< HEAD
 15-10-2026 10:31 - INFO - 
+=======
+15-10-2026 10:19 - INFO - 
+>>>>>>> origin/feature/jorge
 ========================================
 Menu de opções:
  1. ETL JSON -> BD
@@ -7419,6 +7423,7 @@ Menu de opções:
  4. Coletar meteorologia Agritempo -> JSON
  5. Cadastrar parâmetros, catálogo LGPD e operadores
 ========================================
+<<<<<<< HEAD
 15-10-2026 10:31 - INFO - ==================== Iniciando: Insert_localizacao.py ====================
 15-10-2026 10:31 - ERROR - ❌ Falha em Insert_localizacao.py:
 Traceback (most recent call last):
@@ -7531,6 +7536,9 @@ sqlalchemy.exc.InterfaceError: (pyodbc.InterfaceError) ('28000', '[28000] [Micro
 (Background on this error at: https://sqlalche.me/e/21/rvf5)
 15-10-2026 10:31 - ERROR - Carga ETL interrompida após falha em Insert_localizacao.py.
 15-10-2026 10:31 - INFO - 
+=======
+15-10-2026 10:24 - INFO - 
+>>>>>>> origin/feature/jorge
 ========================================
 Menu de opções:
  1. ETL JSON -> BD
@@ -7538,6 +7546,7 @@ Menu de opções:
  4. Coletar meteorologia Agritempo -> JSON
  5. Cadastrar parâmetros, catálogo LGPD e operadores
 ========================================
+<<<<<<< HEAD
 15-10-2026 10:32 - INFO - ==================== Iniciando: Insert_localizacao.py ====================
 15-10-2026 10:32 - ERROR - ❌ Falha em Insert_localizacao.py:
 Traceback (most recent call last):
@@ -7679,11 +7688,63 @@ Traceback (most recent call last):
     carregar_operadores()
     ~~~~~~~~~~~~~~~~~~~^^
   File "C:\Users\wagner.a.dos.santos\Documents\GitHub\meteorological-pycorders\src\database\dml\Insert_Operadores.py", line 286, in carregar_operadores
+=======
+15-10-2026 10:26 - INFO - 
+========================================
+Menu de opções:
+ 1. ETL JSON -> BD
+ 2. Coletar meteorologia Agritempo -> JSON
+ 3. Cadastrar parâmetros, catálogo LGPD e operadores
+ 4. Cancelar Operação
+========================================
+15-10-2026 10:26 - INFO - ==================== Iniciando: Insert_Parametros.py ====================
+15-10-2026 10:26 - INFO - ✅ Sucesso em Insert_Parametros.py
+15-10-2026 10:26 - INFO - ==================== Iniciando: Insert_Catalogo_LGPD.py ====================
+15-10-2026 10:26 - INFO - ✅ Sucesso em Insert_Catalogo_LGPD.py
+15-10-2026 10:26 - INFO - ==================== Iniciando: Insert_Operadores.py ====================
+15-10-2026 10:27 - ERROR - ❌ Falha em Insert_Operadores.py:
+Traceback (most recent call last):
+  File "C:\Users\jorge.caldas.cardoso\Documents\GitHub\meteorological-pycorders\src\database\dml\Insert_Operadores.py", line 14, in <module>
+    from security.pii import decrypt_name, encrypt_name, hash_cpf
+  File "C:\Users\jorge.caldas.cardoso\Documents\GitHub\meteorological-pycorders\src\security\pii.py", line 9, in <module>
+    from cryptography.fernet import Fernet, InvalidToken
+ModuleNotFoundError: No module named 'cryptography'
+15-10-2026 10:27 - ERROR - Cadastro interrompido após falha em Insert_Operadores.py.
+15-10-2026 10:27 - INFO - 
+========================================
+Menu de opções:
+ 1. ETL JSON -> BD
+ 2. Coletar meteorologia Agritempo -> JSON
+ 3. Cadastrar parâmetros, catálogo LGPD e operadores
+ 4. Cancelar Operação
+========================================
+15-10-2026 10:27 - INFO - Aplicação encerrada pelo usuário ao selecionar a opção '4'.
+15-10-2026 10:29 - INFO - 
+========================================
+Menu de opções:
+ 1. ETL JSON -> BD
+ 2. Coletar meteorologia Agritempo -> JSON
+ 3. Cadastrar parâmetros, catálogo LGPD e operadores
+ 4. Cancelar Operação
+========================================
+15-10-2026 10:29 - INFO - ==================== Iniciando: Insert_Parametros.py ====================
+15-10-2026 10:29 - INFO - ✅ Sucesso em Insert_Parametros.py
+15-10-2026 10:29 - INFO - ==================== Iniciando: Insert_Catalogo_LGPD.py ====================
+15-10-2026 10:29 - INFO - ✅ Sucesso em Insert_Catalogo_LGPD.py
+15-10-2026 10:29 - INFO - ==================== Iniciando: Insert_Operadores.py ====================
+15-10-2026 10:29 - ERROR - ❌ Falha em Insert_Operadores.py:
+Traceback (most recent call last):
+  File "C:\Users\jorge.caldas.cardoso\Documents\GitHub\meteorological-pycorders\src\database\dml\Insert_Operadores.py", line 297, in <module>
+    carregar_operadores()
+    ~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\jorge.caldas.cardoso\Documents\GitHub\meteorological-pycorders\src\database\dml\Insert_Operadores.py", line 286, in carregar_operadores
+>>>>>>> origin/feature/jorge
     return inserir_operadores(
         normalized_operators,
     ...<3 lines>...
         data_leitura=source_date,
     )
+<<<<<<< HEAD
   File "C:\Users\wagner.a.dos.santos\Documents\GitHub\meteorological-pycorders\src\database\dml\Insert_Operadores.py", line 41, in inserir_operadores
     _validar_chaves_operador(hmac_secret, encryption_key)
     ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -7699,3 +7760,43 @@ Menu de opções:
  4. Coletar meteorologia Agritempo -> JSON
  5. Cadastrar parâmetros, catálogo LGPD e operadores
 ========================================
+=======
+  File "C:\Users\jorge.caldas.cardoso\Documents\GitHub\meteorological-pycorders\src\database\dml\Insert_Operadores.py", line 41, in inserir_operadores
+    _validar_chaves_operador(hmac_secret, encryption_key)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jorge.caldas.cardoso\Documents\GitHub\meteorological-pycorders\src\database\dml\Insert_Operadores.py", line 191, in _validar_chaves_operador
+    raise ValueError(f"{nome} deve conter um segredo real, não um placeholder")
+ValueError: HMAC_SECRET_KEY deve conter um segredo real, não um placeholder
+15-10-2026 10:29 - ERROR - Cadastro interrompido após falha em Insert_Operadores.py.
+15-10-2026 10:29 - INFO - 
+========================================
+Menu de opções:
+ 1. ETL JSON -> BD
+ 2. Coletar meteorologia Agritempo -> JSON
+ 3. Cadastrar parâmetros, catálogo LGPD e operadores
+ 4. Cancelar Operação
+========================================
+15-10-2026 10:44 - INFO - 
+========================================
+Menu de opções:
+ 1. ETL JSON -> BD
+ 2. Coletar meteorologia Agritempo -> JSON
+ 3. Cadastrar parâmetros, catálogo LGPD e operadores
+ 4. Cancelar Operação
+========================================
+15-10-2026 10:44 - INFO - ==================== Iniciando: Insert_Parametros.py ====================
+15-10-2026 10:44 - INFO - ✅ Sucesso em Insert_Parametros.py
+15-10-2026 10:44 - INFO - ==================== Iniciando: Insert_Catalogo_LGPD.py ====================
+15-10-2026 10:44 - INFO - ✅ Sucesso em Insert_Catalogo_LGPD.py
+15-10-2026 10:44 - INFO - ==================== Iniciando: Insert_Operadores.py ====================
+15-10-2026 10:45 - INFO - ✅ Sucesso em Insert_Operadores.py
+15-10-2026 10:45 - INFO - 
+========================================
+Menu de opções:
+ 1. ETL JSON -> BD
+ 2. Coletar meteorologia Agritempo -> JSON
+ 3. Cadastrar parâmetros, catálogo LGPD e operadores
+ 4. Cancelar Operação
+========================================
+15-10-2026 10:47 - INFO - Aplicação encerrada pelo usuário ao selecionar a opção '4'.
+>>>>>>> origin/feature/jorge
