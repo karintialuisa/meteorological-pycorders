@@ -99,7 +99,6 @@ def test_configure_logging_creates_log_directory(monkeypatch, tmp_path):
     [
         ("tratamento", "tratamento_dados.log"),
         ("insercao", "insercao_dados.log"),
-        ("analise", "relatorios_calculos.log"),
     ],
 )
 def test_configure_logging_selects_file_by_category(
@@ -130,6 +129,10 @@ def test_exibir_menu_returns_trimmed_selection(main_module, monkeypatch):
     monkeypatch.setattr("builtins.input", lambda prompt: " 2 ")
 
     assert main_module.exibir_menu() == "2"
+
+
+def test_menu_preserves_remaining_option_numbers(main_module):
+    assert set(main_module.MENU) == {"1", "3", "4", "5"}
 
 
 def test_executar_script_handles_missing_script(main_module, tmp_path, monkeypatch):
@@ -163,48 +166,45 @@ def test_executar_script_captures_output(
     assert capsys.readouterr().out == "job output\n"
 
 
-def test_executar_script_runs_interactively(main_module, tmp_path, monkeypatch):
-    script = tmp_path / "report.py"
-    script.touch()
-    monkeypatch.setattr(main_module, "BASE_DIR", tmp_path)
-    calls = []
-    monkeypatch.setattr(
-        main_module.subprocess,
-        "run",
-        lambda *args, **kwargs: calls.append((args, kwargs))
-        or type("Result", (), {"returncode": 0})(),
-    )
-
-    assert main_module.executar_script("report.py", interativo=True) is True
-    assert len(calls) == 1
-    assert calls[0][1] == {}
-
-
 def test_main_dispatches_menu_actions_and_exits(main_module, monkeypatch):
-    options = iter(["1", "2", "3"])
+    options = iter(["1", "3"])
     calls = []
     scripts = {
         "INSERT_LOCALIZACAO": "locations.py",
         "INSERT_LEITURA_AMBIENTAL": "water.py",
         "INSERT_LEITURA_METEOROLOGICA": "weather.py",
-        "RELATORIO_ESTATISTICO": "report.py",
     }
     monkeypatch.setattr(main_module, "exibir_menu", lambda: next(options))
     monkeypatch.setattr(main_module, "get_env", scripts.__getitem__)
     monkeypatch.setattr(
         main_module,
         "executar_script",
-        lambda path, interativo=False: calls.append((path, interativo)) or True,
+        lambda path: calls.append(path) or True,
     )
 
     main_module.main()
 
     assert calls == [
-        ("locations.py", False),
-        ("water.py", False),
-        ("weather.py", False),
-        ("report.py", True),
+        "locations.py",
+        "src/database/dml/Insert_Parametros.py",
+        "water.py",
+        "weather.py",
     ]
+
+
+def test_main_does_not_dispatch_removed_report_option(main_module, monkeypatch):
+    options = iter(["2", "3"])
+    calls = []
+    monkeypatch.setattr(main_module, "exibir_menu", lambda: next(options))
+    monkeypatch.setattr(
+        main_module,
+        "executar_script",
+        lambda path: calls.append(path) or True,
+    )
+
+    main_module.main()
+
+    assert calls == []
 
 
 def test_main_stops_etl_after_a_script_fails(main_module, monkeypatch):
@@ -220,12 +220,34 @@ def test_main_stops_etl_after_a_script_fails(main_module, monkeypatch):
     monkeypatch.setattr(
         main_module,
         "executar_script",
-        lambda path, interativo=False: calls.append(path) and False,
+        lambda path: calls.append(path) and False,
     )
 
     main_module.main()
 
     assert calls == ["locations.py"]
+
+
+def test_main_stops_etl_when_parameter_seed_fails(main_module, monkeypatch):
+    options = iter(["1", "3"])
+    calls = []
+    scripts = {
+        "INSERT_LOCALIZACAO": "locations.py",
+        "INSERT_LEITURA_AMBIENTAL": "water.py",
+        "INSERT_LEITURA_METEOROLOGICA": "weather.py",
+    }
+    monkeypatch.setattr(main_module, "exibir_menu", lambda: next(options))
+    monkeypatch.setattr(main_module, "get_env", scripts.__getitem__)
+    monkeypatch.setattr(
+        main_module,
+        "executar_script",
+        lambda path: calls.append(path)
+        or path != "src/database/dml/Insert_Parametros.py",
+    )
+
+    main_module.main()
+
+    assert calls == ["locations.py", "src/database/dml/Insert_Parametros.py"]
 
 
 def test_main_dispatches_rest_ingestion(main_module, monkeypatch):
@@ -235,12 +257,47 @@ def test_main_dispatches_rest_ingestion(main_module, monkeypatch):
     monkeypatch.setattr(
         main_module,
         "executar_script",
-        lambda path, interativo=False: calls.append((path, interativo)) or True,
+        lambda path: calls.append(path) or True,
     )
 
     main_module.main()
 
-    assert calls == [("Get_dados.py", False)]
+    assert calls == ["Get_dados.py"]
+
+
+# projeto_final.pdf secoes 3.2/3.3 -> features.csv IDs 32-34, 38 e 39.
+def test_main_dispatches_cadastro_scripts_in_dependency_order(main_module, monkeypatch):
+    options = iter(["5", "3"])
+    calls = []
+    monkeypatch.setattr(main_module, "exibir_menu", lambda: next(options))
+    monkeypatch.setattr(
+        main_module,
+        "executar_script",
+        lambda path: calls.append(path) or True,
+    )
+
+    main_module.main()
+
+    assert calls == [
+        "src/database/dml/Insert_Parametros.py",
+        "src/database/dml/Insert_Catalogo_LGPD.py",
+        "src/database/dml/Insert_Operadores.py",
+    ]
+
+
+def test_main_stops_cadastro_after_a_script_fails(main_module, monkeypatch):
+    options = iter(["5", "3"])
+    calls = []
+    monkeypatch.setattr(main_module, "exibir_menu", lambda: next(options))
+    monkeypatch.setattr(
+        main_module,
+        "executar_script",
+        lambda path: calls.append(path) and False,
+    )
+
+    main_module.main()
+
+    assert calls == ["src/database/dml/Insert_Parametros.py"]
 
 
 if __name__ == "__main__":

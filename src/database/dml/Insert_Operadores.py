@@ -1,5 +1,6 @@
 """Persiste operadores sem armazenar CPF ou nome completo em texto claro."""
 
+import json
 import logging
 import sys
 from collections.abc import Iterable, Mapping
@@ -37,6 +38,7 @@ def inserir_operadores(
     """
     hmac_secret = hmac_secret or get_env("HMAC_SECRET_KEY")
     encryption_key = encryption_key or get_env("ENCRYPTION_KEY")
+    _validar_chaves_operador(hmac_secret, encryption_key)
     target_engine = engine or create_db_engine()
     table_name = "dbo.operadores" if target_engine.dialect.name == "mssql" else "operadores"
     station_table = "dbo.estacao" if target_engine.dialect.name == "mssql" else "estacao"
@@ -116,7 +118,12 @@ def inserir_operadores(
             return
 
         changes = {}
-        if decrypt_name(existing["nome_completo_cifrado"], encryption_key) != operator["nome_completo"].strip():
+        if decrypt_name(
+            existing["nome_completo_cifrado"],
+            encryption_key,
+            principal="operator-loader",
+            authorize=_autorizar_descriptografia_loader,
+        ) != operator["nome_completo"].strip():
             changes["nome_completo_cifrado"] = protected_values["nome_completo_cifrado"]
         new_status = operator.get("status")
         if new_status is not None and new_status != existing["status"]:
@@ -174,8 +181,117 @@ def inserir_operadores(
     return inserted, updated
 
 
+# projeto_final.pdf secao 3.2 LGPD -> features.csv IDs 33 e 34.
+def _validar_chaves_operador(hmac_secret: str, encryption_key: str) -> None:
+    for nome, valor in (
+        ("HMAC_SECRET_KEY", hmac_secret),
+        ("ENCRYPTION_KEY", encryption_key),
+    ):
+        if not valor.strip() or valor.strip().casefold().startswith("replace-with"):
+            raise ValueError(f"{nome} deve conter um segredo real, não um placeholder")
+
+
+def _autorizar_descriptografia_loader(principal: str, action: str) -> bool:
+    """Permite a leitura do nome somente ao fluxo interno de carga."""
+    return principal == "operator-loader" and action == "decrypt_operator_name"
+
+
+OPERADORES_JSON = (
+    Path(__file__).resolve().parents[2] / "ingestion" / "localizacao" / "operadores.json"
+)
+_STATUS_ATIVO = {"1", "ativo", "ativa", "active", "true"}
+_STATUS_INATIVO = {"0", "inativo", "inativa", "inactive", "false", "desativado"}
+
+
+def _normalizar_status(status: object) -> str:
+    if isinstance(status, bool):
+        return str(int(status))
+    return "" if status is None else str(status).strip().lower()
+
+
+# projeto_final.pdf secao 3.3 (Operadores - tabela cadastral) -> features.csv IDs 10 e 38.
+def _converter_status_operador(status: object) -> int:
+    """Retorna 1 somente para status ativo; qualquer outro valor grava 0."""
+    return int(_normalizar_status(status) in _STATUS_ATIVO)
+
+
+def _status_reconhecido(status: object) -> bool:
+    return _normalizar_status(status) in (_STATUS_ATIVO | _STATUS_INATIVO)
+
+
+# projeto_final.pdf secoes 3.2 (LGPD) e 3.3 -> features.csv IDs 32-34 e 38; ETL na camada DML.
+def carregar_operadores(
+    path_arquivo: str | Path | None = None,
+    engine=None,
+    hmac_secret: str | None = None,
+    encryption_key: str | None = None,
+) -> tuple[int, int]:
+    """Le operadores do JSON, normaliza o contrato e persiste via inserir_operadores."""
+    source_path = Path(path_arquivo) if path_arquivo else OPERADORES_JSON
+    source_date = "desconhecida"
+    try:
+        with open(source_path, "r", encoding="utf-8") as arquivo:
+            payload = json.load(arquivo)
+        source_date = str(payload.get("date") or "desconhecida")
+        operators = payload.get("operadores")
+        if not isinstance(operators, list):
+            raise ValueError("lista de operadores ausente ou invalida")
+    except (OSError, json.JSONDecodeError, AttributeError, ValueError) as error:
+        logging.error(
+            "Falha ao ler operadores: data_leitura=%s estacao_id=desconhecida erro=%s",
+            source_date,
+            type(error).__name__,
+        )
+        return 0, 0
+
+    normalized_operators = []
+    for operator in operators:
+        station_code = (
+            str(operator.get("estacao_id") or "").strip()
+            if isinstance(operator, dict)
+            else ""
+        )
+        try:
+            if not isinstance(operator, dict):
+                raise ValueError("registro invalido")
+            if not station_code:
+                logging.error(
+                    "Estacao nao informada; cadastre-a antes do operador: "
+                    "data_leitura=%s estacao_id=desconhecida",
+                    source_date,
+                )
+                continue
+
+            status = operator.get("status")
+            if not _status_reconhecido(status):
+                logging.warning(
+                    "Status de operador ausente ou nao reconhecido; gravado como "
+                    "inativo (0): data_leitura=%s estacao_id=%s",
+                    source_date,
+                    station_code,
+                )
+            normalized_operators.append({
+                **operator,
+                "nome_completo": operator.get("nome"),
+                "status": _converter_status_operador(status),
+            })
+        except Exception as error:
+            logging.error(
+                "Falha no ETL do operador: data_leitura=%s estacao_id=%s erro=%s",
+                source_date,
+                station_code or "desconhecida",
+                type(error).__name__,
+            )
+
+    return inserir_operadores(
+        normalized_operators,
+        hmac_secret=hmac_secret,
+        encryption_key=encryption_key,
+        engine=engine,
+        data_leitura=source_date,
+    )
+
+
 if __name__ == "__main__":
     configure_logging(categoria="insercao")
-    raise SystemExit(
-        "Informe registros de uma fonte aprovada chamando inserir_operadores()."
-    )
+    carregar_operadores()

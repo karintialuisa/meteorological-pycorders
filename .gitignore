@@ -6,3 +6,4 @@ reports/*.tmp
 logs/*.log
 src/ingestion/leituras/api_*.jsonl
 src/config/.env
+src/config/.env.test

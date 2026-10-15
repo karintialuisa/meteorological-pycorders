@@ -8,7 +8,10 @@ from cryptography.fernet import Fernet, InvalidToken
 from sqlalchemy import text
 
 from src.database.dml.Insert_Catalogo_LGPD import inserir_catalogo_lgpd
-from src.database.dml.Insert_Operadores import inserir_operadores
+from src.database.dml.Insert_Operadores import (
+    _converter_status_operador,
+    inserir_operadores,
+)
 from src.ingestion.localizacao import Parse_localizacao_JSON as localizacao
 from src.security.pii import decrypt_name, encrypt_name, hash_cpf, normalize_cpf
 
@@ -23,6 +26,17 @@ def _synthetic_cpf(prefix: str = "123456789") -> str:
     first_digit = check_digit(digits, range(10, 1, -1))
     second_digit = check_digit(digits + [first_digit], range(11, 1, -1))
     return f"{prefix}{first_digit}{second_digit}"
+
+
+def _authorized_test_decryption(ciphertext, key):
+    return decrypt_name(
+        ciphertext,
+        key,
+        principal="lgpd-test",
+        authorize=lambda principal, action: (
+            principal == "lgpd-test" and action == "decrypt_operator_name"
+        ),
+    )
 
 
 def _seed_operator_stations(engine):
@@ -69,43 +83,94 @@ def test_hash_cpf_rejects_empty_key():
         hash_cpf(_synthetic_cpf(), "")
 
 
-def test_encrypt_name_can_be_decrypted_with_the_same_key():
+@pytest.mark.parametrize(
+    "hmac_secret,encryption_key,invalid_key",
+    [
+        ("replace-with-a-random-secret", "valid-fernet-key-placeholder", "HMAC_SECRET_KEY"),
+        ("valid-hmac-secret", "replace-with-a-generated-fernet-key", "ENCRYPTION_KEY"),
+    ],
+)
+def test_operator_loader_rejects_placeholder_keys_before_database_access(
+    hmac_secret, encryption_key, invalid_key
+):
+    with pytest.raises(ValueError, match=invalid_key):
+        inserir_operadores([], hmac_secret, encryption_key, engine=object())
+
+
+def test_encrypt_name_can_be_decrypted_with_the_same_key_and_audit(caplog):
+    caplog.set_level(logging.INFO)
     key = Fernet.generate_key()
 
     ciphertext = encrypt_name("Operador de Teste", key)
 
     assert "Operador de Teste" not in ciphertext
-    assert decrypt_name(ciphertext, key) == "Operador de Teste"
+    assert _authorized_test_decryption(ciphertext, key) == "Operador de Teste"
+    assert "principal=lgpd-test" in caplog.text
+    assert "outcome=success" in caplog.text
+    assert "Operador de Teste" not in caplog.text
+    assert ciphertext not in caplog.text
+    assert key.decode("ascii") not in caplog.text
 
 
 def test_decrypt_name_rejects_another_key():
     ciphertext = encrypt_name("Operador de Teste", Fernet.generate_key())
 
     with pytest.raises(InvalidToken):
-        decrypt_name(ciphertext, Fernet.generate_key())
+        _authorized_test_decryption(ciphertext, Fernet.generate_key())
 
 
-def test_catalog_seed_is_idempotent_and_classifies_both_fields(banco_teste):
+def test_decrypt_name_denies_unauthorized_principal_and_audits_without_pii(
+    caplog,
+):
+    key = Fernet.generate_key()
+    ciphertext = encrypt_name("Operador Confidencial", key)
+
+    with pytest.raises(PermissionError, match="sem autorizacao"):
+        decrypt_name(
+            ciphertext,
+            key,
+            principal="untrusted-service",
+            authorize=lambda _principal, _action: False,
+        )
+
+    assert "outcome=denied" in caplog.text
+    assert "untrusted-service" in caplog.text
+    assert "Operador Confidencial" not in caplog.text
+    assert ciphertext not in caplog.text
+    assert key.decode("ascii") not in caplog.text
+
+
+def test_decrypt_name_requires_safe_principal_identifier(caplog):
+    key = Fernet.generate_key()
+    ciphertext = encrypt_name("Operador Confidencial", key)
+
+    with pytest.raises(PermissionError, match="Principal invalido"):
+        decrypt_name(
+            ciphertext,
+            key,
+            principal="user\nforged-log-entry",
+            authorize=lambda _principal, _action: True,
+        )
+
+    assert "forged-log-entry" not in caplog.text
+
+
+def test_catalog_seed_is_idempotent_and_classifies_both_fields(
+    banco_teste, catalogo_lgpd_esperado
+):
     assert inserir_catalogo_lgpd(banco_teste) == 2
     assert inserir_catalogo_lgpd(banco_teste) == 2
 
     with banco_teste.connect() as connection:
         fields = connection.execute(
             text(
-                "SELECT campo_logico, coluna_armazenada, classificacao, protecao "
+                "SELECT schema_name, tabela, campo_logico, coluna_armazenada, "
+                "classificacao, finalidade, protecao, politica_acesso "
                 "FROM catalogo_dados ORDER BY campo_logico"
             )
         ).all()
 
-    assert fields == [
-        ("cpf", "cpf_hash", "Dado pessoal", "HMAC-SHA-256"),
-        (
-            "nome_completo",
-            "nome_completo_cifrado",
-            "Dado pessoal",
-            "Fernet",
-        ),
-    ]
+    assert fields == catalogo_lgpd_esperado
 
 
 def test_operator_loader_persists_only_protected_values(banco_teste):
@@ -132,7 +197,7 @@ def test_operator_loader_persists_only_protected_values(banco_teste):
     assert stored.cpf_hash == hash_cpf(cpf, hmac_secret)
     assert cpf not in stored.cpf_hash
     assert "Operador de Teste" not in stored.nome_completo_cifrado
-    assert decrypt_name(stored.nome_completo_cifrado, key) == "Operador de Teste"
+    assert _authorized_test_decryption(stored.nome_completo_cifrado, key) == "Operador de Teste"
 
 
 def test_operator_loader_updates_existing_operator_without_duplicates(
@@ -165,7 +230,7 @@ def test_operator_loader_updates_existing_operator_without_duplicates(
         ).scalar_one()
 
     assert count == 1
-    assert decrypt_name(ciphertext, key) == "Nome Atualizado"
+    assert _authorized_test_decryption(ciphertext, key) == "Nome Atualizado"
 
 
 def test_operator_loader_rolls_back_batch_when_record_is_invalid(banco_teste):
@@ -330,7 +395,7 @@ def test_json_loader_rejects_invalid_operator_fixtures(
         encoding="utf-8",
     )
 
-    assert len(invalid_operators) == 6
+    assert len(invalid_operators) == 4
     assert localizacao.carregar_operadores(
         path, banco_teste, "test-hmac-secret", Fernet.generate_key().decode("ascii")
     ) == (0, 0)
@@ -338,3 +403,63 @@ def test_json_loader_rejects_invalid_operator_fixtures(
     assert any("estacao_id=AMB-001" in record.message for record in caplog.records)
     with banco_teste.connect() as connection:
         assert connection.execute(text("SELECT COUNT(*) FROM operadores")).scalar_one() == 0
+
+
+# projeto_final.pdf secao 3.3 (Operadores - tabela cadastral) -> features.csv IDs 10 e 38.
+@pytest.mark.parametrize(
+    ("status", "esperado"),
+    [
+        ("ativo", 1),
+        ("ATIVA", 1),
+        (" active ", 1),
+        ("true", 1),
+        (True, 1),
+        (1, 1),
+        ("inativo", 0),
+        ("pendente", 0),
+        ("", 0),
+        (None, 0),
+        (0, 0),
+        (False, 0),
+    ],
+)
+def test_status_operador_grava_um_somente_para_ativo(status, esperado):
+    assert _converter_status_operador(status) == esperado
+
+
+@pytest.mark.parametrize("status", ["", "pendente", None])
+def test_json_loader_grava_status_nao_reconhecido_como_inativo_com_aviso(
+    banco_teste, tmp_path, caplog, status
+):
+    _seed_operator_stations(banco_teste)
+    caplog.set_level(logging.INFO)
+    cpf = _synthetic_cpf()
+    path = tmp_path / "operadores.json"
+    path.write_text(
+        json.dumps({
+            "date": "2026-10-14",
+            "operadores": [{
+                "cpf": cpf,
+                "nome": "Operador Confidencial",
+                "estacao_id": "AMB-011",
+                "status": status,
+            }],
+        }),
+        encoding="utf-8",
+    )
+
+    assert localizacao.carregar_operadores(
+        path, banco_teste, "test-hmac-secret", Fernet.generate_key().decode("ascii")
+    ) == (1, 0)
+
+    with banco_teste.connect() as connection:
+        stored_status = connection.execute(text("SELECT status FROM operadores")).scalar_one()
+    assert stored_status == 0
+    assert any(
+        record.levelno == logging.WARNING
+        and "Status de operador" in record.message
+        and "estacao_id=AMB-011" in record.message
+        for record in caplog.records
+    )
+    assert all("Operador Confidencial" not in record.message for record in caplog.records)
+    assert all(cpf not in record.message for record in caplog.records)
