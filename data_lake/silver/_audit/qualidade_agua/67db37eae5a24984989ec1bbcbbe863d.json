@@ -1,0 +1,56 @@
+{
+  "execucao_id": "67db37eae5a24984989ec1bbcbbe863d",
+  "dataset": "qualidade_agua",
+  "executado_em_utc": "2026-10-15T13:12:57.561719+00:00",
+  "formato": "parquet",
+  "compressao": "snappy",
+  "linhas_recebidas": 120,
+  "linhas_gravadas": 120,
+  "particoes_gravadas": [
+    "qualidade_agua/data_leitura=2026-09-15/part-00000.parquet",
+    "qualidade_agua/data_leitura=2026-09-16/part-00000.parquet",
+    "qualidade_agua/data_leitura=2026-09-17/part-00000.parquet",
+    "qualidade_agua/data_leitura=2026-09-18/part-00000.parquet",
+    "qualidade_agua/data_leitura=2026-09-19/part-00000.parquet",
+    "qualidade_agua/data_leitura=2026-09-20/part-00000.parquet",
+    "qualidade_agua/data_leitura=2026-09-21/part-00000.parquet",
+    "qualidade_agua/data_leitura=2026-09-22/part-00000.parquet",
+    "qualidade_agua/data_leitura=2026-09-23/part-00000.parquet",
+    "qualidade_agua/data_leitura=2026-09-24/part-00000.parquet",
+    "qualidade_agua/data_leitura=2026-09-25/part-00000.parquet",
+    "qualidade_agua/data_leitura=2026-09-26/part-00000.parquet"
+  ],
+  "dimensoes_qualidade": {
+    "completeness": {
+      "linhas_avaliadas": 120,
+      "linhas_aprovadas": 120,
+      "linhas_rejeitadas": 0
+    },
+    "uniqueness": {
+      "linhas_avaliadas": 120,
+      "linhas_aprovadas": 120,
+      "linhas_rejeitadas": 0
+    },
+    "accuracy": {
+      "linhas_avaliadas": 120,
+      "linhas_aprovadas": 120,
+      "linhas_rejeitadas": 0
+    },
+    "validity": {
+      "linhas_avaliadas": 120,
+      "linhas_aprovadas": 120,
+      "linhas_rejeitadas": 0
+    },
+    "timeliness": {
+      "linhas_avaliadas": 120,
+      "linhas_aprovadas": 120,
+      "linhas_rejeitadas": 0,
+      "ordenacao_gravada": "data_leitura_utc_ascendente"
+    },
+    "consistency": {
+      "linhas_avaliadas": 120,
+      "linhas_aprovadas": 120,
+      "linhas_rejeitadas": 0
+    }
+  }
+}

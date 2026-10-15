@@ -7351,3 +7351,63 @@ Menu de opções:
  3. Cancelar operação
 ========================================
 09-10-2026 16:35 - INFO - Aplicação encerrada pelo usuário ao selecionar a opção '3'.
+15-10-2026 09:57 - INFO - 
+========================================
+Menu de opções:
+ 1. ETL JSON -> BD
+ 2. Gerar relatórios estatísticos dos dados
+ 3. Cancelar operação
+ 4. Coletar meteorologia Agritempo -> JSON
+========================================
+15-10-2026 09:58 - INFO - Aplicação encerrada pelo usuário ao selecionar a opção '3'.
+15-10-2026 09:59 - INFO - 
+========================================
+Menu de opções:
+ 1. ETL JSON -> BD
+ 2. Gerar relatórios estatísticos dos dados
+ 3. Cancelar operação
+ 4. Coletar meteorologia Agritempo -> JSON
+========================================
+15-10-2026 10:01 - INFO - ==================== Iniciando: Get_dados.py ====================
+15-10-2026 10:02 - INFO - ✅ Sucesso em Get_dados.py
+15-10-2026 10:02 - INFO - 
+========================================
+Menu de opções:
+ 1. ETL JSON -> BD
+ 2. Gerar relatórios estatísticos dos dados
+ 3. Cancelar operação
+ 4. Coletar meteorologia Agritempo -> JSON
+========================================
+15-10-2026 10:05 - WARNING - Opção inválida. Digite 1, 2 ou 3.
+15-10-2026 10:05 - INFO - 
+========================================
+Menu de opções:
+ 1. ETL JSON -> BD
+ 2. Gerar relatórios estatísticos dos dados
+ 3. Cancelar operação
+ 4. Coletar meteorologia Agritempo -> JSON
+========================================
+15-10-2026 10:05 - INFO - Aplicação encerrada pelo usuário ao selecionar a opção '3'.
+15-10-2026 10:12 - INFO - 
+========================================
+Menu de opções:
+ 1. ETL JSON -> BD
+ 2. Gerar relatórios estatísticos dos dados
+ 3. Cancelar operação
+ 4. Coletar meteorologia Agritempo -> JSON
+========================================
+15-10-2026 10:12 - INFO - ==================== Iniciando: Insert_localizacao.py ====================
+15-10-2026 10:12 - INFO - ✅ Sucesso em Insert_localizacao.py
+15-10-2026 10:12 - INFO - ==================== Iniciando: Insert_leituras_ambiental.py ====================
+15-10-2026 10:12 - INFO - ✅ Sucesso em Insert_leituras_ambiental.py
+15-10-2026 10:12 - INFO - ==================== Iniciando: Insert_leituras_meteorologica.py ====================
+15-10-2026 10:13 - INFO - ✅ Sucesso em Insert_leituras_meteorologica.py
+15-10-2026 10:13 - INFO - 
+========================================
+Menu de opções:
+ 1. ETL JSON -> BD
+ 2. Gerar relatórios estatísticos dos dados
+ 3. Cancelar operação
+ 4. Coletar meteorologia Agritempo -> JSON
+========================================
+15-10-2026 10:14 - INFO - Aplicação encerrada pelo usuário ao selecionar a opção '3'.

@@ -111,7 +111,7 @@ def main():
             executar_script("Get_dados.py")
 
         else:
-            logging.warning("Opção inválida. Digite 1, 2 ou 3.")
+            logging.warning("Opção inválida. Digite 1, 2, 3 ou 4.")
 
 
 if __name__ == "__main__":
