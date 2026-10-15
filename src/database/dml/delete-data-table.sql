@@ -1,32 +1,20 @@
 /*
---usado apenas para limpar todas as tabelas do banco de dados monitoramento
---script de execução manual
-USE monitoramento;
-1. Desativa temporariamente as restrições de chave estrangeira
-EXEC sp_msforeachtable "ALTER TABLE ? NOCHECK CONSTRAINT all";
+Modelo manual de exclusao SELETIVA. Nao executa ao carregar este arquivo.
+Exige backup, autorizacao e conexao explicitamente selecionada.
+Nunca desabilitar FKs, nunca reseed de IDs de registros relacionados.
+Arquivos legado_* sao imutaveis e nao participam desta limpeza.
 
-2. Limpa os dados de todas as tabelas
-DELETE FROM leitura_meteorologica;
-DELETE FROM qualidade_agua;
-DELETE FROM estacao;
-DELETE FROM cidade;
-DELETE FROM estado;
+SET XACT_ABORT ON;
+BEGIN TRANSACTION;
+DECLARE @id_leitura BIGINT = <id autorizado>;
+DELETE FROM dbo.leituras WHERE id = @id_leitura;
+-- Os itens sao removidos pela FK ON DELETE CASCADE.
+COMMIT;
 
-3. Reseta o contador do ID (IDENTITY) para 0 em cada tabela
- (O próximo registro inserido receberá o ID 1)
-DBCC CHECKIDENT ('leitura_meteorologica', RESEED, 0);
-DBCC CHECKIDENT ('qualidade_agua', RESEED, 0);
-DBCC CHECKIDENT ('estacao', RESEED, 0);
-DBCC CHECKIDENT ('cidade', RESEED, 0);
-DBCC CHECKIDENT ('estado', RESEED, 0);
-
-4. Reativa as restrições de chave estrangeira
-EXEC sp_msforeachtable "ALTER TABLE ? WITH CHECK CHECK CONSTRAINT all";
-
-5. Valida que realmente as tabelas foram limpas
-SELECT * FROM estado;
-SELECT * FROM leitura_meteorologica;
-SELECT * FROM qualidade_agua;
-SELECT * FROM estacao;
-SELECT * FROM cidade;
+Para remover cadastros autorizados, usar transacao e predicados especificos,
+na ordem: leituras/itens -> operadores -> estacao -> cidade -> estado.
+Remover parametros somente depois dos itens que os referenciam.
+NO_ACTION deve bloquear exclusoes de pais ainda referenciados.
+Se houver arquivo legado referenciando o cadastro, preservar o cadastro.
+Nao existe limpeza global automatica do banco monitoramento.
 */

@@ -2,7 +2,7 @@
 
 Este arquivo configura o sistema de logs, apresenta o menu interativo da
 aplicação e orquestra a execução de scripts de ETL (Extração, Transformação
- e Carga) e de relatórios estatísticos.
+e Carga.
 """
 
 import logging
@@ -18,7 +18,6 @@ configure_logging(BASE_DIR)
 
 MENU = {
     "1": "ETL JSON -> BD",
-    "2": "Gerar relatórios estatísticos dos dados",
     "3": "Cancelar operação",
     "4": "Coletar meteorologia Agritempo -> JSON",
     "5": "Cadastrar parâmetros, catálogo LGPD e operadores",
@@ -38,7 +37,7 @@ def exibir_menu() -> str:
     return input("Escolha uma opção: ").strip()
 
 
-def executar_script(caminho_relativo: str, interativo: bool = False) -> bool:
+def executar_script(caminho_relativo: str) -> bool:
     caminho_script = BASE_DIR / caminho_relativo
 
     if not caminho_script.exists():
@@ -46,14 +45,6 @@ def executar_script(caminho_relativo: str, interativo: bool = False) -> bool:
         return False
 
     logging.info("=" * 20 + f" Iniciando: {caminho_script.name} " + "=" * 20)
-
-    if interativo:
-        resultado = subprocess.run([sys.executable, str(caminho_script)])
-        if resultado.returncode != 0:
-            logging.error(f"❌ Falha em {caminho_script.name}")
-            return False
-        logging.info(f"✅ Sucesso em {caminho_script.name}")
-        return True
 
     resultado = subprocess.run(
         [sys.executable, str(caminho_script)], capture_output=True, text=True
@@ -93,20 +84,18 @@ def main():
             script_amb = get_env("INSERT_LEITURA_AMBIENTAL")
             script_met = get_env("INSERT_LEITURA_METEOROLOGICA")
 
-            for script in (script_loc, script_amb, script_met):
+            for script in (
+                script_loc,
+                "src/database/dml/Insert_Parametros.py",
+                script_amb,
+                script_met,
+            ):
                 if not executar_script(script):
                     logging.error(
                         "Carga ETL interrompida após falha em %s.",
                         Path(script).name,
                     )
                     break
-
-        elif opcao == "2":
-            script_rel = get_env("RELATORIO_ESTATISTICO")
-
-            executar_script(
-                script_rel, interativo=True
-            )
 
         elif opcao == "4":
             executar_script("Get_dados.py")
@@ -127,7 +116,7 @@ def main():
                     break
 
         else:
-            logging.warning("Opção inválida. Digite uma opção de 1 a 5.")
+            logging.warning("Opção inválida. Digite 1, 2, 3 ou 4.")
 
 
 if __name__ == "__main__":
