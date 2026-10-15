@@ -116,7 +116,7 @@ def main():
                     break
 
         else:
-            logging.warning("Opção inválida. Use uma das opções exibidas.")
+            logging.warning("Opção inválida. Digite 1, 2, 3 ou 4.")
 
 
 if __name__ == "__main__":
