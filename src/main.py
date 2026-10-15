@@ -18,9 +18,9 @@ configure_logging(BASE_DIR)
 
 MENU = {
     "1": "ETL JSON -> BD",
-    "3": "Cancelar operação",
-    "4": "Coletar meteorologia Agritempo -> JSON",
-    "5": "Cadastrar parâmetros, catálogo LGPD e operadores",
+    "2": "Coletar meteorologia Agritempo -> JSON",
+    "3": "Cadastrar parâmetros, catálogo LGPD e operadores",
+    "4": "Cancelar Operação"
 }
 
 
@@ -74,8 +74,8 @@ def main():
     while True:
         opcao = exibir_menu()
 
-        if opcao == "3":
-            logging.info("Aplicação encerrada pelo usuário ao selecionar a opção '3'.")
+        if opcao == "4":
+            logging.info("Aplicação encerrada pelo usuário ao selecionar a opção '4'.")
             break
 
         elif opcao == "1":
@@ -97,10 +97,10 @@ def main():
                     )
                     break
 
-        elif opcao == "4":
+        elif opcao == "2":
             executar_script("Get_dados.py")
 
-        elif opcao == "5":
+        elif opcao == "3":
             # projeto_final.pdf secoes 3.2/3.3 -> features.csv IDs 32-34, 38 e 39.
             scripts_cadastro = (
                 "src/database/dml/Insert_Parametros.py",
