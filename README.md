@@ -20,6 +20,7 @@ O pipeline contempla:
 - Proteção de dados pessoais de operadores: CPF em HMAC-SHA-256 e nome completo cifrado com Fernet, com catálogo LGPD. A descriptografia exige autorização explícita do chamador e registra auditoria sem conteúdo pessoal ou chaves.
 - API FastAPI para listar cidades e consultar leituras carregadas dos JSONs.
 - Logs separados para tratamento, inserção no banco e execução do menu.
+- Estatísticas descritivas por estação e parâmetro a partir da Silver, com relatório CSV (IDs 45 a 49).
 
 ## Tecnologias
 
@@ -77,6 +78,7 @@ meteorological-pycorders/
 │   │       ├── estado.json
 │   │       ├── municipio.json
 │   │       └── operadores.json
+│   ├── analytics_statistics.py      # Estatísticas da Silver e relatório CSV
 │   ├── main.py                      # Menu e orquestração das cargas
 │   └── __init__.py
 ├── .gitignore
@@ -93,6 +95,7 @@ meteorological-pycorders/
     ├── test_lgpd.py
     ├── test_parsers.py
     ├── test_silver.py
+   ├── test_analytics_statistics.py  # Estatísticas, leitura Silver e CSV
     ├── test_sqlserver_lgpd.py           # Opt-in
     ├── test_sqlserver_relational_integrity.py  # Opt-in
     ├── test_sqlserver_uniqueness.py     # Opt-in
@@ -170,7 +173,7 @@ Configure `src/config/.env` com as variáveis abaixo. Esse arquivo é local e ig
    ENCRYPTION_KEY=gere_uma_chave_fernet
    ```
 
-`src/config/.env.example` é um modelo sem segredos. Copie-o para `src/config/.env` e substitua os marcadores antes de executar cargas que protegem dados de operadores. A opção 5 do menu executa os cadastros de parâmetros, catálogo LGPD e operadores; para operadores, as chaves HMAC e Fernet devem ser reais. O loader recusa valores que começam com `replace-with`.
+`src/config/.env.example` é um modelo sem segredos. Copie-o para `src/config/.env` e substitua os marcadores antes de executar cargas que protegem dados de operadores. A opção 3 do menu executa os cadastros de parâmetros, catálogo LGPD e operadores; para operadores, as chaves HMAC e Fernet devem ser reais. O loader recusa valores que começam com `replace-with`.
 
 `Get_dados.py` usa a API Agritempo da Embrapa. O bearer deve ficar somente em `src/config/.env`; não o coloque no código nem o versione. O escopo atual dessa fonte é meteorológico, com os dados de temperatura do ar disponíveis no retorno climático. O contrato em `src/ingestion/api_ingestion.py` valida o envelope, os dados da estação e cada observação diária, exigindo data, ID e temperaturas mínima/máxima numéricas, finitas e coerentes entre si. Estações sem série climática são aceitas.
 
@@ -185,12 +188,12 @@ Prepare o banco em uma instância SQL Server dedicada. Execute `src/database/ddl
 Para abrir o menu e executar as cargas:
 
    ```bash
-   python -m src.main
+   python src/main.py
    ```
 
-No menu, a opção 1 executa localização, cadastro dos parâmetros e, em seguida, as cargas ambientais e meteorológicas. A opção 5 executa os cadastros de parâmetros, catálogo LGPD e operadores, nessa ordem, interrompendo ao primeiro erro. A carga depende de uma conexão SQL Server configurada em `src/config/.env` e de estações previamente cadastradas para os operadores.
+No menu, a opção 1 executa localização, cadastro dos parâmetros e, em seguida, as cargas ambientais e meteorológicas. A opção 3 executa os cadastros de parâmetros, catálogo LGPD e operadores, nessa ordem, interrompendo ao primeiro erro. A carga depende de uma conexão SQL Server configurada em `src/config/.env` e de estações previamente cadastradas para os operadores. A opção 4 encerra o menu; a opção 5 gera o relatório estatístico da Silver, sem consultar o banco.
 
-A opção `4` executa `Get_dados.py`: consulta estações e dados climáticos, aplica o limite `API_REQUESTS_PER_MINUTE` e acrescenta os resultados ao JSON cumulativo. Também é possível executar com `python Get_dados.py`. O módulo `src/ingestion/api_ingestion.py` permanece como conector genérico separado para endpoints que já atendam aos contratos ambiental ou meteorológico definidos nele; ele não é o coletor da Agritempo.
+A opção `2` executa `Get_dados.py`: consulta estações e dados climáticos, aplica o limite `API_REQUESTS_PER_MINUTE` e acrescenta os resultados ao JSON cumulativo. Também é possível executar com `python Get_dados.py`. O módulo `src/ingestion/api_ingestion.py` permanece como conector genérico separado para endpoints que já atendam aos contratos ambiental ou meteorológico definidos nele; ele não é o coletor da Agritempo.
 
 Para iniciar a API que lê os JSONs (não consulta o banco):
 
@@ -204,7 +207,7 @@ A documentação interativa da API ficará disponível em `http://127.0.0.1:8000
 
 - `logs/tratamento_dados.log`: ingestão REST e execução isolada dos parsers/tratamentos.
 - `logs/insercao_dados.log`: cargas e inserções no banco, incluindo eventos de validação ocorridos durante a carga.
-- `logs/execucao_relatorio.log`: menu e orquestração geral.
+- `logs/execucao_relatorio.log`: menu, orquestração geral e geração do relatório estatístico.
 
 Os logs são gerados localmente e ignorados pelo Git. O único parâmetro de conexão fixo no código é `ODBC Driver 17 for SQL Server`; servidor, porta, banco e autenticação vêm do `.env`.
 
@@ -242,6 +245,61 @@ As regras verificadas na Silver são:
 Cada execução cria um manifesto JSON em `_audit/<dataset>/` com contagens avaliadas, aprovadas e rejeitadas por dimensão, formato/codec e partições escritas. O manifesto contém apenas contagens e metadados técnicos; não grava valores das leituras, CPF, nome completo ou segredos.
 
 O Parquet da Silver e o SQL Server não compartilham uma transação distribuída. Nas cargas relacionais canônicas, o SQL é confirmado antes da escrita Silver; se Silver falhar, o erro é explícito e uma reexecução compatível repara a projeção Silver. Reexecuções são idempotentes pelas chaves naturais. O lock `sp_getapplock` protege apenas writers SQL Server que usem o mesmo recurso; não impede inserts feitos por aplicações externas que ignorem o lock.
+
+## Estatísticas descritivas - IDs 45 a 49
+
+`src/analytics_statistics.py` lê os Parquets de `SILVER_DIR` (padrão `data_lake/silver`) e gera `reports/estatisticas_descritivas.csv`. A execução não acessa o SQL Server, não modifica a Silver e não exige novas dependências. Execute na raiz do projeto, com `LOGS_DIR` configurado como nas demais rotinas:
+
+```bash
+python -m src.analytics_statistics
+```
+
+Também é possível usar a opção 5 do menu ou executar `python src/analytics_statistics.py`. O menu usa todo o histórico disponível e o destino padrão. Para selecionar um período e outro destino:
+
+```bash
+python -m src.analytics_statistics --data-inicio 2026-10-01 --data-fim 2026-10-14 --saida reports/estatisticas_outubro.csv
+```
+
+`--silver-dir` permite escolher outra Silver sem alterar o `.env`. Caminhos relativos de entrada e saída são resolvidos a partir da raiz do projeto. As duas datas são dias UTC inclusivos; internamente, o limite final é a meia-noite do dia seguinte, exclusiva. Sem datas, o período abrange os dias das observações disponíveis. Só as partições do recorte são lidas, e todas as observações são agregadas juntas, não por média de médias diárias.
+
+O agrupamento usa `dataset`, `id_estacao`, `codigo_parametro` e `unidade_medida`. O identificador é o ID numérico resolvido na Silver, sem enriquecimento com nome/município ou dados de operadores. Os códigos e unidades seguem o catálogo de parâmetros:
+
+| Dataset | Coluna Silver | Código | Unidade |
+|---|---|---|---|
+| qualidade_agua | temperatura_agua | TEMP_AGUA | Celsius |
+| qualidade_agua | ph | PH | pH |
+| qualidade_agua | oxigenio | OD | mg/L |
+| qualidade_agua | condutividade | COND_ELETRICA | uS/cm |
+| qualidade_agua | turbidez | TURBIDEZ | NTU |
+| leitura_meteorologica | temperatura_ar | TEMP_AR | Celsius |
+| leitura_meteorologica | umidade | UMIDADE | % |
+| leitura_meteorologica | chuva | CHUVA | mm |
+| leitura_meteorologica | vento | VENTO | km/h |
+
+`condicao`, IDs e demais campos de controle não são medidas. As funções `ler_medicoes_silver`, `calcular_estatisticas` e `gerar_relatorio_estatistico` também podem ser importadas; o cálculo recebe um DataFrame longo com as quatro colunas de agrupamento e `valor`.
+
+- ID 45: média aritmética das observações válidas.
+- ID 46: mediana, incluindo a média dos dois valores centrais quando a quantidade é par.
+- IDs 47 e 48: desvio padrão e variância **amostrais**, com divisor `n - 1` (`ddof=1`).
+- ID 49: `iqr = q3 - q1`, com quantis de 25% e 75% e interpolação linear.
+
+Não há arredondamento intermediário. Para `[1, 2, 3, 4]`, média e mediana são `2.5`, variância `5/3`, desvio `sqrt(5/3)`, Q1 `1.75`, Q3 `3.25` e IQR `1.5`. Com uma única observação, média/mediana/Q1/Q3 são o próprio valor e IQR é zero; desvio e variância ficam vazios no CSV, pois não há amostra suficiente. Séries constantes com pelo menos duas observações têm dispersão zero. A variância usa a unidade da variável ao quadrado; as demais métricas usam a unidade original.
+
+O CSV tem separador `;`, decimal `.`, codificação UTF-8 com BOM e uma linha por grupo. As colunas são as quatro chaves do grupo, `periodo_inicio_utc`, `periodo_fim_exclusivo_utc`, `n_validos`, `n_invalidos`, `media`, `mediana`, `desvio_padrao`, `variancia`, `q1`, `q3`, `iqr` e `ddof`. A ordem é determinística e o período identifica a janela comum de cálculo.
+
+Medidas nulas, booleanas, não numéricas (inclusive strings numéricas) ou infinitas são descartadas por parâmetro e contabilizadas em `WARNING`. Grupos sem valor válido são omitidos e registrados no log. A ausência de um dataset permite processar o outro com aviso. Se não houver dados ou grupos válidos, a execução termina com código não zero e não publica um relatório vazio.
+
+Schema incompleto, identificadores/timestamps inválidos, datas fora da partição UTC, chaves naturais duplicadas ou Parquet corrompido interrompem a execução com `ERROR`. Não há deduplicação silenciosa nem alteração dos dados de origem. A escrita usa arquivo temporário e substituição atômica: reexecutar substitui o snapshot sem duplicar linhas; falhas preservam o CSV anterior. O destino não pode ficar dentro da Silver. Não execute writers Silver durante a leitura: os arquivos não oferecem snapshot transacional entre partições.
+
+Os logs registram início, datasets/quantidades, descartes, período, destino e resultado. O relatório é um artefato analítico separado, não uma camada Gold. Esta entrega não detecta outliers, não calcula Z-Score nem persiste flags; os IDs 50 a 52 permanecem fora do escopo.
+
+Para validar esta entrega:
+
+```bash
+python -m pytest tests/test_analytics_statistics.py tests/test_config_and_main.py tests/test_silver.py -q
+```
+
+Verificação local em 2026-10-15: 68 testes focados passaram; a suíte sem integrações SQL teve 193 aprovados e 42 ignorados (`RUN_SQLSERVER_LGPD_TESTS=0`). A tentativa de integração SQL foi impedida por falha de acesso ao banco descartável, sem homologação SQL nesta entrega. A Silver local gerou 422 grupos, com 120 leituras de água e 2.817 meteorológicas (11.868 medidas válidas), cobrindo os dias UTC de 2026-09-15 a 2026-10-30. Módulo e menu foram executados; o replay preservou o CSV byte a byte e os hashes dos 54 Parquets de origem.
 
 ## Regras de qualidade e pendências
 
@@ -367,7 +425,7 @@ Este runbook documenta o procedimento; nenhuma migração foi executada em `moni
 | `cpf` | `cpf_hash` | Dado pessoal | Cadastro e identificação de operadores de campo | HMAC-SHA-256; chave restrita ao processo autorizado, digest não reversível |
 | `nome_completo` | `nome_completo_cifrado` | Dado pessoal | Cadastro e identificação de operadores de campo | Fernet; descriptografia autorizada por principal, tentativas auditadas sem PII |
 
-`inserir_catalogo_lgpd` insere ou atualiza os metadados em transação, preservando o ID e a data de criação em reexecuções. A opção 5 do menu executa essa carga. Os testes conferem todos os metadados e, no SQLExpress descartável com o DDL oficial, validam reexecução, correção de metadados desatualizados e rejeição de duplicidade/classificação inválida. Essa homologação não publica o catálogo nem altera dados no banco `monitoramento`.
+`inserir_catalogo_lgpd` insere ou atualiza os metadados em transação, preservando o ID e a data de criação em reexecuções. A opção 3 do menu executa essa carga. Os testes conferem todos os metadados e, no SQLExpress descartável com o DDL oficial, validam reexecução, correção de metadados desatualizados e rejeição de duplicidade/classificação inválida. Essa homologação não publica o catálogo nem altera dados no banco `monitoramento`.
 
 ### Operadores em 3FN — ID 38
 

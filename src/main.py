@@ -20,7 +20,8 @@ MENU = {
     "1": "ETL JSON -> BD",
     "2": "Coletar meteorologia Agritempo -> JSON",
     "3": "Cadastrar parâmetros, catálogo LGPD e operadores",
-    "4": "Cancelar Operação"
+    "4": "Cancelar Operação",
+    "5": "Gerar estatísticas descritivas da Silver -> CSV"
 }
 
 
@@ -59,10 +60,10 @@ def executar_script(caminho_relativo: str) -> bool:
             if resultado.stderr
             else "Erro desconhecido."
         )
-        logging.error(f"❌ Falha em {caminho_script.name}:\n{erro_msg}")
+        logging.error(f"Falha em {caminho_script.name}:\n{erro_msg}")
         return False
 
-    logging.info(f"✅ Sucesso em {caminho_script.name}")
+    logging.info(f"Sucesso em {caminho_script.name}")
     return True
 
 
@@ -115,8 +116,11 @@ def main():
                     )
                     break
 
+        elif opcao == "5":
+            executar_script("src/analytics_statistics.py")
+
         else:
-            logging.warning("Opção inválida. Digite 1, 2, 3 ou 4.")
+            logging.warning("Opção inválida. Digite 1, 2, 3, 4 ou 5.")
 
 
 if __name__ == "__main__":
