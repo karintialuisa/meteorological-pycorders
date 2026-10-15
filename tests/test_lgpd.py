@@ -155,27 +155,22 @@ def test_decrypt_name_requires_safe_principal_identifier(caplog):
     assert "forged-log-entry" not in caplog.text
 
 
-def test_catalog_seed_is_idempotent_and_classifies_both_fields(banco_teste):
+def test_catalog_seed_is_idempotent_and_classifies_both_fields(
+    banco_teste, catalogo_lgpd_esperado
+):
     assert inserir_catalogo_lgpd(banco_teste) == 2
     assert inserir_catalogo_lgpd(banco_teste) == 2
 
     with banco_teste.connect() as connection:
         fields = connection.execute(
             text(
-                "SELECT campo_logico, coluna_armazenada, classificacao, protecao "
+                "SELECT schema_name, tabela, campo_logico, coluna_armazenada, "
+                "classificacao, finalidade, protecao, politica_acesso "
                 "FROM catalogo_dados ORDER BY campo_logico"
             )
         ).all()
 
-    assert fields == [
-        ("cpf", "cpf_hash", "Dado pessoal", "HMAC-SHA-256"),
-        (
-            "nome_completo",
-            "nome_completo_cifrado",
-            "Dado pessoal",
-            "Fernet",
-        ),
-    ]
+    assert fields == catalogo_lgpd_esperado
 
 
 def test_operator_loader_persists_only_protected_values(banco_teste):
@@ -317,61 +312,6 @@ def test_json_loader_delegates_operator_upsert_and_logs_station_changes(
     assert any("Estacao do operador atualizada" in record.message for record in caplog.records)
     assert all("Operador Confidencial" not in record.message for record in caplog.records)
     assert all(cpf not in record.message for record in caplog.records)
-
-
-def test_json_loader_uses_configured_fictitious_fixture_without_pii(
-    banco_teste, tmp_path, monkeypatch, caplog
-):
-    _seed_operator_stations(banco_teste)
-    caplog.set_level(logging.INFO)
-    fixture_path = (
-        Path(__file__).resolve().parents[1]
-        / "src"
-        / "ingestion"
-        / "localizacao"
-        / "operadores_ficticios.json"
-    )
-    payload = json.loads(fixture_path.read_text(encoding="utf-8"))
-    operator = payload["operadores"][0]
-    key = Fernet.generate_key().decode("ascii")
-    hmac_secret = "test-hmac-secret"
-    monkeypatch.setenv(
-        "OPERADORES_JSON_PATH",
-        "src/ingestion/localizacao/operadores_ficticios.json",
-    )
-    monkeypatch.chdir(tmp_path)
-
-    assert localizacao.carregar_operadores(
-        engine=banco_teste,
-        hmac_secret=hmac_secret,
-        encryption_key=key,
-    ) == (1, 0)
-    assert localizacao.carregar_operadores(
-        engine=banco_teste,
-        hmac_secret=hmac_secret,
-        encryption_key=key,
-    ) == (0, 0)
-
-    with banco_teste.connect() as connection:
-        stored = connection.execute(
-            text(
-                "SELECT cpf_hash, nome_completo_cifrado, status, id_estacao "
-                "FROM operadores"
-            )
-        ).one()
-        count = connection.execute(
-            text("SELECT COUNT(*) FROM operadores")
-        ).scalar_one()
-
-    assert stored.cpf_hash == hash_cpf(operator["cpf"], hmac_secret)
-    assert operator["cpf"] not in stored.cpf_hash
-    assert operator["nome"] not in stored.nome_completo_cifrado
-    assert _authorized_test_decryption(stored.nome_completo_cifrado, key) == operator[
-        "nome"
-    ]
-    assert (stored.status, stored.id_estacao, count) == (1, 20, 1)
-    assert operator["cpf"] not in caplog.text
-    assert operator["nome"] not in caplog.text
 
 
 def test_json_loader_rejects_invalid_and_incomplete_records_with_context(

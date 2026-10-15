@@ -15,6 +15,23 @@ def silver_dir_teste(monkeypatch, tmp_path):
 
 
 @pytest.fixture
+def catalogo_lgpd_esperado():
+    return [
+        (
+            "dbo", "operadores", "cpf", "cpf_hash", "Dado pessoal",
+            "Cadastro e identificacao de operadores de campo", "HMAC-SHA-256",
+            "Chave HMAC restrita ao processo autorizado; digest nao reversivel",
+        ),
+        (
+            "dbo", "operadores", "nome_completo", "nome_completo_cifrado",
+            "Dado pessoal", "Cadastro e identificacao de operadores de campo",
+            "Fernet",
+            "Descriptografia autorizada por principal; tentativas auditadas sem PII",
+        ),
+    ]
+
+
+@pytest.fixture
 def banco_teste():
     engine = create_engine(
         "sqlite+pysqlite:///:memory:",
@@ -102,6 +119,27 @@ def banco_teste():
             )
         )
 
+    with engine.begin() as connection:
+        connection.execute(text(
+            "CREATE TABLE parametros (id INTEGER PRIMARY KEY, codigo TEXT NOT NULL UNIQUE, "
+            "nome TEXT NOT NULL, unidade_medida TEXT NOT NULL)"
+        ))
+        connection.execute(text(
+            "CREATE TABLE leituras (id INTEGER PRIMARY KEY, origem TEXT NOT NULL, "
+            "chave_origem TEXT NOT NULL, id_estacao INTEGER NOT NULL, id_operador INTEGER, "
+            "data_leitura TEXT NOT NULL, criado_em TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+            "UNIQUE(origem, chave_origem), FOREIGN KEY(id_estacao) REFERENCES estacao(id), "
+            "FOREIGN KEY(id_operador) REFERENCES operadores(id))"
+        ))
+        connection.execute(text(
+            "CREATE TABLE leitura_itens (id_leitura INTEGER NOT NULL, id_parametro INTEGER NOT NULL, "
+            "valor_numerico NUMERIC, valor_texto TEXT, "
+            "PRIMARY KEY(id_leitura,id_parametro), "
+            "CHECK ((valor_numerico IS NOT NULL AND valor_texto IS NULL) OR "
+            "(valor_numerico IS NULL AND valor_texto IS NOT NULL)), "
+            "FOREIGN KEY(id_leitura) REFERENCES leituras(id) ON DELETE CASCADE, "
+            "FOREIGN KEY(id_parametro) REFERENCES parametros(id))"
+        ))
     yield engine
     engine.dispose()
 

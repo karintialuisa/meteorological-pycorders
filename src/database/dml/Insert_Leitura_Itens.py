@@ -3,10 +3,12 @@
 import logging
 import sys
 from collections.abc import Iterable, Mapping
+from contextlib import nullcontext
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
 from sqlalchemy import text
+from sqlalchemy.engine import Connection
 
 sys.path.append(str(Path(__file__).resolve().parents[2]))
 from config.settings import configure_logging, create_db_engine
@@ -20,6 +22,12 @@ from database.dml.etl_lock import adquirir_lock_etl
 # Referencia: projeto_final.pdf, secao 3.3 (associacao N:M);
 # features.csv IDs 39-41. Codigos de parametro e cabecalhos sao resolvidos no banco.
 _COMPRIMENTOS_MAXIMOS = {"chave_origem": 150, "codigo_parametro": 50}
+LIMITES_NUMERICOS = {
+    "TEMP_AGUA": (0, 50), "TEMP_AR": (-50, 60),
+    "PH": (0, 14), "UMIDADE": (0, 100),
+    "OD": (0, None), "COND_ELETRICA": (0, None),
+    "TURBIDEZ": (0, None), "CHUVA": (0, None), "VENTO": (0, None),
+}
 
 
 class ItemLeituraInvalidoError(ValueError):
@@ -74,12 +82,20 @@ def _normalizar_item(item: Mapping[str, object], indice: int) -> dict[str, objec
         if casas_decimais > 6 or numero.adjusted() > 11:
             raise ValueError(f"valor excede NUMERIC(18,6) no indice {indice}")
         valor_numerico = numero
+        if codigo == "CONDICAO_METEO":
+            raise ValueError("condicao meteorologica exige valor textual")
+        if codigo in LIMITES_NUMERICOS:
+            minimo, maximo = LIMITES_NUMERICOS[codigo]
+            if numero < minimo or (maximo is not None and numero > maximo):
+                raise ValueError(f"valor fora do dominio do parametro {codigo}")
     else:
         if not isinstance(valor_texto, str) or not valor_texto.strip():
             raise ValueError(f"valor textual invalido no indice {indice}")
         valor_texto = valor_texto.strip()
         if len(valor_texto) > 200:
             raise ValueError(f"valor textual excede 200 caracteres no indice {indice}")
+        if codigo in LIMITES_NUMERICOS:
+            raise ValueError(f"parametro {codigo} exige valor numerico")
 
     return {
         "origem": origem,
@@ -91,15 +107,20 @@ def _normalizar_item(item: Mapping[str, object], indice: int) -> dict[str, objec
 
 
 def inserir_leitura_itens(
-    itens: Iterable[Mapping[str, object]], engine=None
+    itens: Iterable[Mapping[str, object]], engine=None, *,
+    connection: Connection | None = None, strict: bool = False,
 ) -> tuple[int, int, int]:
     """Persiste itens; retorna (inseridos, retransmissoes, rejeitados).
 
     Cada item informa origem, chave_origem, codigo_parametro e exatamente um
     entre valor_numerico e valor_texto. Estacao/instante podem substituir a
     chave explicita para gerar a mesma chave natural usada por inserir_leituras.
+    connection exige transacao ativa; strict propaga rejeicoes para rollback do evento.
     """
-    target_engine = engine or create_db_engine()
+    if connection is not None and not connection.in_transaction():
+        raise ValueError("connection exige transacao ativa")
+    supplied_connection = connection
+    target_engine = connection.engine if connection is not None else (engine or create_db_engine())
     mssql = target_engine.dialect.name == "mssql"
     item_table = "dbo.Leitura_Itens" if mssql else "leitura_itens"
     leitura_table = "dbo.Leituras" if mssql else "leituras"
@@ -117,12 +138,15 @@ def inserir_leitura_itens(
                 raise ValueError(f"codigo_parametro excede 50 caracteres no indice {indice}")
         except (TypeError, ValueError) as error:
             logging.warning("Item de leitura rejeitado: indice=%s motivo=%s", indice, str(error))
+            if strict:
+                raise
             rejeitados += 1
             continue
 
         try:
             resultado_registro = "retransmissao"
-            with target_engine.begin() as connection:
+            with (nullcontext(supplied_connection) if supplied_connection is not None else target_engine.begin()) as connection:
+                adquirir_lock_etl(connection, "etl:leituras")
                 adquirir_lock_etl(connection, "etl:leitura_itens")
                 id_leitura = connection.execute(
                     text(
@@ -199,6 +223,8 @@ def inserir_leitura_itens(
                 item["codigo_parametro"],
                 str(error),
             )
+            if strict:
+                raise
             rejeitados += 1
         except Exception as error:
             logging.error(
@@ -208,7 +234,7 @@ def inserir_leitura_itens(
                 item["codigo_parametro"],
                 type(error).__name__,
             )
-            rejeitados += 1
+            raise
 
     logging.info(
         "Carga de itens concluida: inseridos=%s retransmissoes=%s rejeitados=%s",

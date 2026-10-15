@@ -2,7 +2,6 @@
 
 import json
 import logging
-import os
 import sys
 from collections.abc import Iterable, Mapping
 from pathlib import Path
@@ -11,7 +10,7 @@ import pandas as pd
 from sqlalchemy import text
 
 sys.path.append(str(Path(__file__).resolve().parents[2]))
-from config.settings import PROJECT_ROOT, configure_logging, create_db_engine, get_env
+from config.settings import configure_logging, create_db_engine, get_env
 from security.pii import decrypt_name, encrypt_name, hash_cpf
 
 # Referencia: projeto_final.pdf, secao 1 (Operadores - origem dos dados), features.csv ID 10.
@@ -228,15 +227,7 @@ def carregar_operadores(
     encryption_key: str | None = None,
 ) -> tuple[int, int]:
     """Le operadores do JSON, normaliza o contrato e persiste via inserir_operadores."""
-    configured_path = os.getenv("OPERADORES_JSON_PATH")
-    if path_arquivo is not None:
-        source_path = Path(path_arquivo)
-    elif configured_path:
-        source_path = Path(configured_path).expanduser()
-        if not source_path.is_absolute():
-            source_path = PROJECT_ROOT / source_path
-    else:
-        source_path = OPERADORES_JSON
+    source_path = Path(path_arquivo) if path_arquivo else OPERADORES_JSON
     source_date = "desconhecida"
     try:
         with open(source_path, "r", encoding="utf-8") as arquivo:
