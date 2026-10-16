@@ -13,7 +13,7 @@ from src.database.dml.Insert_Parametros import inserir_parametros
 from sqlserver_support import RUN_TESTS, ROOT, disposable_engine
 
 
-pytestmark = pytest.mark.skipif(not RUN_TESTS, reason="Habilite SQL Server em src/config/.env.test.")
+pytestmark = pytest.mark.skipif(not RUN_TESTS, reason="Habilite SQL Server em src/config/.env.")
 
 
 @pytest.fixture
@@ -211,3 +211,75 @@ def test_normalized_essential_queries_keep_event_granularity(engine):
     assert results[2][0]["turbidez"] is None
     assert results[3][0]["quantidade_leituras"] == 1
     assert results[3][0]["chuva_acumulada"] == Decimal("0.125000")
+
+
+def test_analytical_queries_calculate_statistics_and_flag_outliers(engine):
+    def insert_measurement(code, value, index, *, text_value=None):
+        with engine.begin() as connection:
+            reading_id = connection.execute(text(
+                "INSERT INTO leituras(origem,chave_origem,id_estacao,data_leitura) "
+                "OUTPUT inserted.id "
+                "SELECT 'qualidade_agua',:key,id,'2026-10-01T12:00:00Z' "
+                "FROM estacao WHERE codigo_origem='HISTORY'"
+            ), {"key": f"ANALYTIC-{code}-{index}"}).scalar_one()
+            parameter_id = connection.execute(text(
+                "SELECT id FROM parametros WHERE codigo=:code"
+            ), {"code": code}).scalar_one()
+            connection.execute(text(
+                "INSERT INTO leitura_itens(id_leitura,id_parametro,valor_numerico,valor_texto) "
+                "VALUES(:reading_id,:parameter_id,:value,:text_value)"
+            ), {
+                "reading_id": reading_id, "parameter_id": parameter_id,
+                "value": value, "text_value": text_value,
+            })
+
+    for index, value in enumerate([1, 2, 3, 4, 20]):
+        insert_measurement("PH", value, index)
+    insert_measurement("PH", None, "text", text_value="sem medida numerica")
+    for index, value in enumerate([8, 8, 8]):
+        insert_measurement("TEMP_AGUA", value, index)
+    insert_measurement("VENTO", 4, 0)
+    for index, value in enumerate([0] * 10 + [100]):
+        insert_measurement("OD", value, index)
+
+    query = (ROOT / "sql" / "queries_analiticas.sql").read_text(encoding="utf-8")
+    with engine.connect() as connection:
+        cursor = connection.connection.driver_connection.cursor()
+        try:
+            cursor.execute(query)
+            results = []
+            while True:
+                if cursor.description:
+                    columns = [column[0] for column in cursor.description]
+                    results.append([dict(zip(columns, row)) for row in cursor.fetchall()])
+                if not cursor.nextset():
+                    break
+        finally:
+            cursor.close()
+
+    assert len(results) == 2
+    statistics = {row["codigo_parametro"]: row for row in results[0]}
+    ph = statistics["PH"]
+    assert ph["n"] == 5
+    assert ph["media"] == pytest.approx(6)
+    assert ph["mediana"] == pytest.approx(3)
+    assert ph["variancia_amostral"] == pytest.approx(62.5)
+    assert ph["desvio_padrao_amostral"] == pytest.approx(62.5 ** 0.5)
+    assert ph["q1"] == pytest.approx(2)
+    assert ph["q3"] == pytest.approx(4)
+    assert ph["iqr"] == pytest.approx(2)
+    assert ph["limite_inferior_iqr"] == pytest.approx(-1)
+    assert ph["limite_superior_iqr"] == pytest.approx(7)
+
+    anomalies = {(row["codigo_parametro"], row["valor"]): row for row in results[1]}
+    assert len(results[1]) == 20
+    assert anomalies[("PH", Decimal("20.000000"))]["anomalia_iqr"] is True
+    assert anomalies[("PH", Decimal("20.000000"))]["anomalia_zscore"] is False
+    assert anomalies[("OD", Decimal("100.000000"))]["anomalia_iqr"] is True
+    assert anomalies[("OD", Decimal("100.000000"))]["anomalia_zscore"] is True
+    assert statistics["TEMP_AGUA"]["desvio_padrao_amostral"] == pytest.approx(0)
+    assert all(anomalies[("TEMP_AGUA", Decimal("8.000000"))][key] is False
+               for key in ("anomalia_iqr", "anomalia_zscore"))
+    assert anomalies[("TEMP_AGUA", Decimal("8.000000"))]["z_score"] is None
+    assert statistics["VENTO"]["n"] == 1
+    assert anomalies[("VENTO", Decimal("4.000000"))]["z_score"] is None

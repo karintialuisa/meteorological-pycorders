@@ -1,6 +1,6 @@
 """IDs39-44: constraints e replay no DDL real em banco descartavel automatico.
 
-src/config/.env.test configura todas as suites SQLServer. Constraints usam
+src/config/.env configura todas as suites SQLServer. Constraints usam
 rollback; replay usa dados sinteticos commitados e limpeza explicita.
 """
 
@@ -20,7 +20,7 @@ from src.database.dml.Insert_Parametros import inserir_parametros
 from sqlserver_support import RUN_TESTS, disposable_engine
 
 pytestmark = pytest.mark.skipif(
-    not RUN_TESTS, reason="Habilite SQL Server em src/config/.env.test.",
+    not RUN_TESTS, reason="Habilite SQL Server em src/config/.env.",
 )
 
 # ID 42: PK de cada entidade do modelo; leitura_itens usa PK composta.
