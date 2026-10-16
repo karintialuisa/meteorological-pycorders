@@ -81,6 +81,8 @@ meteorological-pycorders/
 │   ├── analytics_statistics.py      # Estatísticas da Silver e relatório CSV
 │   ├── main.py                      # Menu e orquestração das cargas
 │   └── __init__.py
+├── sql/
+│   └── queries_analiticas.sql      # Estatísticas amostrais e anomalias no SQL Server
 ├── .gitignore
 ├── features.csv                     # Inventário de requisitos, status e evidências
 ├── projeto_final.pdf                # Enunciado do projeto
@@ -301,6 +303,16 @@ python -m pytest tests/test_analytics_statistics.py tests/test_config_and_main.p
 
 Verificação local em 2026-10-15: 68 testes focados passaram; a suíte sem integrações SQL teve 193 aprovados e 42 ignorados (`RUN_SQLSERVER_LGPD_TESTS=0`). A tentativa de integração SQL foi impedida por falha de acesso ao banco descartável, sem homologação SQL nesta entrega. A Silver local gerou 422 grupos, com 120 leituras de água e 2.817 meteorológicas (11.868 medidas válidas), cobrindo os dias UTC de 2026-09-15 a 2026-10-30. Módulo e menu foram executados; o replay preservou o CSV byte a byte e os hashes dos 54 Parquets de origem.
 
+## Consultas analíticas SQL - ID 97
+
+`sql/queries_analiticas.sql` contém consultas para SQL Server sobre o modelo relacional 3FN (`leituras`, `leitura_itens`, `parametros` e `estacao`). Execute o arquivo no banco alvo já selecionado; ajuste `@data_inicio` e `@data_fim` para a janela desejada. Os valores padrão são UTC, com início inclusivo e fim exclusivo, e as datas das leituras são normalizadas para UTC antes do filtro.
+
+O primeiro resultado tem granularidade de estação e parâmetro e apresenta média, mediana e quartis contínuos (`PERCENTILE_CONT`), desvio padrão e variância amostrais (`STDEV` e `VAR`), IQR e limites de `1,5 × IQR`. O segundo resultado tem uma linha por leitura/parâmetro numérico, com Z-score e indicadores IQR e Z; limites IQR são estritos (`valor < limite inferior` ou `valor > limite superior`) e Z sinaliza quando `|Z| >= 3`. Z-score fica nulo e não sinaliza com menos de duas observações ou desvio amostral zero. Itens sem `valor_numerico`, incluindo medidas textuais, não participam dos cálculos nem são classificados.
+
+O teste `test_analytical_queries_calculate_statistics_and_flag_outliers` usa dados sintéticos e roda junto à migração no SQL Server descartável. Valide com `pytest -q tests/test_sqlserver_migration.py`; a execução depende da configuração opt-in documentada em Testes. Este artefato não implementa flags persistidas (ID 52), Gold ou Power BI.
+
+Verificação SQL Server em 2026-10-16: `python -m pytest -q tests/test_sqlserver_migration.py` concluiu com 10 testes aprovados, incluindo as métricas analíticas e a preservação da granularidade das quatro consultas essenciais. O banco descartável `monitoramento_lgpd_test` ficou online e sem tabelas em `dbo` ao final do lifecycle.
+
 ## Validação por Z-Score - ID 51
 
 O mesmo módulo oferece `calcular_z_scores()` e `gerar_relatorio_zscore()`. O cálculo usa as observações válidas do período selecionado, agrupadas por `dataset`, `id_estacao`, `codigo_parametro` e `unidade_medida`. Reutiliza a média e o desvio amostral (`ddof=1`) calculados em memória, não o CSV descritivo que pode estar desatualizado:
@@ -360,7 +372,7 @@ Os testes SQLite exercitam parsers, loaders, constraints, configuração e write
 
 Com o Python global, a coleta de `tests/test_lgpd.py` falha se `cryptography` não estiver instalado nele.
 
-As integrações LGPD, integridade, unicidade e migração com SQL Server exigem um banco descartável vazio, separado de `monitoramento`. Todas compartilham a configuração carregada automaticamente de `src/config/.env.test`, independentemente do diretório de execução. Esse arquivo local não é versionado; para configurar outra máquina, copie `src/config/.env.test.example` para `src/config/.env.test` e ajuste a conexão. O modelo usa a instância local `localhost\SQLEXPRESS`, autenticação Windows e o banco `monitoramento_lgpd_test`, que deve existir previamente.
+As integrações LGPD, integridade, unicidade e migração com SQL Server exigem um banco descartável vazio, separado de `monitoramento`. Todas compartilham a configuração carregada automaticamente de `src/config/.env`, independentemente do diretório de execução. Configure nesse arquivo local, não versionado, `RUN_SQLSERVER_LGPD_TESTS=1` e `SQLSERVER_LGPD_TEST_URL` para uma instância SQL Server e um banco descartável que já exista. O banco deve ter nome terminado em `_test`, `_tests`, `_disposable` ou `_scratch`.
 
 ```powershell
 & '.\.venv\Scripts\python.exe' -m pytest '.\tests\test_sqlserver_lgpd.py' -v
@@ -372,7 +384,7 @@ Nunca aponte essa configuração para `monitoramento`. O lifecycle exige um nome
 
 ### Integridade relacional no SQL Server
 
-As suítes SQL de integridade e unicidade validam PKs, FKs, nulabilidade, CHECKs, cascatas, cargas e replay contra o DDL real. Use somente uma instância e uma base descartáveis, configuradas em `src/config/.env.test`; as suítes carregam esse arquivo automaticamente, e variáveis do processo podem sobrescrevê-lo. Não aponte testes ou migrações para dados reais.
+As suítes SQL de integridade e unicidade validam PKs, FKs, nulabilidade, CHECKs, cascatas, cargas e replay contra o DDL real. Use somente uma instância e uma base descartáveis, configuradas em `src/config/.env`; as suítes carregam esse arquivo automaticamente, e variáveis do processo podem sobrescrevê-lo. Não aponte testes ou migrações para dados reais.
 
 ```powershell
 & '.\.venv\Scripts\python.exe' -m pytest `
@@ -425,7 +437,7 @@ Não inicie novas cargas enquanto houver medições ativas nas tabelas legadas. 
 
 1. Faça e valide um backup recuperável, abra janela de manutenção e congele os writers legados. Não permita cargas concorrentes durante a migração.
 2. Revise o catálogo da base, aplique o esquema canônico e cadastre os parâmetros. O comando de migração não cria nem atualiza schema ou parâmetros por conta própria.
-3. Em base descartável, exercite os testes SQL com `src/config/.env.test`; a configuração local de teste é carregada automaticamente pelas suítes SQL, com variáveis do processo podendo sobrescrevê-la. Preserve constraints/FKs durante os testes; não as desabilite nem as remova para limpar os dados.
+3. Em base descartável, exercite os testes SQL com `src/config/.env`; a configuração local é carregada automaticamente pelas suítes SQL, com variáveis do processo podendo sobrescrevê-la. Preserve constraints/FKs durante os testes; não as desabilite nem as remova para limpar os dados.
 4. Após revisar o destino e autorizar operacionalmente a execução, rode a migração explicitamente:
 
    ```powershell

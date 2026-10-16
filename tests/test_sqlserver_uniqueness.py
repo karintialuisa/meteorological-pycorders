@@ -14,7 +14,7 @@ from src.database.dml.Insert_Parametros import inserir_parametros
 from sqlserver_support import RUN_TESTS, disposable_engine
 
 
-pytestmark = pytest.mark.skipif(not RUN_TESTS, reason="Habilite SQL Server em src/config/.env.test.")
+pytestmark = pytest.mark.skipif(not RUN_TESTS, reason="Habilite SQL Server em src/config/.env.")
 
 
 @pytest.fixture

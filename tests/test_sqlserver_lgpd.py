@@ -238,7 +238,7 @@ def _assert_operator_json_loading(engine, tmp_path, caplog):
 @pytest.mark.skipif(
     not RUN_TESTS,
     reason=(
-        "Habilite RUN_SQLSERVER_LGPD_TESTS=1 em src/config/.env.test "
+        "Habilite RUN_SQLSERVER_LGPD_TESTS=1 em src/config/.env "
         "ou no ambiente para executar a integracao SQL Server."
     ),
 )
