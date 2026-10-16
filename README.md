@@ -191,7 +191,7 @@ Para abrir o menu e executar as cargas:
    python src/main.py
    ```
 
-No menu, a opção 1 executa localização, cadastro dos parâmetros e, em seguida, as cargas ambientais e meteorológicas. A opção 3 executa os cadastros de parâmetros, catálogo LGPD e operadores, nessa ordem, interrompendo ao primeiro erro. A carga depende de uma conexão SQL Server configurada em `src/config/.env` e de estações previamente cadastradas para os operadores. A opção 4 encerra o menu; a opção 5 gera o relatório estatístico da Silver, sem consultar o banco.
+No menu, a opção 1 executa localização, cadastro dos parâmetros e, em seguida, as cargas ambientais e meteorológicas. A opção 3 executa os cadastros de parâmetros, catálogo LGPD e operadores, nessa ordem, interrompendo ao primeiro erro. A carga depende de uma conexão SQL Server configurada em `src/config/.env` e de estações previamente cadastradas para os operadores. A opção 4 encerra o menu; a opção 5 gera o relatório estatístico da Silver e a opção 6 gera a validação por Z-Score, ambas sem consultar o banco.
 
 A opção `2` executa `Get_dados.py`: consulta estações e dados climáticos, aplica o limite `API_REQUESTS_PER_MINUTE` e acrescenta os resultados ao JSON cumulativo. Também é possível executar com `python Get_dados.py`. O módulo `src/ingestion/api_ingestion.py` permanece como conector genérico separado para endpoints que já atendam aos contratos ambiental ou meteorológico definidos nele; ele não é o coletor da Agritempo.
 
@@ -291,7 +291,7 @@ Medidas nulas, booleanas, não numéricas (inclusive strings numéricas) ou infi
 
 Schema incompleto, identificadores/timestamps inválidos, datas fora da partição UTC, chaves naturais duplicadas ou Parquet corrompido interrompem a execução com `ERROR`. Não há deduplicação silenciosa nem alteração dos dados de origem. A escrita usa arquivo temporário e substituição atômica: reexecutar substitui o snapshot sem duplicar linhas; falhas preservam o CSV anterior. O destino não pode ficar dentro da Silver. Não execute writers Silver durante a leitura: os arquivos não oferecem snapshot transacional entre partições.
 
-Os logs registram início, datasets/quantidades, descartes, período, destino e resultado. O relatório é um artefato analítico separado, não uma camada Gold. Esta entrega não detecta outliers, não calcula Z-Score nem persiste flags; os IDs 50 a 52 permanecem fora do escopo.
+Os logs registram início, datasets/quantidades, descartes, período, destino e resultado. O relatório é um artefato analítico separado, não uma camada Gold. A rotina descritiva não classifica anomalias; a validação independente por Z-Score do ID 51 está documentada a seguir. O detector IQR (ID 50) e a persistência de flags operacionais (ID 52) permanecem fora do escopo.
 
 Para validar esta entrega:
 
@@ -300,6 +300,51 @@ python -m pytest tests/test_analytics_statistics.py tests/test_config_and_main.p
 ```
 
 Verificação local em 2026-10-15: 68 testes focados passaram; a suíte sem integrações SQL teve 193 aprovados e 42 ignorados (`RUN_SQLSERVER_LGPD_TESTS=0`). A tentativa de integração SQL foi impedida por falha de acesso ao banco descartável, sem homologação SQL nesta entrega. A Silver local gerou 422 grupos, com 120 leituras de água e 2.817 meteorológicas (11.868 medidas válidas), cobrindo os dias UTC de 2026-09-15 a 2026-10-30. Módulo e menu foram executados; o replay preservou o CSV byte a byte e os hashes dos 54 Parquets de origem.
+
+## Validação por Z-Score - ID 51
+
+O mesmo módulo oferece `calcular_z_scores()` e `gerar_relatorio_zscore()`. O cálculo usa as observações válidas do período selecionado, agrupadas por `dataset`, `id_estacao`, `codigo_parametro` e `unidade_medida`. Reutiliza a média e o desvio amostral (`ddof=1`) calculados em memória, não o CSV descritivo que pode estar desatualizado:
+
+$$
+z = \frac{x - \bar{x}}{s}, \qquad s = \sqrt{\frac{\sum_{i=1}^{n}(x_i-\bar{x})^2}{n-1}}
+$$
+
+O Z-Score é adimensional. A condição de sinalização é estrita: `abs(z_score) > limiar`; igualdade não sinaliza. O limiar padrão é `3.0` e deve ser numérico, finito e positivo. Não se excluem extremos finitos antes de calcular a referência, nem se ajusta o limiar automaticamente.
+
+Execute na raiz do projeto, com as dependências e `LOGS_DIR` já configurados:
+
+```bash
+python -m src.analytics_statistics --analise zscore
+```
+
+A opção 6 do menu executa esse modo com todo o histórico, limiar 3 e saída `reports/z_scores.csv`. Também funciona como script direto: `python src/analytics_statistics.py --analise zscore`. Para personalizar a janela, o limiar ou o destino:
+
+```bash
+python -m src.analytics_statistics --analise zscore --limiar 2.5 --data-inicio 2026-10-01 --data-fim 2026-10-14 --saida reports/z_scores_outubro.csv
+```
+
+`--silver-dir` e as datas UTC inclusivas seguem as mesmas regras da rotina descritiva. Sem `--analise`, o modo continua sendo `estatisticas`, com saída `reports/estatisticas_descritivas.csv`; a opção 5 permanece inalterada. Cada modo tem seu próprio destino padrão. Um `--saida` explícito substitui o arquivo informado, portanto não use o mesmo destino para relatórios que deseja manter separados.
+
+O CSV Z-Score tem uma linha por medição e parâmetro, inclusive quando o escore é indefinido. Preserva `id_leitura_origem` da água (dois eventos no mesmo instante não são confundidos). Na meteorologia, essa coluna fica vazia e a leitura é identificada por `id_estacao` e `data_leitura` UTC, além do dataset. As nove colunas numéricas do catálogo continuam sendo as únicas medidas.
+
+As colunas de saída são `dataset`, `id_estacao`, `codigo_parametro`, `unidade_medida`, `id_leitura_origem`, `data_leitura`, `valor`, `n_validos`, `n_invalidos`, `media`, `desvio_padrao`, `ddof`, `limiar_zscore`, `z_score`, `anomalia_zscore`, `status_zscore`, `periodo_inicio_utc` e `periodo_fim_exclusivo_utc`. As contagens e referências são do grupo, repetidas em cada medição; não some essas contagens entre as linhas. `valor`, média e desvio usam a unidade original.
+
+| `status_zscore` | Situação | Escore e indicador |
+|---|---|---|
+| `avaliado` | Medida válida, pelo menos duas observações válidas e desvio positivo | Escore numérico; indicador `True` ou `False` |
+| `medida_invalida` | Nulo, booleano, string ou número não finito | Vazios; valor numérico também vazio |
+| `amostra_insuficiente` | Medida válida, mas menos de duas observações válidas no grupo | Vazios |
+| `desvio_zero` | Medida válida em uma série constante com pelo menos duas observações | Vazios |
+
+Um Z-Score igual a zero é válido quando a medida coincide com a média e há dispersão positiva; não equivale aos casos indefinidos. Textos de medidas rejeitadas não são exportados. Grupos inteiramente inválidos mantêm suas linhas e contagens na função de cálculo, mas uma execução sem nenhuma medida válida falha sem substituir o relatório anterior. Grupos válidos com escores todos indefinidos produzem CSV explicativo e `WARNING`, sem afirmar ausência de anomalias.
+
+Formato, compressão de origem e validações da Silver permanecem inalterados. O CSV usa `;`, decimal `.`, UTF-8 com BOM, campos ausentes vazios e ordenação determinística. A escrita atômica é compartilhada com o relatório descritivo e limpa arquivos temporários em caso de falha. O destino não pode estar dentro da Silver. Schema/chaves inválidos, arquivo corrompido ou resultado calculável não finito geram erro e retorno não zero, preservando o CSV anterior.
+
+Os logs de execução informam período, limiar, grupos, medidas avaliadas, quantidade sinalizada e destino. Casos não calculáveis são resumidos em `WARNING`; falhas geram `ERROR`. Não há conexão SQL, alteração dos Parquets nem gravação de flags no banco/Silver. Evite executar writers Silver durante a leitura, pois não há snapshot transacional entre partições.
+
+O resultado é um indicador estatístico para validação, não prova de erro físico, risco sanitário ou concordância com IQR. A própria leitura participa da referência do seu grupo; não há janela móvel, treinamento separado ou avaliação preditiva. Com `ddof=1`, referência no próprio grupo e limiar 3, grupos com até dez observações não conseguem ultrapassar o limiar. Sazonalidade, assimetria e múltiplos extremos também podem mascarar anomalias. Esta entrega não conclui os IDs 50, 52, 102 ou o relatório completo de qualidade do ID 108.
+
+Verificação local em 2026-10-16: 102 testes focados aprovados; suíte local com 227 aprovados e 42 integrações SQL ignoradas, definindo `RUN_SQLSERVER_LGPD_TESTS=0` somente no processo. Módulo e opção 6 foram executados sobre 11.868 medições de 422 grupos, com 92 sinalizadas por `abs(z)>3`. O replay gerou CSV idêntico; o relatório descritivo e os hashes dos 54 Parquets foram preservados. A execução não realizou homologação SQL.
 
 ## Regras de qualidade e pendências
 

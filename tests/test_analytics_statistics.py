@@ -1,4 +1,4 @@
-"""Aceite dos IDs 45-49: estatisticas descritivas sem dependencia de SQL."""
+"""Aceite dos IDs 45-49 e 51: estatisticas e Z-Score sem dependencia de SQL."""
 
 import math
 import os
@@ -101,6 +101,114 @@ def test_missing_columns_and_group_identifiers_are_rejected():
         analytics.calcular_estatisticas(medicoes([1]).assign(id_estacao=None))
 
 
+def test_zscore_matches_sample_formula_and_preserves_input():
+    entrada = medicoes([1, 2, 3, 4]).assign(id_leitura_origem=["a", "b", "c", "d"])
+    original = entrada.copy(deep=True)
+    entrada.index = [9, 9, 2, 2]
+
+    resultado = analytics.calcular_z_scores(entrada)
+
+    esperado = [(valor - 2.5) / math.sqrt(5 / 3) for valor in [1, 2, 3, 4]]
+    assert resultado["z_score"].tolist() == pytest.approx(esperado)
+    assert resultado["z_score"].sum() == pytest.approx(0)
+    assert resultado["z_score"].std(ddof=1) == pytest.approx(1)
+    assert resultado["id_leitura_origem"].tolist() == ["a", "b", "c", "d"]
+    assert resultado["status_zscore"].eq("avaliado").all()
+    assert not resultado["anomalia_zscore"].any()
+    assert resultado["ddof"].eq(1).all()
+    pd.testing.assert_frame_equal(entrada.reset_index(drop=True), original)
+
+
+@pytest.mark.parametrize("extremo", [100, -100])
+def test_zscore_detects_positive_and_negative_extremes(extremo):
+    resultado = analytics.calcular_z_scores(medicoes([0] * 10 + [extremo]))
+
+    assert resultado["z_score"].iloc[-1] == pytest.approx(math.copysign(10 / math.sqrt(11), extremo))
+    assert resultado["anomalia_zscore"].tolist() == [False] * 10 + [True]
+
+
+def test_zscore_threshold_is_strict_and_configurable():
+    entrada = medicoes([-1, 0, 1])
+
+    igual = analytics.calcular_z_scores(entrada, limiar=1)
+    menor = analytics.calcular_z_scores(entrada, limiar=0.5)
+
+    assert igual["z_score"].tolist() == [-1, 0, 1]
+    assert igual["anomalia_zscore"].tolist() == [False, False, False]
+    assert menor["anomalia_zscore"].tolist() == [True, False, True]
+    assert menor["limiar_zscore"].eq(0.5).all()
+
+
+@pytest.mark.parametrize("limiar", [0, -1, True, None, "3", float("nan"), float("inf")])
+def test_zscore_rejects_invalid_thresholds(limiar):
+    with pytest.raises(ValueError, match="Limiar"):
+        analytics.calcular_z_scores(medicoes([1, 2]), limiar=limiar)
+
+
+@pytest.mark.parametrize("valores,status", [
+    ([7], "amostra_insuficiente"), ([7, 7, 7], "desvio_zero"),
+])
+def test_zscore_undefined_is_not_classified_as_normal(valores, status, caplog):
+    resultado = analytics.calcular_z_scores(medicoes(valores))
+
+    assert resultado["z_score"].isna().all()
+    assert resultado["anomalia_zscore"].isna().all()
+    assert str(resultado["anomalia_zscore"].dtype) == "boolean"
+    assert resultado["status_zscore"].eq(status).all()
+    assert status in caplog.text
+
+
+def test_zscore_invalid_measures_remain_traceable_but_do_not_affect_baseline():
+    valores = pd.Series([1, 3, None, True, "5", float("inf")], dtype=object)
+    entrada = pd.concat([
+        medicoes(valores), medicoes([None, None], estacao=2)
+    ], ignore_index=True)
+
+    resultado = analytics.calcular_z_scores(entrada)
+
+    assert len(resultado) == 8
+    assert resultado["z_score"].iloc[:2].tolist() == pytest.approx([-1 / math.sqrt(2), 1 / math.sqrt(2)])
+    assert resultado["valor"].iloc[2:].isna().all()
+    assert resultado["z_score"].iloc[2:].isna().all()
+    assert resultado["anomalia_zscore"].iloc[2:].isna().all()
+    assert resultado["status_zscore"].iloc[2:].eq("medida_invalida").all()
+    assert resultado["n_validos"].tolist() == [2] * 6 + [0, 0]
+    assert resultado["n_invalidos"].tolist() == [4] * 6 + [2, 2]
+
+
+def test_zscore_all_invalid_and_empty_inputs_have_explicit_contract():
+    invalido = analytics.calcular_z_scores(medicoes([None]))
+    assert invalido["n_validos"].tolist() == [0]
+    assert invalido["n_invalidos"].tolist() == [1]
+    assert invalido["status_zscore"].tolist() == ["medida_invalida"]
+    vazio = analytics.calcular_z_scores(medicoes([]))
+    assert vazio.empty
+    assert {"z_score", "anomalia_zscore", "status_zscore"}.issubset(vazio.columns)
+
+
+def test_zscore_groups_are_isolated_even_with_repeated_indices():
+    grupos = [
+        medicoes([1, 3]), medicoes([100, 104], estacao=2),
+        medicoes([5, 15], parametro="TURBIDEZ", unidade="NTU"),
+        medicoes([20, 40]).assign(dataset="outro_dataset"),
+        medicoes([6, 9], unidade="outra_unidade"),
+    ]
+    resultado = analytics.calcular_z_scores(pd.concat(grupos))
+
+    assert len(resultado) == 10
+    assert resultado["z_score"].tolist() == pytest.approx([-1 / math.sqrt(2), 1 / math.sqrt(2)] * 5)
+    assert resultado["n_validos"].eq(2).all()
+
+
+def test_zscore_rejects_nonfinite_result_instead_of_marking_normal(monkeypatch):
+    referencia = analytics.calcular_estatisticas(medicoes([1, 2]))
+    referencia["desvio_padrao"] = 1e-320
+    monkeypatch.setattr(analytics, "calcular_estatisticas", lambda entrada: referencia)
+
+    with pytest.raises(ValueError, match="Z-Score nao finito"):
+        analytics.calcular_z_scores(medicoes([1, 2]))
+
+
 @pytest.fixture
 def gravar_silver(tmp_path):
     def gravar(valores=(1, 2, 3, 4), dataset="qualidade_agua", dia="2026-10-01",
@@ -149,6 +257,25 @@ def test_partition_aggregation_uses_observations_not_daily_means(gravar_silver):
 
     assert resultado.loc[resultado["id_estacao"] == 1, "media"].eq(3).all()
     assert resultado.loc[resultado["id_estacao"] == 2, "media"].eq(100).all()
+
+
+def test_reader_preserves_environmental_event_identity_at_same_instant(gravar_silver):
+    gravar_silver([1, 3], transformar=lambda df: df.assign(
+        data_leitura=pd.Timestamp("2026-10-01", tz="UTC"),
+        id_leitura_origem=["evento-a", "evento-b"],
+    ))
+    gravar_silver([2], dataset="leitura_meteorologica")
+
+    entrada = analytics.ler_medicoes_silver()
+    agua = entrada.loc[entrada["dataset"] == "qualidade_agua"]
+    meteo = entrada.loc[entrada["dataset"] == "leitura_meteorologica"]
+
+    assert len(agua) == 10
+    assert set(agua["id_leitura_origem"]) == {"evento-a", "evento-b"}
+    assert agua["data_leitura"].nunique() == 1
+    assert meteo["id_leitura_origem"].isna().all()
+    assert not meteo.duplicated(["id_estacao", "data_leitura", "codigo_parametro"]).any()
+    assert analytics.calcular_estatisticas(agua)["media"].eq(2).all()
 
 
 @pytest.mark.parametrize("invalido", [True, None, "5", float("inf")])
@@ -293,6 +420,133 @@ def test_report_cannot_overwrite_silver(gravar_silver):
     origem = gravar_silver()
     with pytest.raises(ValueError, match="fora da Silver"):
         analytics.gerar_relatorio_estatistico(saida=origem)
+
+
+def test_zscore_report_round_trip_replay_and_silver_preservation(gravar_silver, tmp_path, monkeypatch):
+    origem = gravar_silver([1, 2, 3, 4])
+    original = origem.read_bytes()
+    gravar_silver([1, 3], dataset="leitura_meteorologica")
+    saida = tmp_path / "z_scores.csv"
+    descritivo = tmp_path / "estatisticas.csv"
+    monkeypatch.setattr(analytics, "SAIDA_ZSCORE", saida)
+    monkeypatch.setattr(analytics, "SAIDA_PADRAO", descritivo)
+    analytics.gerar_relatorio_estatistico()
+    anterior = descritivo.read_bytes()
+
+    primeiro = analytics.gerar_relatorio_zscore(limiar=0.5)
+    conteudo = saida.read_bytes()
+    segundo = analytics.gerar_relatorio_zscore(limiar=0.5)
+
+    pd.testing.assert_frame_equal(primeiro, segundo)
+    assert len(primeiro) == 28
+    assert saida.read_bytes() == conteudo
+    assert conteudo.startswith(b"\xef\xbb\xbf")
+    relido = pd.read_csv(saida, sep=";")
+    assert relido["z_score"].tolist() == pytest.approx(primeiro["z_score"].tolist())
+    assert relido["limiar_zscore"].eq(0.5).all()
+    assert relido["ddof"].eq(1).all()
+    assert relido["status_zscore"].eq("avaliado").all()
+    assert set(relido["codigo_parametro"]) == set(analytics.PARAMETROS.values())
+    assert relido.loc[relido["dataset"] == "leitura_meteorologica", "id_leitura_origem"].isna().all()
+    assert relido["periodo_inicio_utc"].eq("2026-10-01T00:00:00+00:00").all()
+    assert relido["periodo_fim_exclusivo_utc"].eq("2026-10-02T00:00:00+00:00").all()
+    assert descritivo.read_bytes() == anterior
+    assert origem.read_bytes() == original
+
+
+@pytest.mark.parametrize("valores,status", [([7], "amostra_insuficiente"), ([7, 7], "desvio_zero")])
+def test_zscore_report_publishes_valid_but_undefined_scores_as_blank(gravar_silver, tmp_path, valores, status):
+    gravar_silver(valores)
+    saida = tmp_path / "z_scores.csv"
+    analytics.gerar_relatorio_zscore(saida=saida)
+
+    relido = pd.read_csv(saida, sep=";", keep_default_na=False)
+    assert relido["z_score"].eq("").all()
+    assert relido["anomalia_zscore"].eq("").all()
+    assert relido["status_zscore"].eq(status).all()
+
+
+def test_zscore_report_preserves_invalid_measure_rows(gravar_silver, tmp_path):
+    gravar_silver([1, 3], transformar=lambda df: df.assign(ph=["erro", "5"]))
+    saida = tmp_path / "z_scores.csv"
+    resultado = analytics.gerar_relatorio_zscore(saida=saida)
+
+    invalidas = resultado.loc[resultado["codigo_parametro"] == "PH"]
+    assert len(resultado) == 10
+    assert invalidas["status_zscore"].eq("medida_invalida").all()
+    assert invalidas["n_invalidos"].eq(2).all()
+    assert invalidas["valor"].isna().all()
+    assert "erro" not in saida.read_text(encoding="utf-8-sig")
+
+
+def test_zscore_report_filters_utc_period_and_retains_natural_ids(gravar_silver, tmp_path):
+    gravar_silver([100], dia="2026-09-30")
+    gravar_silver([1, 3], transformar=lambda df: df.assign(
+        data_leitura=["2026-10-01T00:00:00Z", "2026-10-02T01:59:59+02:00"],
+        id_leitura_origem=["evento-a", "evento-b"],
+    ))
+    resultado = analytics.gerar_relatorio_zscore(
+        saida=tmp_path / "z_scores.csv", data_inicio="2026-10-01", data_fim="2026-10-01"
+    )
+
+    assert len(resultado) == 10
+    assert resultado["media"].eq(2).all()
+    assert set(resultado["id_leitura_origem"]) == {"evento-a", "evento-b"}
+
+
+@pytest.mark.parametrize("falha", ["ausente", "invalida", "corrompida", "publicacao"])
+def test_zscore_report_failure_preserves_previous_csv(gravar_silver, tmp_path, monkeypatch, falha):
+    saida = tmp_path / "z_scores.csv"
+    saida.write_bytes(b"anterior")
+    if falha != "ausente":
+        arquivo = gravar_silver([None] if falha == "invalida" else [1, 2])
+        if falha == "corrompida":
+            arquivo.write_bytes(b"corrompido")
+    if falha == "publicacao":
+        def falhar(*args):
+            raise OSError("Falha simulada")
+        monkeypatch.setattr(analytics.os, "replace", falhar)
+
+    with pytest.raises((ValueError, OSError)):
+        analytics.gerar_relatorio_zscore(saida=saida)
+
+    assert saida.read_bytes() == b"anterior"
+    assert not list(tmp_path.glob(".z_scores.*.tmp"))
+
+
+def test_zscore_report_rejects_destination_in_silver_and_bad_threshold(gravar_silver, tmp_path):
+    arquivo = gravar_silver()
+    with pytest.raises(ValueError, match="fora da Silver"):
+        analytics.gerar_relatorio_zscore(saida=arquivo)
+    with pytest.raises(ValueError, match="Limiar"):
+        analytics.gerar_relatorio_zscore(saida=tmp_path / "z.csv", limiar=0)
+
+
+@pytest.mark.parametrize("direto", [False, True])
+def test_zscore_cli_supports_threshold_and_explicit_failure(gravar_silver, tmp_path, direto):
+    gravar_silver([1, 2, 3, 4])
+    raiz = Path(__file__).resolve().parents[1]
+    comando = [sys.executable, str(raiz / "src" / "analytics_statistics.py")] if direto else [
+        sys.executable, "-m", "src.analytics_statistics"
+    ]
+    saida = tmp_path / "z.csv"
+    argumentos = ["--analise", "zscore", "--saida", str(saida), "--limiar", "0.5"]
+    ambiente = dict(os.environ, LOGS_DIR=str(tmp_path / "logs"))
+    resultado = subprocess.run(comando + argumentos, cwd=raiz, env=ambiente,
+                               capture_output=True, text=True)
+    assert resultado.returncode == 0, resultado.stdout + resultado.stderr
+    relido = pd.read_csv(saida, sep=";")
+    assert relido["anomalia_zscore"].tolist() == [True, False, False, True] * 5
+    assert relido["limiar_zscore"].eq(0.5).all()
+    anterior = saida.read_bytes()
+    for extras in [["--limiar", "nan"], ["--data-inicio", "erro"]]:
+        falha = subprocess.run(comando + argumentos + extras, cwd=raiz, env=ambiente,
+                               capture_output=True, text=True)
+        assert falha.returncode == 1
+        assert saida.read_bytes() == anterior
+    logs = (tmp_path / "logs" / "execucao_relatorio.log").read_text(encoding="utf-8")
+    assert "Relatorio Z-Score publicado" in logs
+    assert "avaliadas=20" in logs and "anomalias=10" in logs and "ERROR" in logs
 
 
 @pytest.mark.parametrize("direto", [False, True])

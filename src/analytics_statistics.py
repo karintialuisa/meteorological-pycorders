@@ -1,4 +1,4 @@
-"""Estatisticas descritivas de medicoes por estacao e parametro."""
+"""Estatisticas descritivas e validacao por Z-Score de medicoes Silver."""
 
 import argparse
 from datetime import date
@@ -35,6 +35,7 @@ PARAMETROS = {
 }
 UNIDADES = {item["codigo"]: item["unidade_medida"] for item in CATALOGO_PARAMETROS}
 SAIDA_PADRAO = PROJECT_ROOT / "reports" / "estatisticas_descritivas.csv"
+SAIDA_ZSCORE = PROJECT_ROOT / "reports" / "z_scores.csv"
 
 
 def _numero_finito(valor: object) -> bool:
@@ -93,6 +94,60 @@ def calcular_estatisticas(medicoes: pd.DataFrame) -> pd.DataFrame:
     if not dispersao.map(_numero_finito).all().all():
         raise ValueError("Dispersao estatistica nao finita")
     return resultado[COLUNAS_RESULTADO]
+
+
+def calcular_z_scores(medicoes: pd.DataFrame, limiar: float = 3.0) -> pd.DataFrame:
+    """Avalia cada medida contra a media/desvio amostral do proprio grupo.
+
+    Preserva ordem, identidade e cardinalidade, independentemente do indice.
+    Resultados indefinidos possuem escore/indicador ausentes e status explicito.
+    """
+    if not _numero_finito(limiar) or limiar <= 0:
+        raise ValueError("Limiar de Z-Score deve ser numerico, finito e positivo")
+    estatisticas = calcular_estatisticas(medicoes)
+    colunas = GRUPOS + [
+        coluna for coluna in ["id_leitura_origem", "data_leitura", "valor"]
+        if coluna in medicoes
+    ]
+    resultado = medicoes[colunas].reset_index(drop=True).copy()
+    referencia = ["n_validos", "n_invalidos", "media", "desvio_padrao"]
+    if estatisticas.empty:
+        for coluna in referencia:
+            resultado[coluna] = float("nan")
+    else:
+        resultado = resultado.merge(
+            estatisticas[GRUPOS + referencia], on=GRUPOS,
+            how="left", sort=False, validate="many_to_one",
+        )
+    tamanhos = resultado.groupby(GRUPOS, observed=True)["valor"].transform("size")
+    resultado["n_validos"] = resultado["n_validos"].fillna(0).astype("int64")
+    resultado["n_invalidos"] = resultado["n_invalidos"].fillna(tamanhos).astype("int64")
+    validos = resultado["valor"].map(_numero_finito).astype(bool)
+    resultado["valor"] = pd.to_numeric(
+        resultado["valor"].where(validos), errors="coerce"
+    ).astype(float)
+    resultado["ddof"] = 1
+    resultado["limiar_zscore"] = float(limiar)
+    resultado["z_score"] = float("nan")
+    resultado["anomalia_zscore"] = pd.Series(pd.NA, index=resultado.index, dtype="boolean")
+    resultado["status_zscore"] = "medida_invalida"
+    insuficientes = validos & resultado["n_validos"].lt(2)
+    constantes = validos & resultado["n_validos"].ge(2) & resultado["desvio_padrao"].eq(0)
+    avaliaveis = validos & resultado["n_validos"].ge(2) & resultado["desvio_padrao"].gt(0)
+    resultado.loc[insuficientes, "status_zscore"] = "amostra_insuficiente"
+    resultado.loc[constantes, "status_zscore"] = "desvio_zero"
+    escores = (
+        resultado.loc[avaliaveis, "valor"] - resultado.loc[avaliaveis, "media"]
+    ) / resultado.loc[avaliaveis, "desvio_padrao"]
+    if not escores.map(_numero_finito).all():
+        raise ValueError("Z-Score nao finito em medida avaliavel")
+    resultado.loc[avaliaveis, "z_score"] = escores
+    resultado.loc[avaliaveis, "anomalia_zscore"] = escores.abs().gt(limiar)
+    resultado.loc[avaliaveis, "status_zscore"] = "avaliado"
+    pendentes = resultado.loc[~avaliaveis, "status_zscore"].value_counts().to_dict()
+    if pendentes:
+        logging.warning("Medidas sem Z-Score calculavel: %s", pendentes)
+    return resultado
 
 
 def _data_utc(valor: str) -> pd.Timestamp:
@@ -185,19 +240,36 @@ def ler_medicoes_silver(
         leituras = pd.concat(partes, ignore_index=True)
         if leituras.duplicated(contrato["chave"]).any():
             raise ValueError(f"Chaves duplicadas na Silver: {dataset}")
+        if "id_leitura_origem" not in leituras:
+            leituras["id_leitura_origem"] = pd.NA
         longas = leituras.melt(
-            id_vars=["id_estacao", "data_leitura"],
+            id_vars=["id_estacao", "data_leitura", "id_leitura_origem"],
             value_vars=contrato["numericas"],
             var_name="coluna_parametro", value_name="valor",
         )
         longas["dataset"] = dataset
         longas["codigo_parametro"] = longas["coluna_parametro"].map(PARAMETROS)
         longas["unidade_medida"] = longas["codigo_parametro"].map(UNIDADES)
-        medicoes.append(longas[GRUPOS + ["data_leitura", "valor"]])
+        medicoes.append(longas[GRUPOS + ["id_leitura_origem", "data_leitura", "valor"]])
         logging.info("Silver lida: dataset=%s leituras=%s", dataset, len(leituras))
     if not medicoes:
         raise ValueError("Nenhuma leitura Silver disponivel no periodo")
     return pd.concat(medicoes, ignore_index=True)
+
+
+def _gravar_csv_atomico(resultado: pd.DataFrame, destino: Path) -> None:
+    destino.parent.mkdir(parents=True, exist_ok=True)
+    temporario = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            dir=destino.parent, prefix=f".{destino.stem}.", suffix=".tmp", delete=False
+        ) as arquivo:
+            temporario = Path(arquivo.name)
+        resultado.to_csv(temporario, sep=";", encoding="utf-8-sig", index=False, na_rep="")
+        os.replace(temporario, destino)
+    finally:
+        if temporario is not None and temporario.exists():
+            temporario.unlink()
 
 
 def gerar_relatorio_estatistico(
@@ -222,18 +294,7 @@ def gerar_relatorio_estatistico(
         fim = medicoes["data_leitura"].max().floor("D") + pd.Timedelta(days=1)
     resultado.insert(4, "periodo_inicio_utc", inicio.isoformat())
     resultado.insert(5, "periodo_fim_exclusivo_utc", fim.isoformat())
-    destino.parent.mkdir(parents=True, exist_ok=True)
-    temporario = None
-    try:
-        with tempfile.NamedTemporaryFile(
-            dir=destino.parent, prefix=f".{destino.stem}.", suffix=".tmp", delete=False
-        ) as arquivo:
-            temporario = Path(arquivo.name)
-        resultado.to_csv(temporario, sep=";", encoding="utf-8-sig", index=False, na_rep="")
-        os.replace(temporario, destino)
-    finally:
-        if temporario is not None and temporario.exists():
-            temporario.unlink()
+    _gravar_csv_atomico(resultado, destino)
     logging.info(
         "Relatorio estatistico publicado: grupos=%s n_validos=%s n_invalidos=%s "
         "inicio=%s fim_exclusivo=%s saida=%s",
@@ -243,22 +304,68 @@ def gerar_relatorio_estatistico(
     return resultado
 
 
+def gerar_relatorio_zscore(
+    silver_dir: str | Path | None = None,
+    saida: str | Path | None = None,
+    data_inicio: str | None = None,
+    data_fim: str | None = None,
+    limiar: float = 3.0,
+) -> pd.DataFrame:
+    """Publica Z-Score por medicao em CSV separado, sem modificar a Silver."""
+    if not _numero_finito(limiar) or limiar <= 0:
+        raise ValueError("Limiar de Z-Score deve ser numerico, finito e positivo")
+    inicio, fim = _limites(data_inicio, data_fim)
+    destino = SAIDA_ZSCORE if saida is None else _caminho_projeto(saida)
+    raiz = get_silver_dir() if silver_dir is None else _caminho_projeto(silver_dir)
+    if destino.resolve().is_relative_to(raiz.resolve()):
+        raise ValueError("O relatorio deve ficar fora da Silver")
+    medicoes = ler_medicoes_silver(raiz, data_inicio, data_fim)
+    resultado = calcular_z_scores(medicoes, limiar)
+    if resultado.empty or resultado["n_validos"].eq(0).all():
+        raise ValueError("Nenhuma medida valida para publicar o relatorio")
+    if inicio is None:
+        inicio = medicoes["data_leitura"].min().floor("D")
+    if fim is None:
+        fim = medicoes["data_leitura"].max().floor("D") + pd.Timedelta(days=1)
+    resultado["periodo_inicio_utc"] = inicio.isoformat()
+    resultado["periodo_fim_exclusivo_utc"] = fim.isoformat()
+    resultado = resultado.sort_values(
+        GRUPOS + ["data_leitura", "id_leitura_origem"], kind="stable"
+    ).reset_index(drop=True)
+    _gravar_csv_atomico(resultado, destino)
+    logging.info(
+        "Relatorio Z-Score publicado: grupos=%s medidas=%s avaliadas=%s "
+        "anomalias=%s limiar=%s inicio=%s fim_exclusivo=%s saida=%s",
+        len(resultado[GRUPOS].drop_duplicates()), len(resultado),
+        int(resultado["status_zscore"].eq("avaliado").sum()),
+        int(resultado["anomalia_zscore"].sum()), limiar,
+        inicio.isoformat(), fim.isoformat(), destino,
+    )
+    return resultado
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--analise", choices=["estatisticas", "zscore"], default="estatisticas")
+    parser.add_argument("--limiar", type=float, default=3.0, help="Limiar positivo de |z| no modo zscore; padrao: 3")
     parser.add_argument("--silver-dir", help="Diretorio Silver; padrao: SILVER_DIR")
-    parser.add_argument("--saida", help="CSV de destino; padrao: reports/estatisticas_descritivas.csv")
+    parser.add_argument("--saida", help="CSV de destino; padrao em reports/ conforme --analise")
     parser.add_argument("--data-inicio", help="Primeiro dia UTC, YYYY-MM-DD, inclusivo")
     parser.add_argument("--data-fim", help="Ultimo dia UTC, YYYY-MM-DD, inclusivo")
     argumentos = parser.parse_args(argv)
     try:
         configure_logging(categoria="execucao")
-        logging.info("Iniciando estatisticas descritivas dos IDs 45-49")
-        gerar_relatorio_estatistico(
-            silver_dir=argumentos.silver_dir, saida=argumentos.saida,
-            data_inicio=argumentos.data_inicio, data_fim=argumentos.data_fim,
-        )
+        logging.info("Iniciando analise Silver: %s", argumentos.analise)
+        opcoes = {
+            "silver_dir": argumentos.silver_dir, "saida": argumentos.saida,
+            "data_inicio": argumentos.data_inicio, "data_fim": argumentos.data_fim,
+        }
+        if argumentos.analise == "zscore":
+            gerar_relatorio_zscore(**opcoes, limiar=argumentos.limiar)
+        else:
+            gerar_relatorio_estatistico(**opcoes)
     except Exception:
-        logging.exception("Falha ao gerar relatorio estatistico")
+        logging.exception("Falha ao gerar relatorio: analise=%s", argumentos.analise)
         return 1
     return 0
 

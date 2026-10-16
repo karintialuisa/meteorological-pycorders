@@ -21,7 +21,8 @@ MENU = {
     "2": "Coletar meteorologia Agritempo -> JSON",
     "3": "Cadastrar parâmetros, catálogo LGPD e operadores",
     "4": "Cancelar Operação",
-    "5": "Gerar estatísticas descritivas da Silver -> CSV"
+    "5": "Gerar estatísticas descritivas da Silver -> CSV",
+    "6": "Validar anomalias por Z-Score -> CSV"
 }
 
 
@@ -38,7 +39,7 @@ def exibir_menu() -> str:
     return input("Escolha uma opção: ").strip()
 
 
-def executar_script(caminho_relativo: str) -> bool:
+def executar_script(caminho_relativo: str, argumentos: list[str] | None = None) -> bool:
     caminho_script = BASE_DIR / caminho_relativo
 
     if not caminho_script.exists():
@@ -48,7 +49,8 @@ def executar_script(caminho_relativo: str) -> bool:
     logging.info("=" * 20 + f" Iniciando: {caminho_script.name} " + "=" * 20)
 
     resultado = subprocess.run(
-        [sys.executable, str(caminho_script)], capture_output=True, text=True
+        [sys.executable, str(caminho_script), *(argumentos or [])],
+        capture_output=True, text=True
     )
 
     if resultado.stdout.strip():
@@ -119,8 +121,11 @@ def main():
         elif opcao == "5":
             executar_script("src/analytics_statistics.py")
 
+        elif opcao == "6":
+            executar_script("src/analytics_statistics.py", ["--analise", "zscore"])
+
         else:
-            logging.warning("Opção inválida. Digite 1, 2, 3, 4 ou 5.")
+            logging.warning("Opção inválida. Digite 1, 2, 3, 4, 5 ou 6.")
 
 
 if __name__ == "__main__":
