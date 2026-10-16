@@ -20,7 +20,9 @@ MENU = {
     "1": "ETL JSON -> BD",
     "2": "Coletar meteorologia Agritempo -> JSON",
     "3": "Cadastrar parâmetros, catálogo LGPD e operadores",
-    "4": "Cancelar Operação"
+    "4": "Cancelar Operação",
+    "5": "Gerar estatísticas descritivas da Silver -> CSV",
+    "6": "Validar anomalias por Z-Score -> CSV"
 }
 
 
@@ -37,7 +39,7 @@ def exibir_menu() -> str:
     return input("Escolha uma opção: ").strip()
 
 
-def executar_script(caminho_relativo: str) -> bool:
+def executar_script(caminho_relativo: str, argumentos: list[str] | None = None) -> bool:
     caminho_script = BASE_DIR / caminho_relativo
 
     if not caminho_script.exists():
@@ -47,7 +49,8 @@ def executar_script(caminho_relativo: str) -> bool:
     logging.info("=" * 20 + f" Iniciando: {caminho_script.name} " + "=" * 20)
 
     resultado = subprocess.run(
-        [sys.executable, str(caminho_script)], capture_output=True, text=True
+        [sys.executable, str(caminho_script), *(argumentos or [])],
+        capture_output=True, text=True
     )
 
     if resultado.stdout.strip():
@@ -59,10 +62,10 @@ def executar_script(caminho_relativo: str) -> bool:
             if resultado.stderr
             else "Erro desconhecido."
         )
-        logging.error(f"❌ Falha em {caminho_script.name}:\n{erro_msg}")
+        logging.error(f"Falha em {caminho_script.name}:\n{erro_msg}")
         return False
 
-    logging.info(f"✅ Sucesso em {caminho_script.name}")
+    logging.info(f"Sucesso em {caminho_script.name}")
     return True
 
 
@@ -115,8 +118,14 @@ def main():
                     )
                     break
 
+        elif opcao == "5":
+            executar_script("src/analytics_statistics.py")
+
+        elif opcao == "6":
+            executar_script("src/analytics_statistics.py", ["--analise", "zscore"])
+
         else:
-            logging.warning("Opção inválida. Digite 1, 2, 3 ou 4.")
+            logging.warning("Opção inválida. Digite 1, 2, 3, 4, 5 ou 6.")
 
 
 if __name__ == "__main__":
