@@ -7411,7 +7411,11 @@ Menu de opções:
  4. Coletar meteorologia Agritempo -> JSON
 ========================================
 15-10-2026 10:14 - INFO - Aplicação encerrada pelo usuário ao selecionar a opção '3'.
+<<<<<<< HEAD
+15-10-2026 10:31 - INFO - 
+=======
 15-10-2026 10:19 - INFO - 
+>>>>>>> origin/feature/jorge
 ========================================
 Menu de opções:
  1. ETL JSON -> BD
@@ -7419,7 +7423,122 @@ Menu de opções:
  4. Coletar meteorologia Agritempo -> JSON
  5. Cadastrar parâmetros, catálogo LGPD e operadores
 ========================================
+<<<<<<< HEAD
+15-10-2026 10:31 - INFO - ==================== Iniciando: Insert_localizacao.py ====================
+15-10-2026 10:31 - ERROR - ❌ Falha em Insert_localizacao.py:
+Traceback (most recent call last):
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\engine\base.py", line 149, in __init__
+    self._dbapi_connection = engine.raw_connection()
+                             ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\engine\base.py", line 3284, in raw_connection
+    return self.pool.connect()
+           ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\pool\base.py", line 445, in connect
+    return _ConnectionFairy._checkout(self)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\pool\base.py", line 1287, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\pool\base.py", line 709, in checkout
+    rec = pool._do_get()
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\pool\impl.py", line 176, in _do_get
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 166, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\pool\impl.py", line 174, in _do_get
+    return self._create_connection()
+           ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\pool\base.py", line 386, in _create_connection
+    return _ConnectionRecord(self)
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\pool\base.py", line 671, in __init__
+    self.__connect()
+    ~~~~~~~~~~~~~~^^
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\pool\base.py", line 895, in __connect
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 166, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\pool\base.py", line 891, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+                                         ~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\engine\create.py", line 645, in connect
+    return dialect.connect(*cargs_tup, **cparams)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\engine\default.py", line 857, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+pyodbc.InterfaceError: ('28000', '[28000] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Login failed for user \'AVANADE-CORP\\wagner.a.dos.santos\'. (18456) (SQLDriverConnect); [28000] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Cannot open database "monitoramento" requested by the login. The login failed. (4060); [28000] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Login failed for user \'AVANADE-CORP\\wagner.a.dos.santos\'. (18456); [28000] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Cannot open database "monitoramento" requested by the login. The login failed. (4060)')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\wagner.a.dos.santos\Documents\GitHub\meteorological-pycorders\src\database\dml\Insert_localizacao.py", line 193, in <module>
+    with create_db_engine().begin() as connection:
+         ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\contextlib.py", line 141, in __enter__
+    return next(self.gen)
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\engine\base.py", line 3224, in begin
+    with self.connect() as conn:
+         ~~~~~~~~~~~~^^
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\engine\base.py", line 3260, in connect
+    return self._connection_cls(self)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\engine\base.py", line 151, in __init__
+    Connection._handle_dbapi_exception_noconnection(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        err, dialect, engine
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\engine\base.py", line 2417, in _handle_dbapi_exception_noconnection
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\engine\base.py", line 149, in __init__
+    self._dbapi_connection = engine.raw_connection()
+                             ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\engine\base.py", line 3284, in raw_connection
+    return self.pool.connect()
+           ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\pool\base.py", line 445, in connect
+    return _ConnectionFairy._checkout(self)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\pool\base.py", line 1287, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\pool\base.py", line 709, in checkout
+    rec = pool._do_get()
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\pool\impl.py", line 176, in _do_get
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 166, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\pool\impl.py", line 174, in _do_get
+    return self._create_connection()
+           ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\pool\base.py", line 386, in _create_connection
+    return _ConnectionRecord(self)
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\pool\base.py", line 671, in __init__
+    self.__connect()
+    ~~~~~~~~~~~~~~^^
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\pool\base.py", line 895, in __connect
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 166, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\pool\base.py", line 891, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+                                         ~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\engine\create.py", line 645, in connect
+    return dialect.connect(*cargs_tup, **cparams)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\engine\default.py", line 857, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.InterfaceError: (pyodbc.InterfaceError) ('28000', '[28000] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Login failed for user \'AVANADE-CORP\\wagner.a.dos.santos\'. (18456) (SQLDriverConnect); [28000] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Cannot open database "monitoramento" requested by the login. The login failed. (4060); [28000] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Login failed for user \'AVANADE-CORP\\wagner.a.dos.santos\'. (18456); [28000] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Cannot open database "monitoramento" requested by the login. The login failed. (4060)')
+(Background on this error at: https://sqlalche.me/e/21/rvf5)
+15-10-2026 10:31 - ERROR - Carga ETL interrompida após falha em Insert_localizacao.py.
+15-10-2026 10:31 - INFO - 
+=======
 15-10-2026 10:24 - INFO - 
+>>>>>>> origin/feature/jorge
 ========================================
 Menu de opções:
  1. ETL JSON -> BD
@@ -7427,6 +7546,149 @@ Menu de opções:
  4. Coletar meteorologia Agritempo -> JSON
  5. Cadastrar parâmetros, catálogo LGPD e operadores
 ========================================
+<<<<<<< HEAD
+15-10-2026 10:32 - INFO - ==================== Iniciando: Insert_localizacao.py ====================
+15-10-2026 10:32 - ERROR - ❌ Falha em Insert_localizacao.py:
+Traceback (most recent call last):
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\engine\base.py", line 1943, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\engine\default.py", line 1180, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+pyodbc.ProgrammingError: ('42S02', "[42S02] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Invalid object name 'estado'. (208) (SQLExecDirectW)")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\pandas\io\sql.py", line 1679, in execute
+    return execute_function(sql, *args)
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\engine\base.py", line 1448, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\sql\elements.py", line 533, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\engine\base.py", line 1668, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<9 lines>...
+        param_dict=param_dict,
+    )
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\engine\base.py", line 1822, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\engine\base.py", line 1962, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\engine\base.py", line 2332, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\engine\base.py", line 1943, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\engine\default.py", line 1180, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.ProgrammingError: (pyodbc.ProgrammingError) ('42S02', "[42S02] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Invalid object name 'estado'. (208) (SQLExecDirectW)")
+[SQL: SELECT codigo_ibge FROM estado]
+(Background on this error at: https://sqlalche.me/e/21/f405)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\wagner.a.dos.santos\Documents\GitHub\meteorological-pycorders\src\database\dml\Insert_localizacao.py", line 195, in <module>
+    estado_ids = inserir_localizacao(connection)
+  File "C:\Users\wagner.a.dos.santos\Documents\GitHub\meteorological-pycorders\src\database\dml\Insert_localizacao.py", line 63, in inserir_localizacao
+    estados_existentes = pd.read_sql(
+        text("SELECT codigo_ibge FROM estado"), connection
+    )
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\pandas\io\sql.py", line 730, in read_sql
+    return pandas_sql.read_query(
+           ~~~~~~~~~~~~~~~~~~~~~^
+        sql,
+        ^^^^
+    ...<6 lines>...
+        dtype=dtype,
+        ^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\pandas\io\sql.py", line 1856, in read_query
+    result = self.execute(sql, params)
+  File "C:\Users\wagner.a.dos.santos\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\pandas\io\sql.py", line 1681, in execute
+    raise DatabaseError(f"Execution failed on sql '{sql}': {exc}") from exc
+pandas.errors.DatabaseError: Execution failed on sql 'SELECT codigo_ibge FROM estado': (pyodbc.ProgrammingError) ('42S02', "[42S02] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Invalid object name 'estado'. (208) (SQLExecDirectW)")
+[SQL: SELECT codigo_ibge FROM estado]
+(Background on this error at: https://sqlalche.me/e/21/f405)
+15-10-2026 10:32 - ERROR - Carga ETL interrompida após falha em Insert_localizacao.py.
+15-10-2026 10:32 - INFO - 
+========================================
+Menu de opções:
+ 1. ETL JSON -> BD
+ 3. Cancelar operação
+ 4. Coletar meteorologia Agritempo -> JSON
+ 5. Cadastrar parâmetros, catálogo LGPD e operadores
+========================================
+15-10-2026 10:35 - INFO - ==================== Iniciando: Insert_localizacao.py ====================
+15-10-2026 10:35 - INFO - ✅ Sucesso em Insert_localizacao.py
+15-10-2026 10:35 - INFO - ==================== Iniciando: Insert_Parametros.py ====================
+15-10-2026 10:35 - INFO - ✅ Sucesso em Insert_Parametros.py
+15-10-2026 10:35 - INFO - ==================== Iniciando: Insert_leituras_ambiental.py ====================
+15-10-2026 10:35 - INFO - ✅ Sucesso em Insert_leituras_ambiental.py
+15-10-2026 10:35 - INFO - ==================== Iniciando: Insert_leituras_meteorologica.py ====================
+15-10-2026 10:37 - INFO - ✅ Sucesso em Insert_leituras_meteorologica.py
+15-10-2026 10:37 - INFO - 
+========================================
+Menu de opções:
+ 1. ETL JSON -> BD
+ 3. Cancelar operação
+ 4. Coletar meteorologia Agritempo -> JSON
+ 5. Cadastrar parâmetros, catálogo LGPD e operadores
+========================================
+15-10-2026 10:38 - INFO - ==================== Iniciando: Get_dados.py ====================
+15-10-2026 10:39 - INFO - ✅ Sucesso em Get_dados.py
+15-10-2026 10:39 - INFO - 
+========================================
+Menu de opções:
+ 1. ETL JSON -> BD
+ 3. Cancelar operação
+ 4. Coletar meteorologia Agritempo -> JSON
+ 5. Cadastrar parâmetros, catálogo LGPD e operadores
+========================================
+15-10-2026 10:40 - INFO - ==================== Iniciando: Insert_Parametros.py ====================
+15-10-2026 10:40 - INFO - ✅ Sucesso em Insert_Parametros.py
+15-10-2026 10:40 - INFO - ==================== Iniciando: Insert_Catalogo_LGPD.py ====================
+15-10-2026 10:40 - INFO - ✅ Sucesso em Insert_Catalogo_LGPD.py
+15-10-2026 10:40 - INFO - ==================== Iniciando: Insert_Operadores.py ====================
+15-10-2026 10:40 - ERROR - ❌ Falha em Insert_Operadores.py:
+Traceback (most recent call last):
+  File "C:\Users\wagner.a.dos.santos\Documents\GitHub\meteorological-pycorders\src\database\dml\Insert_Operadores.py", line 297, in <module>
+    carregar_operadores()
+    ~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\wagner.a.dos.santos\Documents\GitHub\meteorological-pycorders\src\database\dml\Insert_Operadores.py", line 286, in carregar_operadores
+=======
 15-10-2026 10:26 - INFO - 
 ========================================
 Menu de opções:
@@ -7476,11 +7738,29 @@ Traceback (most recent call last):
     carregar_operadores()
     ~~~~~~~~~~~~~~~~~~~^^
   File "C:\Users\jorge.caldas.cardoso\Documents\GitHub\meteorological-pycorders\src\database\dml\Insert_Operadores.py", line 286, in carregar_operadores
+>>>>>>> origin/feature/jorge
     return inserir_operadores(
         normalized_operators,
     ...<3 lines>...
         data_leitura=source_date,
     )
+<<<<<<< HEAD
+  File "C:\Users\wagner.a.dos.santos\Documents\GitHub\meteorological-pycorders\src\database\dml\Insert_Operadores.py", line 41, in inserir_operadores
+    _validar_chaves_operador(hmac_secret, encryption_key)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\wagner.a.dos.santos\Documents\GitHub\meteorological-pycorders\src\database\dml\Insert_Operadores.py", line 191, in _validar_chaves_operador
+    raise ValueError(f"{nome} deve conter um segredo real, não um placeholder")
+ValueError: HMAC_SECRET_KEY deve conter um segredo real, não um placeholder
+15-10-2026 10:40 - ERROR - Cadastro interrompido após falha em Insert_Operadores.py.
+15-10-2026 10:40 - INFO - 
+========================================
+Menu de opções:
+ 1. ETL JSON -> BD
+ 3. Cancelar operação
+ 4. Coletar meteorologia Agritempo -> JSON
+ 5. Cadastrar parâmetros, catálogo LGPD e operadores
+========================================
+=======
   File "C:\Users\jorge.caldas.cardoso\Documents\GitHub\meteorological-pycorders\src\database\dml\Insert_Operadores.py", line 41, in inserir_operadores
     _validar_chaves_operador(hmac_secret, encryption_key)
     ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -7519,3 +7799,4 @@ Menu de opções:
  4. Cancelar Operação
 ========================================
 15-10-2026 10:47 - INFO - Aplicação encerrada pelo usuário ao selecionar a opção '4'.
+>>>>>>> origin/feature/jorge
