@@ -7,9 +7,9 @@ import pandas as pd
 from sqlalchemy import inspect, text
 from sqlalchemy.engine import Connection, Engine
 
-from database.dml.Insert_Leituras import _normalizar_registro, inserir_leituras
-from database.dml.Insert_Leitura_Itens import _normalizar_item, inserir_leitura_itens
-from database.dml.etl_lock import adquirir_lock_etl
+from src.database.dml.Insert_Leituras import _normalizar_registro, inserir_leituras
+from src.database.dml.Insert_Leitura_Itens import _normalizar_item, inserir_leitura_itens
+from src.database.dml.etl_lock import adquirir_lock_etl
 
 
 MAPEAMENTO = {

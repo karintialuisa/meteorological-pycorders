@@ -39,9 +39,9 @@ def test_get_silver_dir_resolves_default_relative_and_absolute(monkeypatch, tmp_
     assert settings.get_silver_dir() == absolute_path
 
 
-def test_get_api_raw_dir_uses_existing_ingestion_path(monkeypatch, tmp_path):
+def test_get_api_raw_dir_uses_bronze_path(monkeypatch, tmp_path):
     monkeypatch.delenv("API_RAW_DIR", raising=False)
-    assert settings.get_api_raw_dir() == settings.PROJECT_ROOT / "src" / "ingestion" / "leituras"
+    assert settings.get_api_raw_dir() == settings.PROJECT_ROOT / "data_lake" / "bronze" / "api"
 
     monkeypatch.setenv("API_RAW_DIR", "data/raw-api")
     assert settings.get_api_raw_dir() == settings.PROJECT_ROOT / "data" / "raw-api"
@@ -49,6 +49,16 @@ def test_get_api_raw_dir_uses_existing_ingestion_path(monkeypatch, tmp_path):
     absolute_path = tmp_path / "api-raw"
     monkeypatch.setenv("API_RAW_DIR", str(absolute_path))
     assert settings.get_api_raw_dir() == absolute_path
+
+
+def test_get_agritempo_dir_is_independent_of_rest_batches(monkeypatch, tmp_path):
+    monkeypatch.delenv("AGRITEMPO_RAW_DIR", raising=False)
+    monkeypatch.setenv("API_RAW_DIR", str(tmp_path / "api"))
+    assert settings.get_agritempo_raw_dir() == settings.PROJECT_ROOT / "data_lake" / "bronze" / "agritempo"
+    monkeypatch.setenv("AGRITEMPO_RAW_DIR", "lake/agritempo")
+    assert settings.get_agritempo_raw_dir() == settings.PROJECT_ROOT / "lake" / "agritempo"
+    monkeypatch.setenv("AGRITEMPO_RAW_DIR", str(tmp_path / "agritempo"))
+    assert settings.get_agritempo_raw_dir() == tmp_path / "agritempo"
 
 
 def test_create_db_engine_builds_sql_server_connection(monkeypatch):
@@ -366,7 +376,7 @@ def test_main_dispatches_statistics_and_returns_to_menu(main_module, monkeypatch
 
     main_module.main()
 
-    assert calls == ["src/analytics_statistics.py"]
+    assert calls == ["src/gold/analytics_statistics.py"]
 
 
 @pytest.mark.parametrize("sucesso", [True, False])
@@ -381,7 +391,7 @@ def test_main_dispatches_zscore_and_returns_to_menu(main_module, monkeypatch, su
 
     main_module.main()
 
-    assert calls == [("src/analytics_statistics.py", ["--analise", "zscore"])]
+    assert calls == [("src/gold/analytics_statistics.py", ["--analise", "zscore"])]
 
 
 if __name__ == "__main__":

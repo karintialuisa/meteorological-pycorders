@@ -5,8 +5,8 @@ import json
 import pandas as pd
 from typing import Optional, List
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from config.settings import get_path
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from src.config.settings import get_path
 
 app = FastAPI(
     title="API de Leituras Ambientais e Meteorológicas",

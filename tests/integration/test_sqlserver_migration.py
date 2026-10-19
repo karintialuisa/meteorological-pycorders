@@ -189,7 +189,7 @@ def test_location_parent_deletes_are_blocked_and_preserve_rows(engine, table):
 def test_normalized_essential_queries_keep_event_granularity(engine):
     seed_history(engine)
     migrar_legado(engine, arquivar=True)
-    query = (ROOT / "src" / "database" / "dql" / "consultas-essenciais.sql").read_text(encoding="utf-8")
+    query = (ROOT / "sql" / "dql" / "consultas-essenciais.sql").read_text(encoding="utf-8")
     with engine.connect() as connection:
         cursor = connection.connection.driver_connection.cursor()
         try:

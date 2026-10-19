@@ -9,9 +9,9 @@ from pathlib import Path
 import pandas as pd
 from sqlalchemy import text
 
-sys.path.append(str(Path(__file__).resolve().parents[2]))
-from config.settings import configure_logging, create_db_engine, get_env
-from security.pii import decrypt_name, encrypt_name, hash_cpf
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+from src.config.settings import PROJECT_ROOT, configure_logging, create_db_engine, get_env
+from src.security.pii import decrypt_name, encrypt_name, hash_cpf
 
 # Referencia: projeto_final.pdf, secao 1 (Operadores - origem dos dados), features.csv ID 10.
 # Referencia: projeto_final.pdf, secao 3.3 (Operadores - tabela cadastral), ID 38.
@@ -197,7 +197,7 @@ def _autorizar_descriptografia_loader(principal: str, action: str) -> bool:
 
 
 OPERADORES_JSON = (
-    Path(__file__).resolve().parents[2] / "ingestion" / "localizacao" / "operadores.json"
+    PROJECT_ROOT / "data_lake" / "bronze" / "cadastros" / "operadores.json"
 )
 _STATUS_ATIVO = {"1", "ativo", "ativa", "active", "true"}
 _STATUS_INATIVO = {"0", "inativo", "inativa", "inactive", "false", "desativado"}

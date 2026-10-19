@@ -12,11 +12,11 @@ import tempfile
 import pandas as pd
 
 if not __package__:
-    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src.config.settings import PROJECT_ROOT, configure_logging, get_silver_dir
 from src.database.dml.Insert_Parametros import CATALOGO_PARAMETROS
-from src.ingestion.leituras.Persistir_Silver import CONTRATOS_DATASETS
+from src.silver.leituras.Persistir_Silver import CONTRATOS_DATASETS
 
 
 GRUPOS = ["dataset", "id_estacao", "codigo_parametro", "unidade_medida"]
@@ -34,8 +34,8 @@ PARAMETROS = {
     "vento": "VENTO",
 }
 UNIDADES = {item["codigo"]: item["unidade_medida"] for item in CATALOGO_PARAMETROS}
-SAIDA_PADRAO = PROJECT_ROOT / "reports" / "estatisticas_descritivas.csv"
-SAIDA_ZSCORE = PROJECT_ROOT / "reports" / "z_scores.csv"
+SAIDA_PADRAO = PROJECT_ROOT / "data_lake" / "gold" / "estatisticas_descritivas.csv"
+SAIDA_ZSCORE = PROJECT_ROOT / "data_lake" / "gold" / "z_scores.csv"
 
 
 def _numero_finito(valor: object) -> bool:
@@ -349,7 +349,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--analise", choices=["estatisticas", "zscore"], default="estatisticas")
     parser.add_argument("--limiar", type=float, default=3.0, help="Limiar positivo de |z| no modo zscore; padrao: 3")
     parser.add_argument("--silver-dir", help="Diretorio Silver; padrao: SILVER_DIR")
-    parser.add_argument("--saida", help="CSV de destino; padrao em reports/ conforme --analise")
+    parser.add_argument("--saida", help="CSV de destino; padrao em data_lake/gold/ conforme --analise")
     parser.add_argument("--data-inicio", help="Primeiro dia UTC, YYYY-MM-DD, inclusivo")
     parser.add_argument("--data-fim", help="Ultimo dia UTC, YYYY-MM-DD, inclusivo")
     argumentos = parser.parse_args(argv)

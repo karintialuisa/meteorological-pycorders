@@ -9,12 +9,12 @@ from pathlib import Path
 import pandas as pd
 from sqlalchemy.engine import Engine
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from config.settings import configure_logging, create_db_engine, get_path
-from database.dml.Persistir_Medicoes import carregar_dataframe, consultar_medicoes_periodo
-from ingestion.leituras.Parse_LeituraAmbiental import tabela_ambiental
-from ingestion.leituras.Parse_LeituraMetereologica import tabela_metereologica
-from ingestion.leituras.Persistir_Silver import persistir_silver, reconstruir_particoes_silver
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+from src.config.settings import configure_logging, create_db_engine, get_path
+from src.database.dml.Persistir_Medicoes import carregar_dataframe, consultar_medicoes_periodo
+from src.silver.leituras.Parse_LeituraAmbiental import tabela_ambiental
+from src.silver.leituras.Parse_LeituraMetereologica import tabela_metereologica
+from src.silver.leituras.Persistir_Silver import persistir_silver, reconstruir_particoes_silver
 
 
 DATASETS = {

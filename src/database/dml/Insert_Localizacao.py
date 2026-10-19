@@ -16,9 +16,9 @@ from sqlalchemy import text
 import sys
 from pathlib import Path
 # setamos o caminho para o sys.path, para ao executar o script possamos importar módulos do projeto corretamente.
-sys.path.append(str(Path(__file__).resolve().parents[2]))
-from config.settings import PROJECT_ROOT, configure_logging, create_db_engine
-from ingestion.localizacao.Parse_localizacao_JSON import (
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+from src.config.settings import PROJECT_ROOT, configure_logging, create_db_engine
+from src.silver.localizacao.Parse_localizacao_JSON import (
     tabela_cidade,
     tabela_estacao,
     tabela_estado,

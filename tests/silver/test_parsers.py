@@ -3,15 +3,15 @@
 import json
 import sys
 from pathlib import Path
-path = Path(__file__).resolve().parents[1] 
+path = Path(__file__).resolve().parents[2] 
 sys.path.append(str(path))  
 
 import pandas as pd
 import pytest
 
-from src.ingestion.localizacao import Parse_localizacao_JSON as localizacao
-from src.ingestion.leituras import Parse_LeituraAmbiental as ambiental
-from src.ingestion.leituras import Parse_LeituraMetereologica as meteorologica
+from src.silver.localizacao import Parse_localizacao_JSON as localizacao
+from src.silver.leituras import Parse_LeituraAmbiental as ambiental
+from src.silver.leituras import Parse_LeituraMetereologica as meteorologica
 
 
 def save_json(tmp_path, filename, content):
@@ -128,7 +128,7 @@ def test_tabela_estacao_rejects_unmatched_location(monkeypatch, tmp_path):
 
 
 def test_tabela_estacao_resolves_repository_locations(monkeypatch):
-    location_dir = Path(__file__).resolve().parents[1] / "src" / "ingestion" / "localizacao"
+    location_dir = Path(__file__).resolve().parents[2] / "data_lake" / "bronze" / "cadastros"
     paths = {
         "INGESTION_LOCALIZACAO_ESTADOS": location_dir / "estado.json",
         "INGESTION_LOCALIZACAO_MUNICIPIOS": location_dir / "municipio.json",

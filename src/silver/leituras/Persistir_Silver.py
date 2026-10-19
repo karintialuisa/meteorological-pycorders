@@ -15,8 +15,8 @@ from pathlib import Path
 
 import pandas as pd
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from config.settings import PROJECT_ROOT, get_silver_dir
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+from src.config.settings import PROJECT_ROOT, get_silver_dir
 
 
 # Referencia: projeto_final.pdf, secao 3.2 (persistencia e compressao);

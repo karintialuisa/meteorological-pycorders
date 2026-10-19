@@ -10,7 +10,8 @@ from pathlib import Path
 import subprocess
 import sys
 
-from config.settings import PROJECT_ROOT, configure_logging, get_env
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from src.config.settings import PROJECT_ROOT, configure_logging, get_env
 
 BASE_DIR = PROJECT_ROOT
 configure_logging(BASE_DIR)
@@ -120,10 +121,10 @@ def main():
                     break
 
         elif opcao == "5":
-            executar_script("src/analytics_statistics.py")
+            executar_script("src/gold/analytics_statistics.py")
 
         elif opcao == "6":
-            executar_script("src/analytics_statistics.py", ["--analise", "zscore"])
+            executar_script("src/gold/analytics_statistics.py", ["--analise", "zscore"])
 
         elif opcao == "7":
             dataset = input("Dataset (ambiental, meteorologica ou ambos): ").strip()

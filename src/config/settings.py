@@ -38,8 +38,14 @@ def get_silver_dir() -> Path:
 
 
 def get_api_raw_dir() -> Path:
-    """Retorna o diretório existente de leituras para respostas REST brutas."""
-    path = Path(os.getenv("API_RAW_DIR") or "src/ingestion/leituras").expanduser()
+    """Resolve o destino Bronze dos lotes REST genericos."""
+    path = Path(os.getenv("API_RAW_DIR") or "data_lake/bronze/api").expanduser()
+    return path if path.is_absolute() else PROJECT_ROOT / path
+
+
+def get_agritempo_raw_dir() -> Path:
+    """Resolve o destino Bronze do JSON cumulativo Agritempo."""
+    path = Path(os.getenv("AGRITEMPO_RAW_DIR") or "data_lake/bronze/agritempo").expanduser()
     return path if path.is_absolute() else PROJECT_ROOT / path
 
 

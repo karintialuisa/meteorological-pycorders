@@ -10,9 +10,9 @@ from pathlib import Path
 from sqlalchemy import text
 from sqlalchemy.engine import Connection
 
-sys.path.append(str(Path(__file__).resolve().parents[2]))
-from config.settings import configure_logging, create_db_engine
-from database.dml.etl_lock import adquirir_lock_etl
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+from src.config.settings import configure_logging, create_db_engine
+from src.database.dml.etl_lock import adquirir_lock_etl
 
 
 # Referencia: projeto_final.pdf, secao 3.3 (Leituras - cabecalho);

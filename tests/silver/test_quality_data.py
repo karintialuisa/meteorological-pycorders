@@ -4,7 +4,7 @@ import json
 
 import pandas as pd
 
-from src.ingestion.leituras.Persistir_Silver import persistir_silver
+from src.silver.leituras.Persistir_Silver import persistir_silver
 
 
 def _water_record(

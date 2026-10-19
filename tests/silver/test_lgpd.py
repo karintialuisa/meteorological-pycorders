@@ -12,7 +12,7 @@ from src.database.dml.Insert_Operadores import (
     _converter_status_operador,
     inserir_operadores,
 )
-from src.ingestion.localizacao import Parse_localizacao_JSON as localizacao
+from src.silver.localizacao import Parse_localizacao_JSON as localizacao
 from src.security.pii import decrypt_name, encrypt_name, hash_cpf, normalize_cpf
 
 
@@ -377,10 +377,10 @@ def test_json_loader_rejects_invalid_operator_fixtures(
 ):
     _seed_operator_stations(banco_teste)
     source_path = (
-        Path(__file__).resolve().parents[1]
-        / "src"
-        / "ingestion"
-        / "localizacao"
+        Path(__file__).resolve().parents[2]
+        / "data_lake"
+        / "bronze"
+        / "cadastros"
         / "operadores.json"
     )
     source = json.loads(source_path.read_text(encoding="utf-8"))

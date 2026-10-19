@@ -7,11 +7,11 @@ from pathlib import Path
 import pandas as pd
 from sqlalchemy import text
 
-sys.path.append(str(Path(__file__).resolve().parents[2]))
-from config.settings import configure_logging, create_db_engine
-from database.dml.Persistir_Medicoes import carregar_dataframe
-from ingestion.leituras.Parse_LeituraMetereologica import tabela_metereologica
-from ingestion.leituras.Persistir_Silver import persistir_silver
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+from src.config.settings import configure_logging, create_db_engine
+from src.database.dml.Persistir_Medicoes import carregar_dataframe
+from src.silver.leituras.Parse_LeituraMetereologica import tabela_metereologica
+from src.silver.leituras.Persistir_Silver import persistir_silver
 
 
 def resolver_id_cidade(df_leituras: pd.DataFrame, connection) -> pd.DataFrame:

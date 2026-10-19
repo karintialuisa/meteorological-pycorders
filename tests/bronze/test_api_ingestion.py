@@ -9,9 +9,9 @@ from urllib.error import URLError
 
 import pytest
 
-sys.path.append(str(Path(__file__).resolve().parents[1]))
+sys.path.append(str(Path(__file__).resolve().parents[2]))
 
-from src.ingestion import api_ingestion as ingestion
+from src.bronze import api_ingestion as ingestion
 
 
 def leitura_ambiental():

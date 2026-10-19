@@ -6,9 +6,9 @@ import sys
 
 import pytest
 
-sys.path.append(str(Path(__file__).resolve().parents[1]))
+sys.path.append(str(Path(__file__).resolve().parents[2]))
 
-import Get_dados as get_dados
+from src.bronze import agritempo as get_dados
 
 
 def resultado_agritempo(id_estacao, id_leitura, temperatura_minima, temperatura_maxima):
@@ -54,7 +54,7 @@ def test_obter_headers_rejeita_bearer_ausente(monkeypatch):
 
 
 def test_salvar_resultados_acumula_no_mesmo_json(monkeypatch, tmp_path):
-    monkeypatch.setattr(get_dados, "get_api_raw_dir", lambda: tmp_path)
+    monkeypatch.setattr(get_dados, "get_agritempo_raw_dir", lambda: tmp_path)
     registro_antigo = resultado_agritempo(901, 7001, 18.2, 28.1)
     registro_novo = resultado_agritempo(902, 7002, 19.0, 29.0)
 
@@ -75,7 +75,7 @@ def test_salvar_resultados_acumula_no_mesmo_json(monkeypatch, tmp_path):
 
 
 def test_resultado_fora_do_contrato_nao_altera_json_existente(monkeypatch, tmp_path):
-    monkeypatch.setattr(get_dados, "get_api_raw_dir", lambda: tmp_path)
+    monkeypatch.setattr(get_dados, "get_agritempo_raw_dir", lambda: tmp_path)
     caminho, _ = get_dados.salvar_resultados_append(
         [resultado_agritempo(901, 7001, 18.2, 28.1)]
     )
@@ -89,7 +89,7 @@ def test_resultado_fora_do_contrato_nao_altera_json_existente(monkeypatch, tmp_p
 
 
 def test_json_existente_invalido_nao_e_substituido(monkeypatch, tmp_path):
-    monkeypatch.setattr(get_dados, "get_api_raw_dir", lambda: tmp_path)
+    monkeypatch.setattr(get_dados, "get_agritempo_raw_dir", lambda: tmp_path)
     caminho = tmp_path / get_dados.NOME_ARQUIVO_JSON
     conteudo_invalido = "não é JSON"
     caminho.write_text(conteudo_invalido, encoding="utf-8")

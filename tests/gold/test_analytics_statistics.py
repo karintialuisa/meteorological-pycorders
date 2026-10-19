@@ -9,7 +9,7 @@ import sys
 import pandas as pd
 import pytest
 
-from src import analytics_statistics as analytics
+from src.gold import analytics_statistics as analytics
 
 
 def medicoes(valores, estacao=1, parametro="PH", unidade="pH"):
@@ -525,9 +525,9 @@ def test_zscore_report_rejects_destination_in_silver_and_bad_threshold(gravar_si
 @pytest.mark.parametrize("direto", [False, True])
 def test_zscore_cli_supports_threshold_and_explicit_failure(gravar_silver, tmp_path, direto):
     gravar_silver([1, 2, 3, 4])
-    raiz = Path(__file__).resolve().parents[1]
-    comando = [sys.executable, str(raiz / "src" / "analytics_statistics.py")] if direto else [
-        sys.executable, "-m", "src.analytics_statistics"
+    raiz = Path(__file__).resolve().parents[2]
+    comando = [sys.executable, str(raiz / "src" / "gold" / "analytics_statistics.py")] if direto else [
+        sys.executable, "-m", "src.gold.analytics_statistics"
     ]
     saida = tmp_path / "z.csv"
     argumentos = ["--analise", "zscore", "--saida", str(saida), "--limiar", "0.5"]
@@ -552,9 +552,9 @@ def test_zscore_cli_supports_threshold_and_explicit_failure(gravar_silver, tmp_p
 @pytest.mark.parametrize("direto", [False, True])
 def test_cli_publishes_csv_and_returns_failure_on_invalid_dates(gravar_silver, tmp_path, direto):
     gravar_silver()
-    raiz = Path(__file__).resolve().parents[1]
-    comando = [sys.executable, str(raiz / "src" / "analytics_statistics.py")] if direto else [
-        sys.executable, "-m", "src.analytics_statistics"
+    raiz = Path(__file__).resolve().parents[2]
+    comando = [sys.executable, str(raiz / "src" / "gold" / "analytics_statistics.py")] if direto else [
+        sys.executable, "-m", "src.gold.analytics_statistics"
     ]
     saida = tmp_path / "report.csv"
     ambiente = dict(os.environ, LOGS_DIR=str(tmp_path / "logs"))

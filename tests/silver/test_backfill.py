@@ -10,8 +10,8 @@ from sqlalchemy import text
 
 from src.database.dml import Backfill_Leituras as backfill
 from src.database.dml.Insert_Parametros import inserir_parametros
-from ingestion.leituras import Parse_LeituraAmbiental as ambiental
-from ingestion.leituras import Parse_LeituraMetereologica as meteorologica
+from src.silver.leituras import Parse_LeituraAmbiental as ambiental
+from src.silver.leituras import Parse_LeituraMetereologica as meteorologica
 from sqlserver_support import RUN_TESTS, disposable_engine
 
 

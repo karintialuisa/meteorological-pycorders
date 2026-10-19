@@ -37,7 +37,7 @@ def database_name(connection_url: str) -> str:
 
 
 def apply_ddl(engine, filename: str = "create-tables.sql") -> None:
-    ddl = (ROOT / "src" / "database" / "ddl" / filename).read_text(encoding="utf-8-sig")
+    ddl = (ROOT / "sql" / "ddl" / filename).read_text(encoding="utf-8-sig")
     ddl = re.sub(
         r"(?im)^\s*USE\s+\[?monitoramento\]?\s*;?\s*\r?\n\s*GO\s*$", "", ddl, count=1
     )

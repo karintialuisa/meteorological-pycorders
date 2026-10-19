@@ -14,10 +14,10 @@ import unicodedata
 from pathlib import Path
 import sys
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from config.settings import configure_logging, get_path
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+from src.config.settings import configure_logging, get_path
 # O ETL de operadores vive na camada DML; o nome segue exportado aqui por compatibilidade.
-from database.dml.Insert_Operadores import carregar_operadores
+from src.database.dml.Insert_Operadores import carregar_operadores
 
 # 3. Biblioteca para manipulação de dados em formato tabular (DataFrames)
 import pandas as pd
@@ -213,7 +213,7 @@ def tabela_estacao(df_cidade: pd.DataFrame, df_estado: pd.DataFrame) -> pd.DataF
 if __name__ == "__main__":
     import sys
 
-    sys.path.append(str(Path(__file__).resolve().parents[2]))
+    sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
     configure_logging(Path(__file__).resolve().parents[3], categoria="tratamento")
     carregar_operadores()
     logging.info("%s LISTA DE TABELAS %s", "=" * 30, "=" * 30)

@@ -8,11 +8,11 @@ from pathlib import Path
 
 from sqlalchemy import inspect, text
 
-sys.path.append(str(Path(__file__).resolve().parents[2]))
-from config.settings import configure_logging, create_db_engine
-from database.dml.Insert_Leituras import _normalizar_instante
-from database.dml.Persistir_Medicoes import MAPEAMENTO, preparar_evento, persistir_evento
-from database.dml.etl_lock import adquirir_lock_etl
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+from src.config.settings import configure_logging, create_db_engine
+from src.database.dml.Insert_Leituras import _normalizar_instante
+from src.database.dml.Persistir_Medicoes import MAPEAMENTO, preparar_evento, persistir_evento
+from src.database.dml.etl_lock import adquirir_lock_etl
 
 
 def migrar_legado(engine, *, arquivar: bool = False) -> dict[str, int]:

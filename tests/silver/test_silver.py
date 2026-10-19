@@ -10,8 +10,8 @@ import pandas as pd
 import pyarrow.parquet as parquet
 import pytest
 
-from src.ingestion.leituras import Persistir_Silver as silver
-from src.ingestion.leituras.Persistir_Silver import persistir_silver
+from src.silver.leituras import Persistir_Silver as silver
+from src.silver.leituras.Persistir_Silver import persistir_silver
 
 
 def _water_record(
@@ -404,7 +404,7 @@ def test_reconstruction_coordinates_with_normal_writer_in_another_process(tmp_pa
     terminou = tmp_path / "writer-done"
     script = (
         "import json,sys; from pathlib import Path; import pandas as pd; "
-        "from src.ingestion.leituras.Persistir_Silver import persistir_silver; "
+        "from src.silver.leituras.Persistir_Silver import persistir_silver; "
         "Path(sys.argv[2]).touch(); "
         "persistir_silver(pd.DataFrame([json.loads(sys.argv[4])]),'qualidade_agua',sys.argv[1]); "
         "Path(sys.argv[3]).touch()"
@@ -415,7 +415,7 @@ def test_reconstruction_coordinates_with_normal_writer_in_another_process(tmp_pa
         nonlocal processo
         processo = subprocess.Popen(
             [sys.executable, "-c", script, str(tmp_path), str(pronto), str(terminou), json.dumps(novo)],
-            cwd=Path(__file__).resolve().parents[1],
+            cwd=Path(__file__).resolve().parents[2],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
         )
         limite = time.monotonic() + 20
