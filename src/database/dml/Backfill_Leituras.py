@@ -11,10 +11,10 @@ from sqlalchemy.engine import Engine
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from config.settings import configure_logging, create_db_engine, get_path
-from database.dml.Persistir_Medicoes import carregar_dataframe
+from database.dml.Persistir_Medicoes import carregar_dataframe, consultar_medicoes_periodo
 from ingestion.leituras.Parse_LeituraAmbiental import tabela_ambiental
 from ingestion.leituras.Parse_LeituraMetereologica import tabela_metereologica
-from ingestion.leituras.Persistir_Silver import persistir_silver
+from ingestion.leituras.Persistir_Silver import persistir_silver, reconstruir_particoes_silver
 
 
 DATASETS = {
@@ -43,12 +43,15 @@ def reprocessar_periodo(
     data_fim: str,
     *,
     engine: Engine | None = None,
+    reconstruir_silver: bool = False,
 ) -> dict[str, dict[str, int]]:
     """Reaplica leituras do periodo ao SQL e a Silver usando as regras atuais.
 
     A fonte e o JSON definido no .env, nao uma consulta a API ou migracao do
     legado. Replays preservam o SQL existente e permitem reparar Silver ausente.
     Conflitos continuam rejeitados, sem substituir os valores originais.
+    reconstruir_silver substitui dias completos pela referencia SQL aceita,
+    inclusive quando o JSON disponivel nao contem todo o historico do dia.
     """
     if dataset not in (*DATASETS, "ambos"):
         raise ValueError(f"Dataset de backfill desconhecido: {dataset}")
@@ -73,10 +76,23 @@ def reprocessar_periodo(
                 if target_engine is None:
                     target_engine = create_db_engine()
                 aprovados = carregar_dataframe(selecionados, origem, target_engine)
-                if not aprovados.empty:
+                if not aprovados.empty and not reconstruir_silver:
                     silver = persistir_silver(aprovados, origem)
                     gravadas_silver = int(silver["linhas_gravadas"])
             rejeitados = len(selecionados) - len(aprovados)
+            if reconstruir_silver and not rejeitados:
+                if target_engine is None:
+                    target_engine = create_db_engine()
+                silver = reconstruir_particoes_silver(
+                    lambda: consultar_medicoes_periodo(target_engine, origem, inicio, fim),
+                    origem, inicio, fim,
+                )
+                gravadas_silver = int(silver["linhas_gravadas"])
+            elif reconstruir_silver:
+                logging.error(
+                    "Reconstrucao Silver cancelada: dataset=%s eventos_rejeitados=%s",
+                    nome, rejeitados,
+                )
             resultado[nome] = {
                 "selecionados": len(selecionados),
                 "aprovados": len(aprovados),
@@ -101,10 +117,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--dataset", choices=(*DATASETS, "ambos"), required=True)
     parser.add_argument("--data-inicio", required=True, help="Data UTC inclusiva, AAAA-MM-DD.")
     parser.add_argument("--data-fim", required=True, help="Data UTC exclusiva, AAAA-MM-DD.")
+    parser.add_argument(
+        "--reconstruir-silver", action="store_true",
+        help="Substitui as particoes diarias pela referencia SQL aceita (ID 71).",
+    )
     args = parser.parse_args(argv)
     configure_logging(categoria="insercao")
     try:
-        resultado = reprocessar_periodo(args.dataset, args.data_inicio, args.data_fim)
+        resultado = reprocessar_periodo(
+            args.dataset, args.data_inicio, args.data_fim,
+            reconstruir_silver=args.reconstruir_silver,
+        )
     except ValueError as error:
         logging.error("Backfill interrompido: %s", error)
         return 1

@@ -129,9 +129,18 @@ def main():
             dataset = input("Dataset (ambiental, meteorologica ou ambos): ").strip()
             data_inicio = input("Data inicial UTC (AAAA-MM-DD, inclusiva): ").strip()
             data_fim = input("Data final UTC (AAAA-MM-DD, exclusiva): ").strip()
+            modo = input("Reconstruir particoes Silver a partir do SQL? (s/N): ").strip().lower()
+            if modo not in {"", "n", "s"}:
+                logging.error("Resposta invalida para reconstrucao Silver. Informe s ou n.")
+                continue
+            argumentos = [
+                "--dataset", dataset, "--data-inicio", data_inicio, "--data-fim", data_fim,
+            ]
+            if modo == "s":
+                argumentos.append("--reconstruir-silver")
             executar_script(
                 "src/database/dml/Backfill_Leituras.py",
-                ["--dataset", dataset, "--data-inicio", data_inicio, "--data-fim", data_fim],
+                argumentos,
             )
 
         else:

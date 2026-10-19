@@ -1,11 +1,15 @@
 """Persistencia governada das leituras na camada Silver."""
 
+import errno
 import json
 import logging
 import os
 import sys
 import tempfile
+import time
 import uuid
+from collections.abc import Callable, Iterator
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -57,6 +61,59 @@ CONTRATOS_DATASETS = {
         "relacoes": ["id_estacao", "id_cidade"],
     },
 }
+
+
+def _pasta_dataset(dataset: str, diretorio_silver: str | Path | None) -> Path:
+    """Resolve o destino e recusa datasets fora dos contratos conhecidos."""
+    if dataset not in CONTRATOS_DATASETS:
+        raise ValueError(f"Dataset Silver nao suportado: {dataset}")
+    raiz = Path(diretorio_silver) if diretorio_silver is not None else get_silver_dir()
+    if not raiz.is_absolute():
+        raiz = PROJECT_ROOT / raiz
+    pasta = raiz / dataset
+    pasta.mkdir(parents=True, exist_ok=True)
+    return pasta
+
+
+@contextmanager
+def _bloquear_dataset(pasta: Path, timeout: float = 60) -> Iterator[None]:
+    """Serializa escritores locais, inclusive processos, sem apagar o lockfile.
+
+    O lock cobre leitura, mesclagem e troca de arquivos. O sistema operacional
+    libera a reserva se o processo terminar; o arquivo nao representa a reserva.
+    """
+    if os.name == "nt":
+        import msvcrt
+    else:
+        import fcntl
+
+    with (pasta / ".silver.lock").open("a+b") as arquivo:
+        if arquivo.seek(0, os.SEEK_END) == 0:
+            arquivo.write(b"\0")
+            arquivo.flush()
+        limite = time.monotonic() + timeout
+        while True:
+            arquivo.seek(0)
+            try:
+                if os.name == "nt":
+                    msvcrt.locking(arquivo.fileno(), msvcrt.LK_NBLCK, 1)
+                else:
+                    fcntl.flock(arquivo.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                break
+            except OSError as error:
+                if error.errno not in {errno.EACCES, errno.EAGAIN, errno.EDEADLK}:
+                    raise
+                if time.monotonic() >= limite:
+                    raise TimeoutError(f"Timeout ao reservar Silver/{pasta.name}") from error
+                time.sleep(0.05)
+        try:
+            yield
+        finally:
+            arquivo.seek(0)
+            if os.name == "nt":
+                msvcrt.locking(arquivo.fileno(), msvcrt.LK_UNLCK, 1)
+            else:
+                fcntl.flock(arquivo.fileno(), fcntl.LOCK_UN)
 
 
 def _mascara_vazia(df: pd.DataFrame, colunas: list[str]) -> pd.Series:
@@ -234,9 +291,13 @@ def persistir_silver(
     O manifesto registra apenas contagens de qualidade e caminhos tecnicos; nao
     serializa valores das leituras, dados pessoais, chaves ou outros segredos.
     """
-    if dataset not in CONTRATOS_DATASETS:
-        raise ValueError(f"Dataset Silver nao suportado: {dataset}")
+    pasta_dataset = _pasta_dataset(dataset, diretorio_silver)
+    with _bloquear_dataset(pasta_dataset):
+        return _persistir_silver(df, dataset, pasta_dataset)
 
+
+def _persistir_silver(df: pd.DataFrame, dataset: str, pasta_dataset: Path) -> dict[str, object]:
+    """Mescla sob o lock mantido pelo ponto de entrada publico."""
     contrato = CONTRATOS_DATASETS[dataset]
     ausentes = sorted(set(contrato["obrigatorias"]) - set(df.columns))
     if ausentes:
@@ -244,11 +305,7 @@ def persistir_silver(
             f"Colunas obrigatorias ausentes para Silver/{dataset}: {ausentes}"
         )
 
-    raiz = Path(diretorio_silver) if diretorio_silver is not None else get_silver_dir()
-    if not raiz.is_absolute():
-        raiz = PROJECT_ROOT / raiz
-    pasta_dataset = raiz / dataset
-    pasta_dataset.mkdir(parents=True, exist_ok=True)
+    raiz = pasta_dataset.parent
 
     # 3.2 Auditoria (itens 26-31): mede qualidade antes de qualquer persistencia.
     limpas, metricas = _resumo_qualidade(df, dataset, contrato)
@@ -355,3 +412,106 @@ def persistir_silver(
         "particoes_gravadas": particoes_gravadas,
         "manifesto": caminho_manifesto,
     }
+
+
+def reconstruir_particoes_silver(
+    carregar_referencia: Callable[[], pd.DataFrame],
+    dataset: str,
+    inicio: pd.Timestamp,
+    fim: pd.Timestamp,
+    diretorio_silver: str | Path | None = None,
+) -> dict[str, object]:
+    """Substitui dias UTC pela referencia completa, consultada dentro do lock.
+
+    A referencia deve vir do SQL aceito, nunca de um lote parcial de JSON.
+    Dias existentes sem eventos SQL sao substituidos por Parquet vazio. Todo
+    o conteudo e validado antes da primeira troca; a atomicidade e por arquivo.
+    """
+    if (
+        inicio.tzinfo is None or fim.tzinfo is None
+        or inicio.utcoffset().total_seconds() != 0
+        or fim.utcoffset().total_seconds() != 0
+        or inicio != inicio.normalize() or fim != fim.normalize() or inicio >= fim
+    ):
+        raise ValueError("Reconstrucao exige dias completos em UTC e inicio anterior ao fim")
+    pasta = _pasta_dataset(dataset, diretorio_silver)
+    raiz = pasta.parent
+    contrato = CONTRATOS_DATASETS[dataset]
+    with _bloquear_dataset(pasta):
+        referencia = carregar_referencia()
+        ausentes = sorted(set(contrato["obrigatorias"]) - set(referencia.columns))
+        if ausentes:
+            raise ValueError(f"Referencia SQL incompleta para Silver: {ausentes}")
+        limpas, metricas = _resumo_qualidade(referencia, dataset, contrato)
+        if len(limpas) != len(referencia):
+            raise ValueError("Referencia SQL rejeitada pela qualidade Silver; particoes preservadas")
+        if limpas.duplicated(subset=contrato["chave"]).any():
+            raise ValueError("Referencia SQL contem chaves duplicadas; particoes preservadas")
+        if not limpas["data_leitura"].between(inicio, fim, inclusive="left").all():
+            raise ValueError("Referencia SQL contem leituras fora do periodo")
+
+        dias = limpas["data_leitura"].dt.strftime("%Y-%m-%d")
+        particoes = set(dias)
+        chaves_fora = set()
+        for caminho in pasta.glob("data_leitura=*/*.parquet"):
+            dia = caminho.parent.name.removeprefix("data_leitura=")
+            instante = pd.Timestamp(dia, tz="UTC")
+            if inicio <= instante < fim:
+                particoes.add(dia)
+            else:
+                existentes = pd.read_parquet(caminho, columns=contrato["chave"])
+                chaves_fora.update(_chaves(existentes, contrato["chave"]))
+        if chaves_fora.intersection(_chaves(limpas, contrato["chave"])):
+            raise ValueError("Chave da referencia SQL ja existe fora do periodo Silver")
+
+        destinos = []
+        for dia in sorted(particoes):
+            destino = pasta / f"data_leitura={dia}" / "part-00000.parquet"
+            extras = list(destino.parent.glob("*.parquet")) if destino.parent.exists() else []
+            if any(caminho != destino for caminho in extras):
+                raise ValueError(f"Particao com arquivos Parquet fora do layout esperado: {dia}")
+            anteriores = len(pd.read_parquet(destino)) if destino.exists() else 0
+            lote = limpas.loc[dias == dia].sort_values(
+                contrato["chave"], kind="stable",
+            ).sort_values("data_leitura", kind="stable").reset_index(drop=True)
+            destinos.append((destino, lote, anteriores))
+
+        detalhes = []
+        for destino, lote, anteriores in destinos:
+            destino.parent.mkdir(parents=True, exist_ok=True)
+            _gravar_parquet_atomico(lote, destino)
+            detalhes.append({
+                "caminho": destino.relative_to(raiz).as_posix(),
+                "linhas_anteriores": anteriores,
+                "linhas_finais": len(lote),
+            })
+        execucao_id = uuid.uuid4().hex
+        manifesto = {
+            "execucao_id": execucao_id,
+            "dataset": dataset,
+            "modo": "reconstrucao_sql",
+            "executado_em_utc": datetime.now(timezone.utc).isoformat(),
+            "inicio_utc": inicio.isoformat(),
+            "fim_exclusivo_utc": fim.isoformat(),
+            "formato": "parquet",
+            "compressao": "snappy",
+            "linhas_recebidas": len(referencia),
+            "linhas_gravadas": len(limpas),
+            "particoes": detalhes,
+            "dimensoes_qualidade": metricas,
+        }
+        caminho_manifesto = raiz / "_audit" / dataset / f"{execucao_id}.json"
+        caminho_manifesto.parent.mkdir(parents=True, exist_ok=True)
+        _gravar_json_atomico(manifesto, caminho_manifesto)
+        logging.info(
+            "Silver/%s reconstruida: inicio_utc=%s fim_exclusivo_utc=%s "
+            "particoes=%s linhas_anteriores=%s linhas_finais=%s manifesto=%s",
+            dataset, inicio.isoformat(), fim.isoformat(), len(detalhes),
+            sum(item["linhas_anteriores"] for item in detalhes), len(limpas),
+            caminho_manifesto.relative_to(raiz).as_posix(),
+        )
+        return {
+            "linhas_gravadas": len(limpas),
+            "particoes_gravadas": [item["caminho"] for item in detalhes],
+            "manifesto": caminho_manifesto,
+        }

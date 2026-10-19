@@ -225,7 +225,7 @@ Os parsers existentes continuam responsáveis pela qualidade e deduplicação; o
 
 O destino SQL usa `DB_*` e a Silver usa `SILVER_DIR`, exatamente como nas cargas normais. **Executar esse comando grava nos destinos configurados**, não seleciona automaticamente o banco descartável das integrações. Primeiro valide em ambiente isolado.
 
-Reexecutar o mesmo intervalo não duplica eventos: replays preservam identidades/valores no SQL e ignoram chaves já presentes na Silver. Dados conflitantes são rejeitados, sem substituir o histórico aceito. O fluxo não implementa correção por sobrescrita do ID 71. O log de inserção registra fonte, período e contagens; rejeições da carga retornam código de saída 1. Períodos sem leituras são registrados com zero selecionados, sem abrir conexão SQL.
+Reexecutar o mesmo intervalo no modo padrão não duplica eventos: replays preservam identidades/valores no SQL e ignoram chaves já presentes na Silver. Dados conflitantes são rejeitados, sem substituir o histórico aceito. O log de inserção registra fonte, período e contagens; rejeições da carga retornam código de saída 1. No modo padrão, períodos sem leituras são registrados com zero selecionados, sem abrir conexão SQL.
 
 Cada evento SQL é transacional, mas não existe transação única para todo o período nem transação distribuída SQL/Parquet. Em falha da Silver após commit SQL, o erro permanece explícito e a repetição do período pode reconstruir a projeção ausente. Partições fora do período permanecem preservadas. A migração de tabelas legadas em `Migrar_Leituras.py` continua sendo uma operação distinta.
 
@@ -241,11 +241,42 @@ Na raiz do repositório, execute somente os dois cenários de integração do ba
 .\.venv\Scripts\python.exe -m pytest .\tests\test_backfill.py -k backfill_sqlserver_disposable -v
 ```
 
-O teste passa explicitamente a engine descartável ao backfill. Para cada dataset (ambiental e meteorológico), cria o DDL oficial, cadastra estação e parâmetros sintéticos, lê JSONs temporários e grava a Silver apenas sob `.pytest_tmp`. Confere fronteiras UTC, preservação de registros e partições fora do período, identidade e valores no replay, ausência de duplicação e reconstrução da Silver ausente.
+O teste passa explicitamente a engine descartável ao backfill. Para cada dataset (ambiental e meteorológico), cria o DDL oficial, cadastra estação e parâmetros sintéticos, lê JSONs temporários e grava a Silver apenas sob o diretório temporário do pytest (`.pytest_tmp` por padrão). Confere fronteiras UTC, preservação de registros e partições fora do período, identidade e valores no replay, ausência de duplicação e reconstrução da Silver ausente. Também homologa o ID 71: introduz duplicatas, valores incorretos e linhas extras na Silver, reduz o JSON a um lote parcial e verifica que duas reconstruções restauram exatamente os eventos aceitos no SQL, sem modificar o banco.
 
 **Pré-condições e limpeza:** a instância deve estar acessível e o banco descartável deve existir e estar sem tabelas em `dbo`. O lifecycle valida o nome e o banco conectado, adquire um lock exclusivo e remove as tabelas do projeto ao final, inclusive em falhas após a inicialização. Não execute contra `monitoramento` nem remova tabelas preexistentes apenas para liberar o teste. O resultado esperado é **2 testes aprovados**; `SKIPPED` significa integração desabilitada, não homologação concluída.
 
 Para executar os testes locais e esses cenários SQL no mesmo comando, use `python -m pytest tests\test_backfill.py -v` com o interpretador do ambiente virtual e a integração habilitada. Essa validação usa exclusivamente dados sintéticos: não carrega os JSONs operacionais nem publica dados no banco normal.
+
+### Reconstrução das partições Silver — ID 71
+
+O backfill também permite **substituir integralmente as partições diárias afetadas**, sem duplicar suas chaves lógicas. Na opção **7** do menu, responda `s` à pergunta sobre reconstruir a Silver a partir do SQL; Enter ou `n` mantém o backfill padrão. Pela CLI:
+
+```powershell
+.\.venv\Scripts\python.exe .\src\database\dml\Backfill_Leituras.py --dataset ambos --data-inicio 2026-09-15 --data-fim 2026-09-18 --reconstruir-silver
+```
+
+**Esse comando grava nos destinos normais configurados**, não no banco descartável. O intervalo abrange os dias 15, 16 e 17 em UTC. O processo é:
+
+1. Ler os JSONs operacionais e executar os parsers e a carga SQL existentes. Novos eventos válidos são inseridos; o histórico aceito continua protegido contra alterações conflitantes.
+2. Se houver rejeição na carga do dataset, cancelar sua reconstrução Silver, registrar o motivo e retornar falha. Eventos de outros datasets e eventos já confirmados no SQL não são revertidos.
+3. Sob lock exclusivo do dataset Silver, consultar **todos os eventos SQL aceitos no intervalo**, incluindo os que não estão no JSON disponível. A consulta usa os locks ETL existentes durante a leitura.
+4. Validar o conjunto completo antes da primeira substituição: contrato, qualidade, intervalo e unicidade. Dados SQL incompletos ou inválidos causam erro explícito, sem descartar silenciosamente registros para reconstruir a partição.
+5. Regravar os dias selecionados com Parquet/Snappy e troca atômica por arquivo. Remover duplicatas e linhas indevidas decorre da substituição pelo conjunto SQL, não de aceitar o último valor recebido. Dias fora do intervalo não são alterados.
+6. Registrar manifesto em `_audit/<dataset>` com modo `reconstrucao_sql`, período UTC, contagens anteriores/finais por partição e métricas de qualidade, sem valores das medições ou dados pessoais.
+
+**Referência e cardinalidade:** os JSONs continuam sendo a entrada operacional; o SQL aceito é a referência da projeção Silver no instante da consulta. Repetir a reconstrução sem novos eventos mantém as mesmas chaves, valores e quantidade lógica. Uma partição defeituosa pode ter sua quantidade corrigida para corresponder ao SQL. As chaves permanecem `id_leitura_origem` para água e `(id_estacao, data_leitura UTC)` para meteorologia. O recurso não autoriza corrigir valores já aceitos no SQL.
+
+Neste modo, `gravados_silver` conta todas as linhas reconstruídas da referência SQL, inclusive em replay; pode ser maior que `selecionados`/`aprovados`, que continuam contando apenas o lote JSON validado do período.
+
+**Dias sem eventos:** um JSON sem registros no período não causa exclusão por si só; neste modo, o SQL é consultado mesmo assim. Se um dia existente na Silver não possui eventos no SQL, seu arquivo é substituído por um Parquet vazio com o contrato do dataset. Dias sem eventos e sem arquivo existente não geram partições novas.
+
+**Concorrência e recuperação:** todos os escritores Silver deste módulo compartilham `.silver.lock` por dataset, inclusive o modo de mesclagem normal. A reserva tem timeout de 60 segundos e é liberada pelo sistema operacional no encerramento do processo; não apague o arquivo de lock para tentar liberá-la. A coordenação pressupõe escritores cooperantes no mesmo destino e um sistema de arquivos com suporte aos locks utilizados. Os arquivos temporários são criados junto ao destino, não na pasta global `Temp`. A substituição é atômica por arquivo, não para todo o intervalo ou entre SQL/Parquet; falhas intermediárias são explícitas e permitem retomada por reexecução. Um erro de auditoria pode ocorrer após a troca dos arquivos e também exige reexecução.
+
+O layout aceito continua sendo um `part-00000.parquet` por dia. Arquivos Parquet adicionais no dia afetado ou colisões de chave com dias fora do intervalo causam erro antes das substituições; precisam de investigação, não de exclusão automática. Arquivos existentes devem estar legíveis para contabilização e auditoria.
+
+Os testes locais em `tests/test_silver.py` e `tests/test_backfill.py` cobrem igualdade com a referência SQL, JSON parcial ou sem registros no período, limpeza de dias sem eventos SQL, rejeições, replay, preservação fora do intervalo, falhas e retomada, timeout e coordenação com um escritor em outro processo. O comando de homologação no banco descartável da seção anterior também executa os cenários de reconstrução dos dois datasets.
+
+Na validação desta implementação, a tentativa de integração com `monitoramento_lgpd_test` foi bloqueada na conexão: SQLSTATE `28000`, erros SQL Server `18456`/`4060` (login/acesso ao banco). Nenhuma tabela foi criada ou alterada por essa tentativa. A homologação real deve ser repetida após verificar a existência/disponibilidade do banco na instância configurada e a permissão do login utilizado; teste ignorado ou falha de conexão não equivale a homologação aprovada.
 
 Para iniciar a API que lê os JSONs (não consulta o banco):
 

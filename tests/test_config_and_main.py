@@ -231,9 +231,10 @@ def test_main_does_not_dispatch_invalid_option(main_module, monkeypatch, caplog)
     assert "Opção inválida. Digite 1, 2, 3, 4, 5, 6 ou 7." in caplog.text
 
 
-def test_main_dispatches_backfill_with_period(main_module, monkeypatch):
+@pytest.mark.parametrize("modo", ["", "n", "s"])
+def test_main_dispatches_backfill_with_period(main_module, monkeypatch, modo):
     options = iter(["7", "4"])
-    answers = iter(["ambos", "2026-09-15", "2026-09-17"])
+    answers = iter(["ambos", "2026-09-15", "2026-09-17", modo])
     calls = []
     monkeypatch.setattr(main_module, "exibir_menu", lambda: next(options))
     monkeypatch.setattr("builtins.input", lambda _prompt: next(answers))
@@ -246,8 +247,19 @@ def test_main_dispatches_backfill_with_period(main_module, monkeypatch):
 
     assert calls == [(
         "src/database/dml/Backfill_Leituras.py",
-        ["--dataset", "ambos", "--data-inicio", "2026-09-15", "--data-fim", "2026-09-17"],
+        ["--dataset", "ambos", "--data-inicio", "2026-09-15", "--data-fim", "2026-09-17"]
+        + (["--reconstruir-silver"] if modo == "s" else []),
     )]
+
+
+def test_main_rejects_unknown_reconstruction_mode(main_module, monkeypatch, caplog):
+    options = iter(["7", "4"])
+    answers = iter(["ambos", "2026-09-15", "2026-09-17", "talvez"])
+    monkeypatch.setattr(main_module, "exibir_menu", lambda: next(options))
+    monkeypatch.setattr("builtins.input", lambda _prompt: next(answers))
+    monkeypatch.setattr(main_module, "executar_script", lambda *_args: pytest.fail("Execucao inesperada"))
+    main_module.main()
+    assert "Resposta invalida" in caplog.text
 
 
 def test_main_stops_etl_after_a_script_fails(main_module, monkeypatch):

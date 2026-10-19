@@ -5,7 +5,7 @@ from collections.abc import Mapping
 
 import pandas as pd
 from sqlalchemy import inspect, text
-from sqlalchemy.engine import Connection
+from sqlalchemy.engine import Connection, Engine
 
 from database.dml.Insert_Leituras import _normalizar_registro, inserir_leituras
 from database.dml.Insert_Leitura_Itens import _normalizar_item, inserir_leitura_itens
@@ -22,6 +22,72 @@ MAPEAMENTO = {
         "vento": "VENTO", "condicao": "CONDICAO_METEO",
     },
 }
+
+
+def _validar_legado_inativo(connection: Connection) -> None:
+    """Impede tratar um modelo legado ativo como referencia 3FN vazia."""
+    schema = "dbo" if connection.dialect.name == "mssql" else None
+    existentes = set(inspect(connection).get_table_names(schema=schema))
+    for tabela in MAPEAMENTO:
+        if tabela in existentes and connection.execute(
+            text(f"SELECT COUNT(*) FROM {tabela}")
+        ).scalar_one():
+            raise ValueError("legado ativo com dados: realizar migracao e arquivamento antes da carga")
+
+
+def consultar_medicoes_periodo(
+    engine: Engine, origem: str, inicio: pd.Timestamp, fim: pd.Timestamp,
+) -> pd.DataFrame:
+    """Projeta todos os eventos SQL aceitos no intervalo UTC para a Silver.
+
+    As colunas sao derivadas apenas do mapeamento fixo. LEFT JOIN preserva
+    eventos incompletos para que a reconstrucao falhe, em vez de omiti-los.
+    """
+    if origem not in MAPEAMENTO:
+        raise ValueError("origem de medicao desconhecida")
+    medidas = []
+    for coluna, codigo in MAPEAMENTO[origem].items():
+        valor = "valor_texto" if codigo == "CONDICAO_METEO" else "valor_numerico"
+        medidas.append(f"MAX(CASE WHEN p.codigo='{codigo}' THEN i.{valor} END) AS {coluna}")
+    identificadores = (
+        "l.chave_origem AS id_leitura_origem"
+        if origem == "qualidade_agua" else "e.id_cidade"
+    )
+    consulta = text(
+        f"SELECT {identificadores},l.id_estacao,l.data_leitura,{','.join(medidas)} "
+        "FROM leituras l JOIN estacao e ON e.id=l.id_estacao "
+        "LEFT JOIN leitura_itens i ON i.id_leitura=l.id "
+        "LEFT JOIN parametros p ON p.id=i.id_parametro "
+        "WHERE l.origem=:origem AND l.data_leitura>=:inicio AND l.data_leitura<:fim "
+        "GROUP BY l.id,l.chave_origem,l.id_estacao,l.data_leitura,e.id_cidade "
+        "ORDER BY l.data_leitura,l.chave_origem"
+    )
+    with engine.begin() as connection:
+        adquirir_lock_etl(connection, "etl:leituras")
+        adquirir_lock_etl(connection, "etl:leitura_itens")
+        _validar_legado_inativo(connection)
+        dados = pd.read_sql_query(
+            consulta, connection,
+            params={
+                "origem": origem,
+                "inicio": inicio.to_pydatetime(),
+                "fim": fim.to_pydatetime(),
+            },
+        )
+    dados["data_leitura"] = pd.to_datetime(dados["data_leitura"], utc=True, format="mixed")
+    for coluna, codigo in MAPEAMENTO[origem].items():
+        if codigo != "CONDICAO_METEO":
+            dados[coluna] = pd.to_numeric(dados[coluna]).astype(float)
+    for coluna in ("id_estacao", "id_cidade"):
+        if coluna in dados:
+            dados[coluna] = dados[coluna].astype("int64")
+    if dados.empty:
+        coluna_texto = "id_leitura_origem" if origem == "qualidade_agua" else "condicao"
+        dados[coluna_texto] = dados[coluna_texto].astype("string")
+    return dados[
+        [*MAPEAMENTO[origem], "data_leitura", "id_estacao"]
+        + (["id_leitura_origem"] if origem == "qualidade_agua" else ["id_cidade"])
+    ]
 
 
 def preparar_evento(registro: Mapping[str, object], origem: str):
@@ -85,13 +151,7 @@ def carregar_dataframe(df: pd.DataFrame, origem: str, engine) -> pd.DataFrame:
     if origem not in MAPEAMENTO:
         raise ValueError("origem de medicao desconhecida")
     with engine.connect() as connection:
-        schema = "dbo" if connection.dialect.name == "mssql" else None
-        existentes = set(inspect(connection).get_table_names(schema=schema))
-        for tabela in MAPEAMENTO:
-            if tabela in existentes and connection.execute(
-                text(f"SELECT COUNT(*) FROM {tabela}")
-            ).scalar_one():
-                raise ValueError("legado ativo com dados: realizar migracao e arquivamento antes da carga")
+        _validar_legado_inativo(connection)
     aprovados = []
     for indice, registro in enumerate(df.to_dict("records")):
         try:

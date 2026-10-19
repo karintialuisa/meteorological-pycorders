@@ -1,10 +1,16 @@
 """Testes de persistencia e auditoria da camada Silver."""
 
 import json
+import subprocess
+import sys
+import time
+from pathlib import Path
 
 import pandas as pd
 import pyarrow.parquet as parquet
+import pytest
 
+from src.ingestion.leituras import Persistir_Silver as silver
 from src.ingestion.leituras.Persistir_Silver import persistir_silver
 
 
@@ -268,3 +274,184 @@ def test_empty_silver_batch_writes_zero_count_manifest(tmp_path):
     assert result["linhas_gravadas"] == 0
     assert result["manifesto"].is_file()
     assert not (tmp_path / "qualidade_agua" / "data_leitura=NaT").exists()
+
+
+def _reconstruir(tmp_path, referencia, inicio="2026-05-20", fim="2026-05-21"):
+    """Usa uma referencia sintetica completa no contrato da reconstrucao."""
+    return silver.reconstruir_particoes_silver(
+        lambda: referencia.copy(), "qualidade_agua",
+        pd.Timestamp(inicio, tz="UTC"), pd.Timestamp(fim, tz="UTC"), tmp_path,
+    )
+
+
+def test_reconstruction_clears_existing_day_only_when_sql_reference_is_empty(tmp_path):
+    dados = pd.DataFrame([_water_record("W-1", "2026-05-20T12:00:00Z")])
+    persistir_silver(dados, "qualidade_agua", tmp_path)
+    destino = tmp_path / "qualidade_agua" / "data_leitura=2026-05-20" / "part-00000.parquet"
+    resultado = _reconstruir(tmp_path, dados.iloc[:0])
+    assert pd.read_parquet(destino).empty
+    assert resultado["linhas_gravadas"] == 0
+    assert _manifest(resultado)["particoes"][0]["linhas_anteriores"] == 1
+    assert _manifest(resultado)["particoes"][0]["linhas_finais"] == 0
+    assert _reconstruir(tmp_path, dados.iloc[:0])["linhas_gravadas"] == 0
+
+
+@pytest.mark.parametrize("defeito", ["duplicada", "invalida", "fora", "coluna"])
+def test_invalid_reference_preserves_all_partitions(tmp_path, defeito):
+    dados = pd.DataFrame([_water_record("W-1", "2026-05-20T12:00:00Z")])
+    persistir_silver(dados, "qualidade_agua", tmp_path)
+    destino = tmp_path / "qualidade_agua" / "data_leitura=2026-05-20" / "part-00000.parquet"
+    anterior = destino.read_bytes()
+    if defeito == "duplicada":
+        dados = pd.concat([dados, dados], ignore_index=True)
+    elif defeito == "invalida":
+        dados["ph"] = 15
+    elif defeito == "fora":
+        dados["data_leitura"] = "2026-05-21T00:00:00Z"
+    else:
+        dados = dados.drop(columns="ph")
+    with pytest.raises(ValueError):
+        _reconstruir(tmp_path, dados)
+    assert destino.read_bytes() == anterior
+
+
+def test_reconstruction_rejects_key_collision_with_untouched_partition(tmp_path):
+    dados = pd.DataFrame([_water_record("W-1", "2026-05-19T12:00:00Z")])
+    persistir_silver(dados, "qualidade_agua", tmp_path)
+    dados["data_leitura"] = "2026-05-20T12:00:00Z"
+    with pytest.raises(ValueError, match="fora do periodo"):
+        _reconstruir(tmp_path, dados)
+    assert not (tmp_path / "qualidade_agua" / "data_leitura=2026-05-20").exists()
+
+
+@pytest.mark.parametrize("somente_extra", [False, True])
+def test_reconstruction_rejects_unexpected_partition_files(tmp_path, somente_extra):
+    dados = pd.DataFrame([_water_record("W-1", "2026-05-20T12:00:00Z")])
+    persistir_silver(dados, "qualidade_agua", tmp_path)
+    extra = tmp_path / "qualidade_agua" / "data_leitura=2026-05-20" / "part-extra.parquet"
+    dados.to_parquet(extra, index=False)
+    if somente_extra:
+        extra.with_name("part-00000.parquet").unlink()
+        dados = dados.iloc[:0]
+    with pytest.raises(ValueError, match="layout esperado"):
+        _reconstruir(tmp_path, dados)
+
+
+def test_failed_atomic_replace_preserves_previous_file_and_removes_temporary(tmp_path, monkeypatch):
+    dados = pd.DataFrame([_water_record("W-1", "2026-05-20T12:00:00Z")])
+    persistir_silver(dados, "qualidade_agua", tmp_path)
+    destino = tmp_path / "qualidade_agua" / "data_leitura=2026-05-20" / "part-00000.parquet"
+    anterior = destino.read_bytes()
+    dados["ph"] = 8
+
+    def falhar(*_args):
+        raise OSError("Falha na troca atomica")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(silver.os, "replace", falhar)
+        with pytest.raises(OSError, match="Falha na troca"):
+            _reconstruir(tmp_path, dados)
+    assert destino.read_bytes() == anterior
+    assert not list(destino.parent.glob("*.tmp"))
+    _reconstruir(tmp_path, dados)
+    assert pd.read_parquet(destino)["ph"].tolist() == [8]
+
+
+def test_reconstruction_resumes_after_failure_in_second_partition(tmp_path, monkeypatch):
+    dados = pd.DataFrame([
+        _water_record("W-1", "2026-05-20T12:00:00Z"),
+        _water_record("W-2", "2026-05-21T12:00:00Z"),
+    ])
+    persistir_silver(dados, "qualidade_agua", tmp_path)
+    dados["ph"] = 8
+    gravar = silver._gravar_parquet_atomico
+
+    def falhar_segundo(lote, destino):
+        if "2026-05-21" in str(destino):
+            raise OSError("Falha no segundo dia")
+        gravar(lote, destino)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(silver, "_gravar_parquet_atomico", falhar_segundo)
+        with pytest.raises(OSError, match="segundo dia"):
+            _reconstruir(tmp_path, dados, fim="2026-05-22")
+    resultado = _reconstruir(tmp_path, dados, fim="2026-05-22")
+    assert resultado["linhas_gravadas"] == 2
+    for caminho in (tmp_path / "qualidade_agua").glob("data_leitura=*/*.parquet"):
+        assert pd.read_parquet(caminho)["ph"].tolist() == [8]
+
+
+def test_manifest_failure_is_explicit_and_reconstruction_can_be_replayed(tmp_path, monkeypatch):
+    dados = pd.DataFrame([_water_record("W-1", "2026-05-20T12:00:00Z")])
+
+    def falhar(*_args):
+        raise OSError("Auditoria indisponivel")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(silver, "_gravar_json_atomico", falhar)
+        with pytest.raises(OSError, match="Auditoria indisponivel"):
+            _reconstruir(tmp_path, dados)
+    resultado = _reconstruir(tmp_path, dados)
+    assert resultado["linhas_gravadas"] == 1
+    assert _manifest(resultado)["particoes"][0]["linhas_finais"] == 1
+
+
+def test_reconstruction_coordinates_with_normal_writer_in_another_process(tmp_path):
+    """O escritor nao pode mesclar uma versao antiga enquanto outro a substitui."""
+    dados = pd.DataFrame([_water_record("W-1", "2026-05-20T12:00:00Z")])
+    novo = _water_record("W-2", "2026-05-20T13:00:00Z")
+    pronto = tmp_path / "writer-ready"
+    terminou = tmp_path / "writer-done"
+    script = (
+        "import json,sys; from pathlib import Path; import pandas as pd; "
+        "from src.ingestion.leituras.Persistir_Silver import persistir_silver; "
+        "Path(sys.argv[2]).touch(); "
+        "persistir_silver(pd.DataFrame([json.loads(sys.argv[4])]),'qualidade_agua',sys.argv[1]); "
+        "Path(sys.argv[3]).touch()"
+    )
+    processo = None
+
+    def consultar():
+        nonlocal processo
+        processo = subprocess.Popen(
+            [sys.executable, "-c", script, str(tmp_path), str(pronto), str(terminou), json.dumps(novo)],
+            cwd=Path(__file__).resolve().parents[1],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+        )
+        limite = time.monotonic() + 20
+        while not pronto.exists():
+            if processo.poll() is not None:
+                pytest.fail(f"Escritor falhou: {processo.communicate()}")
+            if time.monotonic() >= limite:
+                pytest.fail("Escritor nao iniciou")
+            time.sleep(0.05)
+        time.sleep(0.2)
+        assert not terminou.exists()
+        return dados
+
+    try:
+        silver.reconstruir_particoes_silver(
+            consultar, "qualidade_agua", pd.Timestamp("2026-05-20", tz="UTC"),
+            pd.Timestamp("2026-05-21", tz="UTC"), tmp_path,
+        )
+        assert processo is not None
+        saida, erro = processo.communicate(timeout=20)
+        assert processo.returncode == 0, (saida, erro)
+    finally:
+        if processo is not None and processo.poll() is None:
+            processo.kill()
+            processo.communicate()
+    destino = tmp_path / "qualidade_agua" / "data_leitura=2026-05-20" / "part-00000.parquet"
+    assert set(pd.read_parquet(destino)["id_leitura_origem"]) == {"W-1", "W-2"}
+    assert terminou.exists()
+
+
+def test_dataset_lock_timeout_is_explicit_and_release_allows_retry(tmp_path):
+    pasta = tmp_path / "qualidade_agua"
+    pasta.mkdir()
+    with silver._bloquear_dataset(pasta):
+        with pytest.raises(TimeoutError, match="Timeout ao reservar"):
+            with silver._bloquear_dataset(pasta, timeout=0):
+                pytest.fail("Lock simultaneo")
+    with silver._bloquear_dataset(pasta, timeout=0):
+        assert (pasta / ".silver.lock").exists()
