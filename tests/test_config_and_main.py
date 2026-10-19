@@ -132,7 +132,7 @@ def test_exibir_menu_returns_trimmed_selection(main_module, monkeypatch):
 
 
 def test_menu_preserves_remaining_option_numbers(main_module):
-    assert set(main_module.MENU) == {"1", "2", "3", "4", "5", "6"}
+    assert set(main_module.MENU) == {"1", "2", "3", "4", "5", "6", "7"}
 
 
 def test_executar_script_handles_missing_script(main_module, tmp_path, monkeypatch):
@@ -228,7 +228,26 @@ def test_main_does_not_dispatch_invalid_option(main_module, monkeypatch, caplog)
     main_module.main()
 
     assert calls == []
-    assert "Opção inválida. Digite 1, 2, 3, 4, 5 ou 6." in caplog.text
+    assert "Opção inválida. Digite 1, 2, 3, 4, 5, 6 ou 7." in caplog.text
+
+
+def test_main_dispatches_backfill_with_period(main_module, monkeypatch):
+    options = iter(["7", "4"])
+    answers = iter(["ambos", "2026-09-15", "2026-09-17"])
+    calls = []
+    monkeypatch.setattr(main_module, "exibir_menu", lambda: next(options))
+    monkeypatch.setattr("builtins.input", lambda _prompt: next(answers))
+    monkeypatch.setattr(
+        main_module, "executar_script",
+        lambda path, args: calls.append((path, args)) or True,
+    )
+
+    main_module.main()
+
+    assert calls == [(
+        "src/database/dml/Backfill_Leituras.py",
+        ["--dataset", "ambos", "--data-inicio", "2026-09-15", "--data-fim", "2026-09-17"],
+    )]
 
 
 def test_main_stops_etl_after_a_script_fails(main_module, monkeypatch):

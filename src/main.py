@@ -22,7 +22,8 @@ MENU = {
     "3": "Cadastrar parâmetros, catálogo LGPD e operadores",
     "4": "Cancelar Operação",
     "5": "Gerar estatísticas descritivas da Silver -> CSV",
-    "6": "Validar anomalias por Z-Score -> CSV"
+    "6": "Validar anomalias por Z-Score -> CSV",
+    "7": "Reprocessar leituras historicas por periodo (backfill)"
 }
 
 
@@ -124,8 +125,17 @@ def main():
         elif opcao == "6":
             executar_script("src/analytics_statistics.py", ["--analise", "zscore"])
 
+        elif opcao == "7":
+            dataset = input("Dataset (ambiental, meteorologica ou ambos): ").strip()
+            data_inicio = input("Data inicial UTC (AAAA-MM-DD, inclusiva): ").strip()
+            data_fim = input("Data final UTC (AAAA-MM-DD, exclusiva): ").strip()
+            executar_script(
+                "src/database/dml/Backfill_Leituras.py",
+                ["--dataset", dataset, "--data-inicio", data_inicio, "--data-fim", data_fim],
+            )
+
         else:
-            logging.warning("Opção inválida. Digite 1, 2, 3, 4, 5 ou 6.")
+            logging.warning("Opção inválida. Digite 1, 2, 3, 4, 5, 6 ou 7.")
 
 
 if __name__ == "__main__":

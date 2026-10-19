@@ -1,0 +1,263 @@
+"""Backfill por periodo com JSON real, SQL isolado e Silver temporaria."""
+
+import json
+
+import pandas as pd
+import pytest
+from sqlalchemy import text
+
+from src.database.dml import Backfill_Leituras as backfill
+from src.database.dml.Insert_Parametros import inserir_parametros
+from ingestion.leituras import Parse_LeituraAmbiental as ambiental
+from ingestion.leituras import Parse_LeituraMetereologica as meteorologica
+from sqlserver_support import RUN_TESTS, disposable_engine
+
+
+@pytest.fixture
+def fontes_historicas(tmp_path, monkeypatch):
+    """Configura JSONs sinteticos e Silver temporaria para ambos os bancos."""
+    fontes = {
+        "INGESTION_LEITURA_AMBIENTAL": tmp_path / "water.json",
+        "INGESTION_LEITURA_METEOROLOGICA": tmp_path / "weather.json",
+    }
+    monkeypatch.setattr(backfill, "get_path", fontes.__getitem__)
+    monkeypatch.setattr(ambiental, "get_path", fontes.__getitem__)
+    monkeypatch.setattr(meteorologica, "get_path", fontes.__getitem__)
+    datas = [
+        "2026-05-19T23:59:59Z",
+        "2026-05-19T21:00:00-03:00",
+        "2026-05-20T12:00:00Z",
+        "2026-05-21T00:00:00Z",
+    ]
+    agua = []
+    meteo = []
+    for indice, instante in enumerate(datas):
+        comum = {"estacao_id": "AMB-001", "timestamp": instante}
+        agua.append({
+            **comum, "id": f"W-{indice}",
+            "qualidade_agua": {
+                "temperatura": {"valor": 20},
+                "ph": {"valor": 7},
+                "oxigenio_dissolvido": {"valor": 8},
+                "condutividade": {"valor": 100},
+                "turbidez": {"valor": 3},
+            },
+        })
+        meteo.append({
+            **comum, "cidade": "Sao Paulo", "estado": "SP",
+            "dados_meteorologicos": {
+                "temperatura_ar": {"valor": 24},
+                "umidade": {"valor": 65},
+                "chuva": {"valor": 0},
+                "vento": {"velocidade": 4},
+                "condicao": {"description": "Nublado"},
+            },
+        })
+    fontes["INGESTION_LEITURA_AMBIENTAL"].write_text(
+        json.dumps({"leituras_ambientais": agua}), encoding="utf-8",
+    )
+    fontes["INGESTION_LEITURA_METEOROLOGICA"].write_text(
+        json.dumps({"leituras_meteorologicas": meteo}), encoding="utf-8",
+    )
+    return tmp_path / "silver"
+
+
+@pytest.fixture
+def historico(fontes_historicas, banco_teste):
+    """Prepara os relacionamentos em SQLite para os testes locais."""
+    with banco_teste.begin() as connection:
+        connection.execute(text(
+            "INSERT INTO estado(id,codigo_ibge,sigla,nome) VALUES(1,35,'SP','Sao Paulo')"
+        ))
+        connection.execute(text(
+            "INSERT INTO cidade(id,id_estado,codigo_ibge,nome) VALUES(10,1,3550308,'Sao Paulo')"
+        ))
+        connection.execute(text(
+            "INSERT INTO estacao(id,codigo_origem,nome,status,id_cidade,id_estado) "
+            "VALUES(20,'AMB-001','Estacao',1,10,1)"
+        ))
+    inserir_parametros(engine=banco_teste)
+    return fontes_historicas
+
+
+def _eventos(engine):
+    """Consulta identidade e valores para comprovar preservacao no replay."""
+    with engine.connect() as connection:
+        return connection.execute(text(
+            "SELECT l.id,l.origem,l.chave_origem,l.data_leitura,i.id_parametro,"
+            "i.valor_numerico,i.valor_texto FROM leituras l "
+            "JOIN leitura_itens i ON i.id_leitura=l.id ORDER BY l.id,i.id_parametro"
+        )).all()
+
+
+@pytest.mark.parametrize("dataset,origem", [
+    ("ambiental", "qualidade_agua"),
+    ("meteorologica", "leitura_meteorologica"),
+])
+def test_backfill_filters_utc_replays_and_preserves_outside_period(
+    historico, banco_teste, dataset, origem,
+):
+    """Executa parsers/carga/Silver reais e verifica fronteiras e idempotencia."""
+    _verificar_backfill(historico, banco_teste, dataset, origem)
+
+
+@pytest.mark.skipif(
+    not RUN_TESTS, reason="Habilite SQL Server descartavel em src/config/.env.",
+)
+@pytest.mark.parametrize("dataset,origem", [
+    ("ambiental", "qualidade_agua"),
+    ("meteorologica", "leitura_meteorologica"),
+])
+def test_backfill_sqlserver_disposable(fontes_historicas, dataset, origem):
+    """Homologa o mesmo fluxo no DDL real, com limpeza pelo lifecycle seguro."""
+    with disposable_engine() as engine:
+        with engine.begin() as connection:
+            connection.execute(text(
+                "INSERT INTO estado(codigo_ibge,sigla,nome) VALUES(99,'ZZ','Estado teste')"
+            ))
+            connection.execute(text(
+                "INSERT INTO cidade(id_estado,codigo_ibge,nome) "
+                "SELECT id,9999999,'Cidade teste' FROM estado"
+            ))
+            connection.execute(text(
+                "INSERT INTO estacao(codigo_origem,nome,status,id_cidade,id_estado) "
+                "SELECT 'AMB-001','Estacao teste',1,id,id_estado FROM cidade"
+            ))
+        inserir_parametros(engine=engine)
+        _verificar_backfill(fontes_historicas, engine, dataset, origem)
+
+
+def _verificar_backfill(historico, banco_teste, dataset, origem):
+    """Verifica o mesmo contrato de backfill em SQLite ou SQL Server."""
+    backfill.reprocessar_periodo(dataset, "2026-05-19", "2026-05-20", engine=banco_teste)
+    fora = historico / origem / "data_leitura=2026-05-19" / "part-00000.parquet"
+    bytes_fora = fora.read_bytes()
+    eventos_fora = _eventos(banco_teste)
+
+    resultado = backfill.reprocessar_periodo(
+        dataset, "2026-05-20", "2026-05-21", engine=banco_teste,
+    )
+
+    assert resultado[dataset] == {
+        "selecionados": 2, "aprovados": 2, "rejeitados": 0, "gravados_silver": 2,
+    }
+    destino = historico / origem / "data_leitura=2026-05-20" / "part-00000.parquet"
+    linhas = pd.read_parquet(destino)
+    assert linhas["data_leitura"].tolist() == [
+        pd.Timestamp("2026-05-20T00:00:00Z"),
+        pd.Timestamp("2026-05-20T12:00:00Z"),
+    ]
+    assert not (historico / origem / "data_leitura=2026-05-21").exists()
+    assert fora.read_bytes() == bytes_fora
+    assert _eventos(banco_teste)[:5] == eventos_fora
+    eventos = _eventos(banco_teste)
+    bytes_destino = destino.read_bytes()
+
+    repetido = backfill.reprocessar_periodo(
+        dataset, "2026-05-20", "2026-05-21", engine=banco_teste,
+    )
+    assert repetido[dataset]["gravados_silver"] == 0
+    assert _eventos(banco_teste) == eventos
+    assert destino.read_bytes() == bytes_destino
+
+    destino.unlink()
+    reparado = backfill.reprocessar_periodo(
+        dataset, "2026-05-20", "2026-05-21", engine=banco_teste,
+    )
+    assert reparado[dataset]["gravados_silver"] == 2
+    assert _eventos(banco_teste) == eventos
+    assert fora.read_bytes() == bytes_fora
+
+
+def test_backfill_both_datasets(historico, banco_teste):
+    resultado = backfill.reprocessar_periodo(
+        "ambos", "2026-05-20", "2026-05-21", engine=banco_teste,
+    )
+    assert set(resultado) == {"ambiental", "meteorologica"}
+    assert all(item["aprovados"] == 2 for item in resultado.values())
+
+
+def test_backfill_empty_period_does_not_connect(historico, monkeypatch):
+    def conexao_inesperada():
+        pytest.fail("Periodo sem leituras nao deve abrir conexao.")
+    monkeypatch.setattr(backfill, "create_db_engine", conexao_inesperada)
+    resultado = backfill.reprocessar_periodo("ambos", "2025-01-01", "2025-01-02")
+    assert all(item["selecionados"] == 0 for item in resultado.values())
+
+
+def test_backfill_recovers_after_silver_failure(historico, banco_teste, monkeypatch):
+    writer = backfill.persistir_silver
+
+    def falha_silver(*_args):
+        raise OSError("Falha de escrita simulada")
+    monkeypatch.setattr(backfill, "persistir_silver", falha_silver)
+    with pytest.raises(OSError, match="Falha de escrita"):
+        backfill.reprocessar_periodo(
+            "ambiental", "2026-05-20", "2026-05-21", engine=banco_teste,
+        )
+    eventos = _eventos(banco_teste)
+    assert len(eventos) == 10
+    monkeypatch.setattr(backfill, "persistir_silver", writer)
+    resultado = backfill.reprocessar_periodo(
+        "ambiental", "2026-05-20", "2026-05-21", engine=banco_teste,
+    )
+    assert resultado["ambiental"]["gravados_silver"] == 2
+    assert _eventos(banco_teste) == eventos
+
+
+@pytest.mark.parametrize("inicio,fim", [
+    ("invalid", "2026-05-21"),
+    ("2026-02-30", "2026-05-21"),
+    ("20260520", "2026-05-21"),
+    ("2026-05-20", "2026-05-20"),
+    ("2026-05-21", "2026-05-20"),
+])
+def test_backfill_rejects_invalid_period_before_reading_source(monkeypatch, inicio, fim):
+    monkeypatch.setattr(backfill, "get_path", lambda _key: pytest.fail("Leitura inesperada"))
+    with pytest.raises(ValueError):
+        backfill.reprocessar_periodo("ambos", inicio, fim)
+
+
+def test_backfill_rejects_unknown_dataset():
+    with pytest.raises(ValueError, match="Dataset de backfill desconhecido"):
+        backfill.reprocessar_periodo("desconhecido", "2026-05-20", "2026-05-21")
+
+
+def test_backfill_conflict_is_reported_and_original_is_preserved(
+    historico, banco_teste, caplog, monkeypatch,
+):
+    backfill.reprocessar_periodo("ambiental", "2026-05-20", "2026-05-21", engine=banco_teste)
+    original = _eventos(banco_teste)
+    parser = backfill.tabela_ambiental
+
+    def dados_conflitantes():
+        dados = parser()
+        dados["ph"] = 8
+        return dados
+    monkeypatch.setattr(backfill, "tabela_ambiental", dados_conflitantes)
+    resultado = backfill.reprocessar_periodo(
+        "ambiental", "2026-05-20", "2026-05-21", engine=banco_teste,
+    )
+    assert resultado["ambiental"]["rejeitados"] == 2
+    assert "conflitante" in caplog.text
+    assert _eventos(banco_teste) == original
+
+
+@pytest.mark.parametrize("rejeitados,codigo", [(0, 0), (1, 1)])
+def test_cli_returns_failure_for_rejected_events(monkeypatch, rejeitados, codigo):
+    monkeypatch.setattr(backfill, "configure_logging", lambda **_kwargs: None)
+    monkeypatch.setattr(
+        backfill, "reprocessar_periodo",
+        lambda *_args: {"ambiental": {"rejeitados": rejeitados}},
+    )
+    assert backfill.main([
+        "--dataset", "ambiental", "--data-inicio", "2026-05-20", "--data-fim", "2026-05-21",
+    ]) == codigo
+
+
+def test_cli_logs_invalid_period_and_returns_failure(monkeypatch, caplog):
+    monkeypatch.setattr(backfill, "configure_logging", lambda **_kwargs: None)
+    assert backfill.main([
+        "--dataset", "ambos", "--data-inicio", "2026-05-21", "--data-fim", "2026-05-20",
+    ]) == 1
+    assert "Backfill interrompido" in caplog.text

@@ -211,6 +211,42 @@ No menu, a opção 1 executa localização, cadastro dos parâmetros e, em segui
 
 A opção `2` executa `Get_dados.py`: consulta estações e dados climáticos, aplica o limite `API_REQUESTS_PER_MINUTE` e acrescenta os resultados ao JSON cumulativo. Também é possível executar com `python Get_dados.py`. O módulo `src/ingestion/api_ingestion.py` permanece como conector genérico separado para endpoints que já atendam aos contratos ambiental ou meteorológico definidos nele; ele não é o coletor da Agritempo.
 
+### Reprocessamento histórico por período — ID 70
+
+A opção **7** do menu executa o backfill de leituras: informe `ambiental`, `meteorologica` ou `ambos`, a data inicial inclusiva e a data final exclusiva, no formato `AAAA-MM-DD`. O filtro considera a data da leitura normalizada em UTC, não a data de ingestão. Também é possível executar diretamente:
+
+```powershell
+.\.venv\Scripts\python.exe .\src\database\dml\Backfill_Leituras.py --dataset ambos --data-inicio 2026-09-15 --data-fim 2026-09-18
+```
+
+Esse exemplo seleciona os dias 15, 16 e 17 de setembro em UTC. As fontes são os JSONs definidos por `INGESTION_LEITURA_AMBIENTAL` e `INGESTION_LEITURA_METEOROLOGICA` no `src/config/.env`. Os arquivos precisam conter os registros históricos desejados: o backfill não busca dados em APIs, não lê os envelopes JSONL da Bronze e não consome o JSON cumulativo Agritempo. Preservar esses arquivos é necessário para futuras reexecuções.
+
+Os parsers existentes continuam responsáveis pela qualidade e deduplicação; o filtro por período é aplicado ao resultado validado. As contagens de selecionados/aprovados/rejeitados do backfill referem-se a essa etapa; rejeições anteriores dos parsers mantêm seus próprios logs. Estações e parâmetros devem estar cadastrados no destino 3FN; não execute com medições ativas nas tabelas legadas sem a migração descrita neste documento.
+
+O destino SQL usa `DB_*` e a Silver usa `SILVER_DIR`, exatamente como nas cargas normais. **Executar esse comando grava nos destinos configurados**, não seleciona automaticamente o banco descartável das integrações. Primeiro valide em ambiente isolado.
+
+Reexecutar o mesmo intervalo não duplica eventos: replays preservam identidades/valores no SQL e ignoram chaves já presentes na Silver. Dados conflitantes são rejeitados, sem substituir o histórico aceito. O fluxo não implementa correção por sobrescrita do ID 71. O log de inserção registra fonte, período e contagens; rejeições da carga retornam código de saída 1. Períodos sem leituras são registrados com zero selecionados, sem abrir conexão SQL.
+
+Cada evento SQL é transacional, mas não existe transação única para todo o período nem transação distribuída SQL/Parquet. Em falha da Silver após commit SQL, o erro permanece explícito e a repetição do período pode reconstruir a projeção ausente. Partições fora do período permanecem preservadas. A migração de tabelas legadas em `Migrar_Leituras.py` continua sendo uma operação distinta.
+
+Os testes locais em `tests/test_backfill.py` usam JSONs sintéticos, SQLite e Silver temporária para verificar fronteiras UTC, ambos os datasets, replay, conflitos, preservação dos dados fora do intervalo e recuperação da Silver. O ID 70 está concluído; a integração opt-in abaixo permite repetir a validação no SQL Server descartável.
+
+#### Testar o backfill no banco descartável
+
+Use `monitoramento_lgpd_test`, já configurado em `SQLSERVER_LGPD_TEST_URL` no `src/config/.env`, com `RUN_SQLSERVER_LGPD_TESTS=1`. A configuração de testes é separada de `DB_*`: **não é necessário alterar o destino normal da aplicação**.
+
+Na raiz do repositório, execute somente os dois cenários de integração do backfill:
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest .\tests\test_backfill.py -k backfill_sqlserver_disposable -v
+```
+
+O teste passa explicitamente a engine descartável ao backfill. Para cada dataset (ambiental e meteorológico), cria o DDL oficial, cadastra estação e parâmetros sintéticos, lê JSONs temporários e grava a Silver apenas sob `.pytest_tmp`. Confere fronteiras UTC, preservação de registros e partições fora do período, identidade e valores no replay, ausência de duplicação e reconstrução da Silver ausente.
+
+**Pré-condições e limpeza:** a instância deve estar acessível e o banco descartável deve existir e estar sem tabelas em `dbo`. O lifecycle valida o nome e o banco conectado, adquire um lock exclusivo e remove as tabelas do projeto ao final, inclusive em falhas após a inicialização. Não execute contra `monitoramento` nem remova tabelas preexistentes apenas para liberar o teste. O resultado esperado é **2 testes aprovados**; `SKIPPED` significa integração desabilitada, não homologação concluída.
+
+Para executar os testes locais e esses cenários SQL no mesmo comando, use `python -m pytest tests\test_backfill.py -v` com o interpretador do ambiente virtual e a integração habilitada. Essa validação usa exclusivamente dados sintéticos: não carrega os JSONs operacionais nem publica dados no banco normal.
+
 Para iniciar a API que lê os JSONs (não consulta o banco):
 
 ```bash
@@ -386,6 +422,10 @@ Os testes SQLite exercitam parsers, loaders, constraints, configuração e write
 
 Com o Python global, a coleta de `tests/test_lgpd.py` falha se `cryptography` não estiver instalado nele.
 
+O `pytest.ini` configura `--basetemp=.pytest_tmp`: ao executar os comandos a partir da raiz do repositório, as fixtures `tmp_path` e `tmp_path_factory` usam essa pasta local, ignorada pelo Git, em vez de `%TEMP%\pytest-of-...\pytest-current`. Isso evita a falha de permissão na limpeza do link temporário do Windows, sem alterar as variáveis globais `TEMP`/`TMP` nem a configuração do SQL Server.
+
+Essa pasta é exclusiva dos testes: o pytest apaga seu conteúdo no início de cada execução. Não armazene arquivos importantes nela e não execute duas sessões simultâneas com o mesmo `--basetemp`. Para execuções paralelas independentes, informe caminhos locais distintos, por exemplo `--basetemp=.pytest_tmp\sessao-a` e `--basetemp=.pytest_tmp\sessao-b`. O ajuste elimina o problema de limpeza temporária; eventuais erros de autenticação ou de asserção dos testes continuam sendo exibidos normalmente.
+
 As integrações LGPD, integridade, unicidade e migração com SQL Server exigem um banco descartável vazio, separado de `monitoramento`. Todas compartilham a configuração carregada automaticamente de `src/config/.env`, independentemente do diretório de execução. Configure nesse arquivo local, não versionado, `RUN_SQLSERVER_LGPD_TESTS=1` e `SQLSERVER_LGPD_TEST_URL` para uma instância SQL Server e um banco descartável que já exista. O banco deve ter nome terminado em `_test`, `_tests`, `_disposable` ou `_scratch`.
 
 ```powershell
@@ -515,7 +555,7 @@ Este runbook documenta o procedimento; nenhuma migração foi executada em `moni
 
 A reexecução mantém uma linha por hash e preserva ID, data de criação e ciphertext quando nada muda. Alterações de nome, status ou estação atualizam a mesma linha; a comparação de nome utiliza descriptografia autorizada e auditada. O JSON original pode conter PII e exige acesso restrito; a proteção da tabela não anonimiza o arquivo de origem.
 
-A integração automática SQLExpress usa JSON temporário sintético e o DDL oficial para validar estrutura, carga, replay, atualização, rejeições e ausência de CPF/nome/chaves/ciphertext nos logs. O aceite dos operadores é técnico, em `monitoramento_lgpd_test`: não publica dados em `monitoramento` nem aprova a fonte operacional (ID 10). O ID 44 tem homologação própria nas suítes de integridade, unicidade e migração.
+A integração automática SQLExpress usa JSON temporário sintético e o DDL oficial para validar estrutura, carga, replay, atualização, rejeições e ausência de CPF/nome/chaves/ciphertext nos logs. A fonte operacional do ID 10 foi definida como `src/ingestion/localizacao/operadores.json`; a homologação SQL Server é uma verificação técnica separada, feita somente com dados sintéticos em banco descartável, sem publicar dados em `monitoramento`. O ID 44 tem homologação própria nas suítes de integridade, unicidade e migração.
 
 ## Equipe
 
