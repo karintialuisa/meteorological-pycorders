@@ -3,6 +3,7 @@
 import json
 import logging
 import sys
+from datetime import datetime
 from pathlib import Path
 from urllib.error import URLError
 
@@ -163,6 +164,7 @@ def test_contrato_agritempo_rejeita_leituras_de_temperatura_invalidas(
 def test_ingerir_endpoint_grava_aprovados_em_lotes_append_only(
     monkeypatch, tmp_path, caplog
 ):
+    """Audita rejeições e prova que lotes novos não alteram o histórico Bronze."""
     aprovado = leitura_ambiental()
     invalido = leitura_ambiental()
     invalido["qualidade_agua"]["ph"]["valor"] = "7.2"
@@ -188,13 +190,18 @@ def test_ingerir_endpoint_grava_aprovados_em_lotes_append_only(
 
     assert (primeiro.recebidos, primeiro.aprovados, primeiro.rejeitados) == (2, 1, 1)
     assert "Registro da API rejeitado" in caplog.text
+    registro_auditado = next(
+        record for record in caplog.records if "Auditoria de contrato" in record.message
+    )
+    momento_auditoria = registro_auditado.message.split("momento_utc=")[1]
+    assert datetime.fromisoformat(momento_auditoria).utcoffset().total_seconds() == 0
     assert requisicoes[0][0].get_header("Authorization") == "Bearer segredo-de-teste"
     assert requisicoes[0][1] == 15
     linha = json.loads(primeiro.arquivo_bronze.read_text(encoding="utf-8"))
     assert linha["source"] == "estacoes-rio"
     assert linha["dataset"] == "ambiental"
     assert linha["record"] == aprovado
-    assert linha["ingested_at"]
+    assert datetime.fromisoformat(linha["ingested_at"]).utcoffset().total_seconds() == 0
 
     historico = primeiro.arquivo_bronze.read_bytes()
     segundo = ingestion.ingerir_endpoint(
@@ -206,6 +213,26 @@ def test_ingerir_endpoint_grava_aprovados_em_lotes_append_only(
     assert segundo.arquivo_bronze != primeiro.arquivo_bronze
     assert primeiro.arquivo_bronze.read_bytes() == historico
     assert len(list(tmp_path.glob("api_*.jsonl"))) == 2
+
+
+def test_gravar_bronze_adiciona_timestamp_utc_a_cada_registro(tmp_path):
+    """Confirma que cada linha recebe seu próprio timestamp ISO 8601 UTC."""
+    arquivo = ingestion._gravar_bronze(
+        [leitura_ambiental(), leitura_ambiental()],
+        "ambiental",
+        "estacoes-rio",
+        tmp_path,
+    )
+
+    linhas = [
+        json.loads(linha)
+        for linha in arquivo.read_text(encoding="utf-8").splitlines()
+    ]
+    assert len(linhas) == 2
+    assert all(
+        datetime.fromisoformat(linha["ingested_at"]).utcoffset().total_seconds() == 0
+        for linha in linhas
+    )
 
 
 @pytest.mark.parametrize("body", [b"", b"[]"])

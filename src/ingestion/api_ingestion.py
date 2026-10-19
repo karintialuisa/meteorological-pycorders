@@ -88,6 +88,7 @@ CONTRATO_AGRITEMPO = {
 
 
 def _id_agritempo_valido(valor: object) -> bool:
+    """Aceita identificadores inteiros positivos ou textos não vazios."""
     return not isinstance(valor, bool) and (
         (isinstance(valor, int) and valor > 0)
         or (isinstance(valor, str) and bool(valor.strip()))
@@ -95,6 +96,7 @@ def _id_agritempo_valido(valor: object) -> bool:
 
 
 def _data_agritempo_valida(valor: object) -> bool:
+    """Verifica se o valor representa uma data ISO 8601 sem componente de hora."""
     if not isinstance(valor, str):
         return False
     try:
@@ -105,6 +107,7 @@ def _data_agritempo_valida(valor: object) -> bool:
 
 
 def _timestamp_agritempo_valido(valor: object) -> bool:
+    """Exige timestamp ISO 8601 com informação explícita de fuso horário."""
     if not isinstance(valor, str) or not valor.strip():
         return False
     try:
@@ -115,6 +118,7 @@ def _timestamp_agritempo_valido(valor: object) -> bool:
 
 
 def _numero_agritempo_valido(valor: object) -> bool:
+    """Aceita números finitos, mas não booleanos (subclasse de int em Python)."""
     return (
         not isinstance(valor, bool)
         and isinstance(valor, (int, float))
@@ -295,6 +299,8 @@ def extrair_temperaturas_ar(resultados: list[dict]) -> list[dict]:
 
 @dataclass(frozen=True)
 class ResultadoIngestao:
+    """Resumo imutável da quantidade e do resultado de uma carga REST."""
+
     dataset: str
     recebidos: int
     aprovados: int
@@ -312,6 +318,7 @@ class LimiteRequisicoes:
         relogio: Callable[[], float] = time.monotonic,
         dormir: Callable[[float], None] = time.sleep,
     ) -> None:
+        """Configura o limite e injeta relógio/espera para permitir testes determinísticos."""
         if requisicoes_por_minuto < 1:
             raise ValueError("O limite de requisições deve ser maior que zero.")
         self.requisicoes_por_minuto = requisicoes_por_minuto
@@ -320,6 +327,7 @@ class LimiteRequisicoes:
         self._instantes: deque[float] = deque()
 
     def aguardar_permissao(self) -> None:
+        """Aguarda até haver espaço na janela móvel de sessenta segundos."""
         agora = self.relogio()
         while self._instantes and agora - self._instantes[0] >= 60:
             self._instantes.popleft()
@@ -334,12 +342,17 @@ class LimiteRequisicoes:
 
 
 def _valor_aninhado(registro: dict, objeto: str, campo: str):
+    """Retorna um campo aninhado ou None se o valor intermediário não for objeto."""
     conteudo = registro.get(objeto)
     return conteudo.get(campo) if isinstance(conteudo, dict) else None
 
 
 def validar_registro(dataset: str, registro: object) -> str | None:
-    """Retorna o motivo de rejeição ou None quando o registro adere ao contrato."""
+    """Valida os campos obrigatórios, medições e timestamp de um registro REST.
+
+    Retorna o primeiro motivo de rejeição encontrado; retorna None se o
+    registro estiver de acordo com o contrato do dataset.
+    """
     if dataset not in CONTRATOS:
         return f"dataset desconhecido: {dataset}"
     if not isinstance(registro, dict):
@@ -386,6 +399,7 @@ def validar_registro(dataset: str, registro: object) -> str | None:
 
 
 def _extrair_registros(payload: object, dataset: str) -> list:
+    """Normaliza lista, envelope ou objeto individual em uma lista de registros."""
     chave = CONTRATOS[dataset]["lista"]
     if isinstance(payload, list):
         return payload
@@ -400,6 +414,7 @@ def _extrair_registros(payload: object, dataset: str) -> list:
 
 
 def _fonte_segura(url: str, nome_fonte: str | None) -> str:
+    """Escolhe um rótulo de fonte sem incluir credenciais ou query string da URL."""
     if nome_fonte and nome_fonte.strip():
         return nome_fonte.strip()
     partes = urlsplit(url)
@@ -409,6 +424,11 @@ def _fonte_segura(url: str, nome_fonte: str | None) -> str:
 def _gravar_bronze(
     registros: list[dict], dataset: str, fonte: str, diretorio: Path
 ) -> Path:
+    """Grava registros JSONL com metadados, sem alterar arquivos de lotes anteriores.
+
+    O arquivo é escrito primeiro com nome temporário exclusivo e publicado por
+    rename ao terminar, evitando deixar um lote parcial como arquivo final.
+    """
     instante = datetime.now(timezone.utc)
     nome = f"api_{dataset}_{instante:%Y%m%dT%H%M%S%fZ}_{uuid4().hex}.jsonl"
     destino = diretorio / nome
@@ -441,7 +461,11 @@ def ingerir_endpoint(
     token: str | None = None,
     nome_fonte: str | None = None,
 ) -> ResultadoIngestao:
-    """Busca, valida e grava uma resposta de endpoint REST."""
+    """Busca um endpoint, audita rejeições e persiste apenas registros aprovados.
+
+    Falhas de transporte, resposta fora do contrato ou persistência retornam
+    um resultado com ``ok=False`` para que o chamador possa interromper o fluxo.
+    """
     if dataset not in CONTRATOS:
         raise ValueError(f"Dataset não suportado: {dataset}")
     partes = urlsplit(url)
@@ -500,13 +524,17 @@ def ingerir_endpoint(
             rejeitados += 1
             identificador = registro.get("id") if isinstance(registro, dict) else None
             estacao = registro.get("estacao_id") if isinstance(registro, dict) else None
+            momento_auditoria = datetime.now(timezone.utc).isoformat()
             logging.warning(
-                "Registro da API rejeitado: dataset=%s indice=%s id=%s estacao_id=%s motivo=%s",
+                "Auditoria de contrato - Registro da API rejeitado: "
+                "dataset=%s indice=%s id=%s estacao_id=%s motivo=%s "
+                "momento_utc=%s",
                 dataset,
                 indice,
                 identificador,
                 estacao,
                 motivo,
+                momento_auditoria,
             )
         else:
             aprovados.append(registro)
@@ -542,6 +570,7 @@ def ingerir_endpoint(
 
 
 def main() -> int:
+    """Executa a ingestão dos endpoints configurados em ``src/config/.env``."""
     configure_logging(PROJECT_ROOT, categoria="tratamento")
     limite = LimiteRequisicoes(int(os.getenv("API_REQUESTS_PER_MINUTE", "30")))
     diretorio_bronze = get_api_raw_dir()

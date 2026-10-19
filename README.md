@@ -183,6 +183,20 @@ Para consumo analítico, a projeção usa somente `temperatura_minima` e `temper
 
 Bronze, Silver e Gold são nomes de etapas, não uma exigência de criar pastas com esses nomes. A coleta da Agritempo acumula os resultados no mesmo `dados_agritempo.json`, dentro do diretório de `API_RAW_DIR` (por padrão, `src/ingestion/leituras`). Novas execuções preservam os resultados anteriores e acrescentam os novos; não é criada uma pasta `data/bronze`.
 
+### Ingestão REST genérica e Bronze (IDs 21–25)
+
+O conector `src/ingestion/api_ingestion.py` é um fluxo REST genérico, independente do coletor Agritempo. Ele processa os datasets `ambiental` e `meteorologica` quando seus endpoints estão configurados no `src/config/.env`. As variáveis `API_URL_AMBIENTAL` e `API_URL_METEOROLOGICA` habilitam cada endpoint; `API_SOURCE_NAME_AMBIENTAL` e `API_SOURCE_NAME_METEOROLOGICA` definem rótulos de origem opcionais, `API_TIMEOUT_SECONDS` controla o timeout e `API_REQUESTS_PER_MINUTE` limita as requisições. `API_RAW_DIR` define onde gravar os arquivos.
+
+Cada registro aprovado é gravado como uma linha JSONL com o conteúdo original em `record` e os metadados `dataset`, `source` e `ingested_at`. O timestamp de ingestão é gerado em UTC para cada registro; `source` usa o nome configurado ou, na ausência dele, host e caminho da URL, sem parâmetros de consulta. Cada lote recebe um arquivo exclusivo, publicado após a gravação completa; uma execução seguinte não sobrescreve arquivos históricos. Registros rejeitados não entram na Bronze: geram um evento de auditoria no log de tratamento com dataset, índice, identificador/estação, motivo e instante UTC, sem despejar o payload completo.
+
+Os requisitos dos IDs 22 e 23 já estavam atendidos pela persistência JSONL original e pela criação de arquivos exclusivos por lote, por isso não exigiram alteração de implementação nesta revisão. O campo `source` do ID 25 também já era gravado por registro. O `ingested_at` do ID 24 já existia no gravador Bronze; nesta revisão foram reforçadas sua documentação e a cobertura de teste. O ID 21 passou a incluir instante de auditoria explícito.
+
+### Decisões sobre os artefatos estruturais (IDs 99–104)
+
+Não foram criados módulos adicionais para os IDs 99, 100, 101 e 103, pois os fluxos e responsabilidades já estão separados na estrutura atual: `src/ingestion/` organiza a ingestão, os parsers e o conector REST contêm as respectivas validações, `src/config/settings.py` cria a conexão e `src/database/dml/` mantém as cargas, enquanto `src/main.py` já orquestra as opções do menu. Criar `src/ingestion.py`, `src/quality_governance.py`, `src/database_manager.py` ou outro orquestrador apenas como fachada adicionaria indireção sem comportamento novo. Uma extração futura deve responder a uma necessidade concreta de lógica compartilhada, reutilização ou teste, não somente à presença do arquivo no checklist.
+
+O ID 104 foi concluído com `tests/test_quality_data.py`. Os testes validam aceitação e rejeição de leituras ambientais e meteorológicas na camada Silver e verificam as métricas do manifesto para completude, tempestividade, acurácia e validade.
+
 ## Execução
 
 Prepare o banco em uma instância SQL Server dedicada. Execute `src/database/ddl/create-database.sql` apenas quando o banco `monitoramento` ainda não existir; o comando `CREATE DATABASE` falha se o nome já estiver em uso. Em seguida, execute `src/database/ddl/create-tables.sql` pelo SSMS ou `sqlcmd`, pois o arquivo contém separadores `GO`. O script cria tabelas ausentes, mas não remove nem recria tabelas existentes e não migra constraints para um schema já criado. Em um banco criado com uma versão anterior do script, confira o catálogo antes das cargas, pois colunas acrescentadas depois à definição (como `qualidade_agua.turbidez`) não chegam a tabelas já criadas.
