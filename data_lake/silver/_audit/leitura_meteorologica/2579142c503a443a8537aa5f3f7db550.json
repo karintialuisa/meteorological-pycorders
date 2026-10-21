@@ -1,0 +1,43 @@
+{
+  "execucao_id": "2579142c503a443a8537aa5f3f7db550",
+  "dataset": "leitura_meteorologica",
+  "executado_em_utc": "2026-10-15T13:37:45.508399+00:00",
+  "formato": "parquet",
+  "compressao": "snappy",
+  "linhas_recebidas": 2817,
+  "linhas_gravadas": 0,
+  "particoes_gravadas": [],
+  "dimensoes_qualidade": {
+    "completeness": {
+      "linhas_avaliadas": 2817,
+      "linhas_aprovadas": 2817,
+      "linhas_rejeitadas": 0
+    },
+    "uniqueness": {
+      "linhas_avaliadas": 2817,
+      "linhas_aprovadas": 0,
+      "linhas_rejeitadas": 2817
+    },
+    "accuracy": {
+      "linhas_avaliadas": 2817,
+      "linhas_aprovadas": 2817,
+      "linhas_rejeitadas": 0
+    },
+    "validity": {
+      "linhas_avaliadas": 2817,
+      "linhas_aprovadas": 2817,
+      "linhas_rejeitadas": 0
+    },
+    "timeliness": {
+      "linhas_avaliadas": 2817,
+      "linhas_aprovadas": 2817,
+      "linhas_rejeitadas": 0,
+      "ordenacao_gravada": "data_leitura_utc_ascendente"
+    },
+    "consistency": {
+      "linhas_avaliadas": 2817,
+      "linhas_aprovadas": 2817,
+      "linhas_rejeitadas": 0
+    }
+  }
+}

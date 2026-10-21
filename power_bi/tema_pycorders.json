@@ -1,0 +1,7 @@
+{
+  "name": "PyCorders Ambiental",
+  "dataColors": ["#167A58", "#087F8C", "#C48718", "#B84A48", "#66736D", "#477FA3"],
+  "background": "#F3F6F5",
+  "foreground": "#202B29",
+  "tableAccent": "#167A58"
+}
