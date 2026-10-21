@@ -1,1 +1,0 @@
-"""Aplicação de ingestão e análise meteorológica."""
