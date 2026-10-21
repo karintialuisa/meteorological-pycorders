@@ -8,7 +8,7 @@ import pytest
 path = Path(__file__).resolve().parents[1] 
 sys.path.append(str(path))  
 sys.path.append(str(path / "src"))
-from src.config import settings
+from config import settings
 
 def test_get_env_requires_a_configured_value(monkeypatch):
     monkeypatch.delenv("REQUIRED_TEST_SETTING", raising=False)

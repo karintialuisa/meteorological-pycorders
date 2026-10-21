@@ -8,7 +8,7 @@ import pytest
 
 sys.path.append(str(Path(__file__).resolve().parents[2]))
 
-from src.bronze import agritempo as get_dados
+from bronze.busca_dados import agritempo as get_dados
 
 
 def resultado_agritempo(id_estacao, id_leitura, temperatura_minima, temperatura_maxima):

@@ -8,9 +8,9 @@ import pytest
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 
-from src.database.dml import Insert_Leituras_ambiental as ambiental
-from src.database.dml import Insert_Leituras_Meteorologica as meteorologica
-from src.database.dml.Insert_Parametros import inserir_parametros
+from bronze.sql.dml import Insert_Leituras_ambiental as ambiental
+from bronze.sql.dml import Insert_Leituras_Meteorologica as meteorologica
+from bronze.sql.dml.Insert_Parametros import inserir_parametros
 from sqlserver_support import RUN_TESTS, disposable_engine
 
 

@@ -9,9 +9,9 @@ sys.path.append(str(path))
 import pandas as pd
 import pytest
 
-from src.silver.localizacao import Parse_localizacao_JSON as localizacao
-from src.silver.leituras import Parse_LeituraAmbiental as ambiental
-from src.silver.leituras import Parse_LeituraMetereologica as meteorologica
+from silver.etl import Parse_localizacao_JSON as localizacao
+from silver.etl import Parse_LeituraAmbiental as ambiental
+from silver.etl import Parse_LeituraMetereologica as meteorologica
 
 
 def save_json(tmp_path, filename, content):

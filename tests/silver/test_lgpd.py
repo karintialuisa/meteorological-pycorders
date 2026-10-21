@@ -7,13 +7,13 @@ import pytest
 from cryptography.fernet import Fernet, InvalidToken
 from sqlalchemy import text
 
-from src.database.dml.Insert_Catalogo_LGPD import inserir_catalogo_lgpd
-from src.database.dml.Insert_Operadores import (
+from bronze.sql.dml.Insert_Catalogo_LGPD import inserir_catalogo_lgpd
+from bronze.sql.dml.Insert_Operadores import (
     _converter_status_operador,
     inserir_operadores,
 )
-from src.silver.localizacao import Parse_localizacao_JSON as localizacao
-from src.security.pii import decrypt_name, encrypt_name, hash_cpf, normalize_cpf
+from silver.etl import Parse_localizacao_JSON as localizacao
+from silver.security.pii import decrypt_name, encrypt_name, hash_cpf, normalize_cpf
 
 
 def _synthetic_cpf(prefix: str = "123456789") -> str:

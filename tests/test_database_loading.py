@@ -6,14 +6,14 @@ from unittest.mock import MagicMock
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 
-from src.database.dml import Insert_Leituras_ambiental as ambiental
-from src.database.dml import Insert_Leituras_Meteorologica as meteorologica
-from src.database.dml import Insert_Localizacao as localizacao
-from src.database.dml.Insert_Parametros import inserir_parametros
-from src.database.dml.Migrar_Leituras import migrar_legado
-from src.database.dml import Migrar_Leituras as migracao
-from src.database.dml.Persistir_Medicoes import carregar_dataframe
-from src.silver.localizacao.Exportar_Cadastros import exportar_cadastros
+from bronze.sql.dml import Insert_Leituras_ambiental as ambiental
+from bronze.sql.dml import Insert_Leituras_Meteorologica as meteorologica
+from bronze.sql.dml import Insert_Localizacao as localizacao
+from bronze.sql.dml.Insert_Parametros import inserir_parametros
+from bronze.sql.dml.Migrar_Leituras import migrar_legado
+from bronze.sql.dml import Migrar_Leituras as migracao
+from bronze.sql.dml.Persistir_Medicoes import carregar_dataframe
+from silver.persistencia.Exportar_Cadastros import exportar_cadastros
 
 
 def seed_location(engine):
@@ -62,7 +62,7 @@ def test_exported_cadastros_preserve_reading_ids_and_refresh(banco_teste):
 
 
 def test_exported_cadastros_require_populated_database(banco_teste):
-    from src.config.settings import get_silver_dir
+    from config.settings import get_silver_dir
 
     with pytest.raises(ValueError, match="vazio no banco"):
         exportar_cadastros(banco_teste)
@@ -236,7 +236,7 @@ def test_silver_failure_is_explicit_and_replay_repairs_it(banco_teste, monkeypat
     assert counts(banco_teste) == (1, 5, 0, 0)
     monkeypatch.setattr(ambiental, "persistir_silver", original)
     ambiental.inserir_dados()
-    from src.config.settings import get_silver_dir
+    from config.settings import get_silver_dir
     assert list(get_silver_dir().glob("qualidade_agua/data_leitura=*/part-00000.parquet"))
 
 

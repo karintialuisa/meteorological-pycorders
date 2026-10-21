@@ -11,10 +11,10 @@ import sys
 from dotenv import dotenv_values
 import pytest
 
-from src.bronze import agritempo
-from src.config.settings import PROJECT_ROOT
-from src.database.dml.Insert_Operadores import OPERADORES_JSON
-from src.gold import analytics_statistics
+from bronze.busca_dados import agritempo
+from config.settings import PROJECT_ROOT
+from bronze.sql.dml.Insert_Operadores import OPERADORES_JSON
+from 3_gold import analytics_statistics
 from sqlserver_support import ROOT, TEST_CONFIG_PATH
 
 
