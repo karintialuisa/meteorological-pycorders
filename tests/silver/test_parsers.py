@@ -9,9 +9,9 @@ sys.path.append(str(path))
 import pandas as pd
 import pytest
 
-from silver.etl import Parse_localizacao_JSON as localizacao
-from silver.etl import Parse_LeituraAmbiental as ambiental
-from silver.etl import Parse_LeituraMetereologica as meteorologica
+from src.silver.etl import Parse_localizacao_JSON as localizacao
+from src.silver.etl import Parse_LeituraAmbiental as ambiental
+from src.silver.etl import Parse_LeituraMetereologica as meteorologica
 
 
 def save_json(tmp_path, filename, content):
@@ -128,7 +128,7 @@ def test_tabela_estacao_rejects_unmatched_location(monkeypatch, tmp_path):
 
 
 def test_tabela_estacao_resolves_repository_locations(monkeypatch):
-    location_dir = Path(__file__).resolve().parents[2] / "data_lake" / "bronze" / "cadastros"
+    location_dir = Path(__file__).resolve().parents[2] / "data_lakehouse" / "bronze" / "cadastros"
     paths = {
         "INGESTION_LOCALIZACAO_ESTADOS": location_dir / "estado.json",
         "INGESTION_LOCALIZACAO_MUNICIPIOS": location_dir / "municipio.json",

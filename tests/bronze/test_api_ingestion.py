@@ -11,7 +11,7 @@ import pytest
 
 sys.path.append(str(Path(__file__).resolve().parents[2]))
 
-from bronze.busca_dados import api_ingestion as ingestion
+from src.bronze import ingestion
 
 
 def leitura_ambiental():

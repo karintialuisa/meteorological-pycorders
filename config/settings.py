@@ -11,17 +11,18 @@ from sqlalchemy import create_engine
 
 
 CONFIG_DIR = Path(__file__).resolve().parent
-PROJECT_ROOT = CONFIG_DIR.parents[1]
+PROJECT_ROOT = CONFIG_DIR.parent
 SQL_DRIVER = "ODBC Driver 17 for SQL Server"
 
-load_dotenv(dotenv_path=CONFIG_DIR / ".env")
+ENV_FILE = PROJECT_ROOT / "src" / "config" / ".env"
+load_dotenv(dotenv_path=ENV_FILE)
 
 
 def get_env(key: str) -> str:
     """Retorna uma variável obrigatória definida no arquivo de configuração."""
     value = os.getenv(key)
     if not value:
-        raise KeyError(f"Configuração ausente no src/config/.env: {key}")
+        raise KeyError(f"Configuracao ausente em {ENV_FILE}: {key}")
     return value
 
 
@@ -32,20 +33,20 @@ def get_path(key: str) -> Path:
 
 
 def get_silver_dir() -> Path:
-    """Resolve SILVER_DIR ou retorna data_lake/silver sob a raiz do projeto."""
-    path = Path(os.getenv("SILVER_DIR") or "data_lake/silver").expanduser()
+    """Resolve SILVER_DIR ou retorna data_lakehouse/silver sob a raiz."""
+    path = Path(os.getenv("SILVER_DIR") or "data_lakehouse/silver").expanduser()
     return path if path.is_absolute() else PROJECT_ROOT / path
 
 
 def get_api_raw_dir() -> Path:
     """Resolve o destino Bronze dos lotes REST genericos."""
-    path = Path(os.getenv("API_RAW_DIR") or "data_lake/bronze/api").expanduser()
+    path = Path(os.getenv("API_RAW_DIR") or "data_lakehouse/bronze/api").expanduser()
     return path if path.is_absolute() else PROJECT_ROOT / path
 
 
 def get_agritempo_raw_dir() -> Path:
     """Resolve o destino Bronze do JSON cumulativo Agritempo."""
-    path = Path(os.getenv("AGRITEMPO_RAW_DIR") or "data_lake/bronze/agritempo").expanduser()
+    path = Path(os.getenv("AGRITEMPO_RAW_DIR") or "data_lakehouse/bronze/agritempo").expanduser()
     return path if path.is_absolute() else PROJECT_ROOT / path
 
 

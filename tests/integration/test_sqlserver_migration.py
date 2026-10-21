@@ -7,9 +7,9 @@ import pytest
 from sqlalchemy import inspect, text
 from sqlalchemy.exc import DBAPIError, IntegrityError
 
-from bronze.sql.dml.Migrar_Leituras import migrar_legado
-from bronze.sql.dml.Persistir_Medicoes import carregar_dataframe
-from bronze.sql.dml.Insert_Parametros import inserir_parametros
+from src.database.dml.Migrar_Leituras import migrar_legado
+from src.database.dml.Persistir_Medicoes import carregar_dataframe
+from src.database.dml.Insert_Parametros import inserir_parametros
 from sqlserver_support import RUN_TESTS, ROOT, disposable_engine
 
 

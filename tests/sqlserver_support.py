@@ -36,8 +36,13 @@ def database_name(connection_url: str) -> str:
     return match.group(1).strip() if match else ""
 
 
-def apply_ddl(engine, filename: str = "create-tables.sql") -> None:
-    ddl = (ROOT / "sql" / "ddl" / filename).read_text(encoding="utf-8-sig")
+def apply_ddl(engine, filename: str = "ddl_banco_relacional.sql") -> None:
+    caminho = (
+        ROOT / "sql" / filename
+        if filename == "ddl_banco_relacional.sql"
+        else ROOT / "sql" / "ddl" / filename
+    )
+    ddl = caminho.read_text(encoding="utf-8-sig")
     ddl = re.sub(
         r"(?im)^\s*USE\s+\[?monitoramento\]?\s*;?\s*\r?\n\s*GO\s*$", "", ddl, count=1
     )

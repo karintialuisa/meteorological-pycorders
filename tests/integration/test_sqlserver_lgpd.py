@@ -153,8 +153,8 @@ def _assert_operator_schema(engine):
 
 def _assert_operator_json_loading(engine, tmp_path, caplog):
     from cryptography.fernet import Fernet
-    from bronze.sql.dml.Insert_Operadores import carregar_operadores
-    from silver.security.pii import decrypt_name, hash_cpf
+    from src.database.dml.Insert_Operadores import carregar_operadores
+    from src.silver.security.pii import decrypt_name, hash_cpf
 
     key = Fernet.generate_key().decode("ascii")
     secret = "json-operator-test-secret"
@@ -249,9 +249,9 @@ def test_catalog_and_operator_protection_on_disposable_sql_server(
 
     from cryptography.fernet import Fernet
 
-    from bronze.sql.dml.Insert_Catalogo_LGPD import inserir_catalogo_lgpd
-    from bronze.sql.dml.Insert_Operadores import inserir_operadores
-    from silver.security.pii import decrypt_name, hash_cpf
+    from src.database.dml.Insert_Catalogo_LGPD import inserir_catalogo_lgpd
+    from src.database.dml.Insert_Operadores import inserir_operadores
+    from src.silver.security.pii import decrypt_name, hash_cpf
 
     database = _database_name(TEST_URL)
     if not re.search(r"_(test|tests|disposable|scratch)$", database, re.IGNORECASE):

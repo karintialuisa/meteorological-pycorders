@@ -6,14 +6,14 @@ from unittest.mock import MagicMock
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 
-from bronze.sql.dml import Insert_Leituras_ambiental as ambiental
-from bronze.sql.dml import Insert_Leituras_Meteorologica as meteorologica
-from bronze.sql.dml import Insert_Localizacao as localizacao
-from bronze.sql.dml.Insert_Parametros import inserir_parametros
-from bronze.sql.dml.Migrar_Leituras import migrar_legado
-from bronze.sql.dml import Migrar_Leituras as migracao
-from bronze.sql.dml.Persistir_Medicoes import carregar_dataframe
-from silver.persistencia.Exportar_Cadastros import exportar_cadastros
+from src.database.dml import Insert_Leituras_ambiental as ambiental
+from src.database.dml import Insert_Leituras_Meteorologica as meteorologica
+from src.database.dml import Insert_Localizacao as localizacao
+from src.database.dml.Insert_Parametros import inserir_parametros
+from src.database.dml.Migrar_Leituras import migrar_legado
+from src.database.dml import Migrar_Leituras as migracao
+from src.database.dml.Persistir_Medicoes import carregar_dataframe
+from src.silver.persistencia.Exportar_Cadastros import exportar_cadastros
 
 
 def seed_location(engine):
