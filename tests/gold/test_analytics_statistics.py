@@ -9,7 +9,7 @@ import sys
 import pandas as pd
 import pytest
 
-from src.gold import analytics_statistics as analytics
+from 3_gold import analytics_statistics as analytics
 
 
 def medicoes(valores, estacao=1, parametro="PH", unidade="pH"):

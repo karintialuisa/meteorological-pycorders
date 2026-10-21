@@ -12,9 +12,9 @@ import pytest
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 
-from src.database.dml.Insert_Leitura_Itens import inserir_leitura_itens
-from src.database.dml.Insert_Leituras import inserir_leituras
-from src.database.dml.Insert_Parametros import inserir_parametros
+from bronze.sql.dml.Insert_Leitura_Itens import inserir_leitura_itens
+from bronze.sql.dml.Insert_Leituras import inserir_leituras
+from bronze.sql.dml.Insert_Parametros import inserir_parametros
 
 
 from sqlserver_support import RUN_TESTS, disposable_engine

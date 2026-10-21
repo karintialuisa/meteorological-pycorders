@@ -10,8 +10,8 @@ import pandas as pd
 import pyarrow.parquet as parquet
 import pytest
 
-from src.silver.leituras import Persistir_Silver as silver
-from src.silver.leituras.Persistir_Silver import persistir_silver
+from silver.persistencia import Persistir_Silver as silver
+from silver.persistencia.Persistir_Silver import persistir_silver
 
 
 def _water_record(

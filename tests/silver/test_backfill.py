@@ -8,10 +8,10 @@ import pyarrow.parquet as parquet
 import pytest
 from sqlalchemy import text
 
-from src.database.dml import Backfill_Leituras as backfill
-from src.database.dml.Insert_Parametros import inserir_parametros
-from src.silver.leituras import Parse_LeituraAmbiental as ambiental
-from src.silver.leituras import Parse_LeituraMetereologica as meteorologica
+from bronze.sql.dml import Backfill_Leituras as backfill
+from bronze.sql.dml.Insert_Parametros import inserir_parametros
+from silver.etl import Parse_LeituraAmbiental as ambiental
+from silver.etl import Parse_LeituraMetereologica as meteorologica
 from sqlserver_support import RUN_TESTS, disposable_engine
 
 

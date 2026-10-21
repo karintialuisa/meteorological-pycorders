@@ -1,2 +1,0 @@
--- Dados DML iniciais do projeto PyCordersMeteorological. 
---DML é Data Manipulation Language, utilizada para inserir, atualizar e deletar dados nas tabelas do banco de dados.

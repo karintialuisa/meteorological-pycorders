@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 path = Path(__file__).resolve().parents[1] 
 sys.path.append(str(path))  
-from src.api import main as api
+from . import main as api
 
 def write_json(path, content):
     path.write_text(json.dumps(content), encoding="utf-8")
