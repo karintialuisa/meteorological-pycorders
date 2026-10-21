@@ -7811,3 +7811,11 @@ Menu de opções:
  6. Validar anomalias por Z-Score -> CSV
  7. Reprocessar leituras historicas por periodo (backfill)
 ========================================
+20-10-2026 09:55 - INFO - Iniciando analise Silver: estatisticas
+20-10-2026 09:55 - INFO - Silver lida: dataset=qualidade_agua leituras=120
+20-10-2026 09:55 - INFO - Silver lida: dataset=leitura_meteorologica leituras=2817
+20-10-2026 09:55 - INFO - Relatorio estatistico publicado: grupos=422 n_validos=11868 n_invalidos=0 inicio=2026-09-15T00:00:00+00:00 fim_exclusivo=2026-10-31T00:00:00+00:00 saida=C:\Users\jorge.caldas.cardoso\Documents\GitHub\meteorological-pycorders\data_lake\gold\estatisticas_descritivas.csv
+20-10-2026 10:01 - INFO - Iniciando analise Silver: estatisticas
+20-10-2026 10:01 - INFO - Silver lida: dataset=qualidade_agua leituras=120
+20-10-2026 10:01 - INFO - Silver lida: dataset=leitura_meteorologica leituras=1918
+20-10-2026 10:01 - INFO - Relatorio estatistico publicado: grupos=422 n_validos=8272 n_invalidos=0 inicio=2026-09-15T00:00:00+00:00 fim_exclusivo=2026-10-21T00:00:00+00:00 saida=C:\Users\jorge.caldas.cardoso\Documents\GitHub\meteorological-pycorders\data_lake\gold\estatisticas_descritivas.csv

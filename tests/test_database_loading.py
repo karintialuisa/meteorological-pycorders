@@ -13,6 +13,7 @@ from src.database.dml.Insert_Parametros import inserir_parametros
 from src.database.dml.Migrar_Leituras import migrar_legado
 from src.database.dml import Migrar_Leituras as migracao
 from src.database.dml.Persistir_Medicoes import carregar_dataframe
+from src.silver.localizacao.Exportar_Cadastros import exportar_cadastros
 
 
 def seed_location(engine):
@@ -28,6 +29,44 @@ def seed_location(engine):
             "VALUES(20,'AMB-001','Nome alteravel',1,10,1)"
         ))
     inserir_parametros(engine=engine)
+
+
+def test_exported_cadastros_preserve_reading_ids_and_refresh(banco_teste):
+    seed_location(banco_teste)
+    destinos = exportar_cadastros(banco_teste)
+    estados = pd.read_parquet(destinos["estados"])
+    cidades = pd.read_parquet(destinos["cidades"])
+    estacoes = pd.read_parquet(destinos["estacoes"])
+    assert estados["id_estado"].tolist() == [1]
+    assert estados["codigo_ibge_estado"].tolist() == [35]
+    assert cidades["id_cidade"].tolist() == [10]
+    assert cidades["codigo_ibge_cidade"].tolist() == [3550308]
+    assert estacoes["id_estacao"].tolist() == [20]
+    dimensao = estacoes.merge(cidades, on="id_cidade", validate="many_to_one").merge(
+        estados, on="id_estado", validate="many_to_one"
+    )
+    for origem, registro in (("qualidade_agua", water()), ("leitura_meteorologica", meteo())):
+        leituras = carregar_dataframe(pd.DataFrame([registro]), origem, banco_teste)
+        localizadas = leituras.merge(
+            dimensao[["id_estacao", "nome_cidade", "sigla_estado"]],
+            on="id_estacao", validate="many_to_one",
+        )
+        assert len(localizadas) == len(leituras) == 1
+        assert localizadas["nome_cidade"].tolist() == ["Sao Paulo"]
+        assert localizadas["sigla_estado"].tolist() == ["SP"]
+    with banco_teste.begin() as connection:
+        connection.execute(text("UPDATE estacao SET nome='Nome atualizado' WHERE id=20"))
+    assert exportar_cadastros(banco_teste) == destinos
+    assert pd.read_parquet(destinos["estacoes"])["nome_estacao"].tolist() == ["Nome atualizado"]
+    assert len(list(destinos["estacoes"].parent.glob("*.parquet"))) == 3
+
+
+def test_exported_cadastros_require_populated_database(banco_teste):
+    from src.config.settings import get_silver_dir
+
+    with pytest.raises(ValueError, match="vazio no banco"):
+        exportar_cadastros(banco_teste)
+    assert not (get_silver_dir() / "cadastros").exists()
 
 
 def water(**changes):

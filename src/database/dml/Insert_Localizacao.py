@@ -18,6 +18,7 @@ from pathlib import Path
 # setamos o caminho para o sys.path, para ao executar o script possamos importar módulos do projeto corretamente.
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 from src.config.settings import PROJECT_ROOT, configure_logging, create_db_engine
+from src.silver.localizacao.Exportar_Cadastros import exportar_cadastros
 from src.silver.localizacao.Parse_localizacao_JSON import (
     tabela_cidade,
     tabela_estacao,
@@ -190,9 +191,14 @@ def inserir_estacoes(connection, estado_ids):
 
 if __name__ == "__main__":
     configure_logging(BASE_DIR, categoria="insercao")
-    with create_db_engine().begin() as connection:
-        limpar_localizacao(connection)
-        estado_ids = inserir_localizacao(connection)
-        inserir_estacoes(connection, estado_ids)
+    engine = create_db_engine()
+    try:
+        with engine.begin() as connection:
+            limpar_localizacao(connection)
+            estado_ids = inserir_localizacao(connection)
+            inserir_estacoes(connection, estado_ids)
+        exportar_cadastros(engine)
+    finally:
+        engine.dispose()
 
-    logging.info("Dados de localização inseridos com sucesso!")
+    logging.info("Dados de localização inseridos e cadastros Silver exportados com sucesso!")

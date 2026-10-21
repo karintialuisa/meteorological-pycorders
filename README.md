@@ -2,6 +2,8 @@
 
 Pipeline de Monitoramento e Análise de Dados Ambientais
 
+Para preparar o ambiente, entender o fluxograma, executar as rotinas e localizar cada arquivo Python/configuração, consulte o [RunBook operacional](RUNBOOK.md).
+
 Projeto Prático Integrador desenvolvido pela equipe PyCorders para capturar, tratar e persistir dados de estações meteorológicas e de qualidade da água, com consultas por API REST.
 
 ## Sobre o projeto
@@ -21,6 +23,46 @@ O pipeline contempla:
 - API FastAPI para listar cidades e consultar leituras carregadas dos JSONs.
 - Logs separados para tratamento, inserção no banco e execução do menu.
 - Estatísticas descritivas por estação e parâmetro a partir da Silver, com relatório CSV (IDs 45 a 49).
+
+## Cadastros Parquet para Power BI
+
+A carga de localizacao (opcao 1 do menu) exporta os cadastros depois de confirmar
+a transacao SQL. Para atualizar somente os arquivos, sem inserir ou modificar
+registros no banco, execute na raiz do projeto:
+
+```bash
+python -m src.silver.localizacao.Exportar_Cadastros
+```
+
+O comando usa a conexao SQL configurada em `src/config/.env` e grava em
+`SILVER_DIR/cadastros` (por padrao, `data_lake/silver/cadastros`):
+
+| Arquivo | Chave | Informacoes |
+| --- | --- | --- |
+| `estados.parquet` | `id_estado` | Codigo IBGE, sigla e nome do estado |
+| `cidades.parquet` | `id_cidade` | `id_estado`, codigo IBGE e nome da cidade |
+| `estacoes.parquet` | `id_estacao` | `id_cidade`, codigo de origem, nome e status da estacao |
+
+Os IDs sao os do SQL Server, os mesmos resolvidos na carga das leituras, e nao
+sao recalculados a partir dos JSONs. Cada execucao substitui os snapshots,
+sem acumular duplicatas. Cadastros vazios no banco impedem a exportacao.
+Use o mesmo banco que originou os Parquets de leituras; se os IDs tiverem sido
+recriados nesse banco, sera necessario reconciliar as leituras historicas.
+
+No Power BI, configure relacionamentos ativos de um para muitos, com filtro
+em direcao unica, nesta sequencia:
+
+```text
+estados[id_estado]   -> cidades[id_estado]
+cidades[id_cidade]   -> estacoes[id_cidade]
+estacoes[id_estacao] -> leitura_meteorologica[id_estacao]
+estacoes[id_estacao] -> qualidade_agua[id_estacao]
+```
+
+Nao adicione tambem um relacionamento ativo direto de cidades para meteorologia:
+ele criaria outro caminho de filtro para a mesma tabela. Cidade e estado ja
+filtram as duas leituras pela estacao. Importe cada cadastro separadamente;
+nao combine seus tres arquivos como se tivessem o mesmo esquema.
 
 ## Tecnologias
 

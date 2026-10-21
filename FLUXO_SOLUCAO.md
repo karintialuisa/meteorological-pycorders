@@ -1,5 +1,7 @@
 # Fluxo da solução meteorológica e ambiental
 
+> Documento histórico: há caminhos e status de implementação desatualizados abaixo. Para o fluxograma atual, mapa dos arquivos e procedimentos de execução, consulte o [RunBook operacional](RUNBOOK.md).
+
 Este documento descreve o que está implementado no repositório e separa os
 fluxos independentes das etapas ainda pendentes. O diagrama representa a
 execução observada no código; portanto, a ordem atualmente executada não é
