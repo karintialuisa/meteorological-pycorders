@@ -32,7 +32,7 @@ def test_root_and_expected_directories_match_repository_layout():
 
 
 def test_root_configuration_and_sql_artifacts_exist():
-    for filename in (".env.example", ".gitignore", "requirements.txt", "README.md"):
+    for filename in ("config/.env", ".gitignore", "requirements.txt", "README.md"):
         assert (PROJECT_ROOT / filename).is_file(), filename
     for filename in (
         "sql/ddl_banco_relacional.sql",
@@ -42,11 +42,11 @@ def test_root_configuration_and_sql_artifacts_exist():
     ):
         assert (PROJECT_ROOT / filename).is_file(), filename
     assert ROOT == PROJECT_ROOT
-    assert TEST_CONFIG_PATH == PROJECT_ROOT / "src" / "config" / ".env"
+    assert TEST_CONFIG_PATH == PROJECT_ROOT / "config" / ".env"
 
 
 def test_environment_example_points_to_existing_layer_files():
-    example = dotenv_values(PROJECT_ROOT / ".env.example", interpolate=False)
+    example = dotenv_values(PROJECT_ROOT / "config" / ".env", interpolate=False)
     keys = [
         "INSERT_LOCALIZACAO",
         "INSERT_LEITURA_AMBIENTAL",

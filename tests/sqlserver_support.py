@@ -11,7 +11,7 @@ from sqlalchemy.engine import make_url
 
 
 ROOT = Path(__file__).resolve().parents[1]
-TEST_CONFIG_PATH = ROOT / "src" / "config" / ".env"
+TEST_CONFIG_PATH = ROOT / "config" / ".env"
 
 
 def load_test_config(path: Path) -> tuple[bool, str | None]:
