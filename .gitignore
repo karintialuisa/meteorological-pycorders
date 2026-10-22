@@ -7,5 +7,5 @@ data_lake/gold/*.tmp
 logs/*.log
 data_lake/bronze/api/api_*.jsonl
 data_lake/silver/**/.silver.lock
-src/config/.env
-src/config/.env.test
+config/.env
+config/.env.test
