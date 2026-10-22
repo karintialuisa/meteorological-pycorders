@@ -6,6 +6,9 @@ from pathlib import Path
 import requests
 from uuid import uuid4
 
+import sys
+path = Path(__file__).parents[2]
+sys.path.append(str(path))
 from config.settings import PROJECT_ROOT, configure_logging, get_agritempo_raw_dir
 from src.bronze.ingestion import (
     LimiteRequisicoes,

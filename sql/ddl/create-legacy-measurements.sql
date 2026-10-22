@@ -1,3 +1,6 @@
+USE monitoramento
+GO
+
 -- Somente fixture de homologacao pre-migracao. Nao usar em instalacao nova.
 CREATE TABLE dbo.qualidade_agua (
     id BIGINT IDENTITY PRIMARY KEY,

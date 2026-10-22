@@ -2,6 +2,7 @@
 
 import logging
 from collections.abc import Mapping
+from time import monotonic
 
 import pandas as pd
 from sqlalchemy import inspect, text
@@ -154,9 +155,14 @@ def carregar_dataframe(df: pd.DataFrame, origem: str, engine) -> pd.DataFrame:
     if origem not in MAPEAMENTO:
         raise ValueError("origem de medicao desconhecida")
     require_sqlserver(engine)
+    inicio = monotonic()
+    total = len(df)
+    logging.info("Carga SQL iniciada: origem=%s total=%s; conectando e validando legado", origem, total)
     with engine.connect() as connection:
         _validar_legado_inativo(connection)
+    logging.info("Validacao concluida: origem=%s; iniciando transacoes por leitura", origem)
     aprovados = []
+    ultimo_progresso = monotonic()
     for indice, registro in enumerate(df.to_dict("records")):
         try:
             cabecalho, itens = preparar_evento(registro, origem)
@@ -187,4 +193,19 @@ def carregar_dataframe(df: pd.DataFrame, origem: str, engine) -> pd.DataFrame:
             logging.warning(
                 "Evento rejeitado: origem=%s indice=%s motivo=%s", origem, indice, error
             )
+        processados = indice + 1
+        agora = monotonic()
+        if processados == 1 or processados % 100 == 0 or processados == total or agora - ultimo_progresso >= 5:
+            decorrido = agora - inicio
+            velocidade = processados / decorrido if decorrido > 0 else 0
+            restante = (total - processados) / velocidade if velocidade > 0 else 0
+            logging.info(
+                "Progresso SQL: origem=%s processados=%s/%s (%.1f%%) "
+                "aceitos=%s rejeitados=%s decorrido=%.1fs taxa=%.1f leituras/s restante_estimado=%.1fs",
+                origem, processados, total, 100 * processados / total,
+                len(aprovados), processados - len(aprovados), decorrido, velocidade, restante,
+            )
+            ultimo_progresso = agora
+    logging.info("Carga SQL concluida: origem=%s aceitos=%s rejeitados=%s tempo=%.1fs",
+                 origem, len(aprovados), total - len(aprovados), monotonic() - inicio)
     return pd.DataFrame(aprovados)

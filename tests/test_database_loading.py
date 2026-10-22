@@ -14,6 +14,7 @@ from src.database.dml import Insert_Localizacao as localizacao
 from src.database.dml.Insert_Parametros import inserir_parametros
 from src.database.dml.Migrar_Leituras import migrar_legado
 from src.database.dml import Migrar_Leituras as migracao
+from src.database.dml import Persistir_Medicoes as persistencia
 from src.database.dml.Persistir_Medicoes import carregar_dataframe
 from src.silver.persistencia.Exportar_Cadastros import exportar_cadastros
 
@@ -105,6 +106,70 @@ def test_empty_readings_skip_database_connection(monkeypatch, module, parser):
     monkeypatch.setattr(module, parser, pd.DataFrame)
     monkeypatch.setattr(module, "create_db_engine", lambda: pytest.fail("conexao inesperada"))
     module.inserir_dados()
+
+
+def test_load_progress_reports_counts_without_database(monkeypatch, caplog):
+    engine = MagicMock()
+    connection = engine.begin.return_value.__enter__.return_value
+    connection.execute.return_value.one.return_value = MagicMock(id=20, id_cidade=10)
+    monkeypatch.setattr(persistencia, "require_sqlserver", lambda engine: None)
+    monkeypatch.setattr(persistencia, "_validar_legado_inativo", lambda connection: None)
+    persistir = MagicMock()
+    monkeypatch.setattr(persistencia, "persistir_evento", persistir)
+    monkeypatch.setattr(persistencia, "monotonic", lambda: 10.0)
+    registros = [meteo() for _ in range(101)] + [meteo(umidade=101)]
+
+    with caplog.at_level("INFO"):
+        aprovados = carregar_dataframe(pd.DataFrame(registros), "leitura_meteorologica", engine)
+
+    assert len(aprovados) == persistir.call_count == 101
+    progresso = [record.message for record in caplog.records if "Progresso SQL:" in record.message]
+    assert len(progresso) == 3
+    assert "processados=1/102" in progresso[0]
+    assert "processados=100/102" in progresso[1]
+    assert "processados=102/102 (100.0%) aceitos=101 rejeitados=1" in progresso[2]
+    assert "restante_estimado=0.0s" in progresso[2]
+    assert "conectando e validando legado" in caplog.text
+    assert "Carga SQL concluida" in caplog.text
+
+
+def test_load_progress_reports_elapsed_interval(monkeypatch, caplog):
+    engine = MagicMock()
+    connection = engine.begin.return_value.__enter__.return_value
+    connection.execute.return_value.one.return_value = MagicMock(id=20, id_cidade=10)
+    monkeypatch.setattr(persistencia, "require_sqlserver", lambda engine: None)
+    monkeypatch.setattr(persistencia, "_validar_legado_inativo", lambda connection: None)
+    monkeypatch.setattr(persistencia, "persistir_evento", MagicMock())
+    instantes = iter([0.0, 0.0, 1.0, 6.0, 7.0, 7.0])
+    monkeypatch.setattr(persistencia, "monotonic", lambda: next(instantes))
+
+    with caplog.at_level("INFO"):
+        carregar_dataframe(pd.DataFrame([meteo()] * 3), "leitura_meteorologica", engine)
+
+    progresso = [record.message for record in caplog.records if "Progresso SQL:" in record.message]
+    assert len(progresso) == 3
+    assert "processados=2/3" in progresso[1]
+    assert "decorrido=6.0s" in progresso[1]
+    assert "restante_estimado=3.0s" in progresso[1]
+
+
+def test_meteorological_loader_logs_stages(monkeypatch, caplog):
+    dados = pd.DataFrame([meteo()])
+    monkeypatch.setattr(meteorologica, "tabela_metereologica", lambda: dados)
+    monkeypatch.setattr(meteorologica, "create_db_engine", MagicMock())
+    monkeypatch.setattr(meteorologica, "carregar_dataframe", lambda *args: dados)
+    silver = MagicMock()
+    monkeypatch.setattr(meteorologica, "persistir_silver", silver)
+
+    with caplog.at_level("INFO"):
+        meteorologica.inserir_dados()
+
+    silver.assert_called_once_with(dados, "leitura_meteorologica")
+    assert "lendo e tratando JSON Bronze" in caplog.text
+    assert "Tratamento meteorologico concluido: leituras=1" in caplog.text
+    assert "Persistencia Silver iniciada" in caplog.text
+    assert "Persistencia Silver concluida" in caplog.text
+    assert "aceitos=1 rejeitados=0 tempo_total=" in caplog.text
 
 
 def test_station_code_resolution_does_not_depend_on_name(banco_teste, caplog):

@@ -102,7 +102,7 @@ def main():
                     break
 
         elif opcao == "2":
-            executar_script("Get_dados.py")
+            executar_script("src/bronze/Get_dados.py")
 
         elif opcao == "3":
             # projeto_final.pdf secoes 3.2/3.3 -> features.csv IDs 32-34, 38 e 39.
@@ -120,10 +120,10 @@ def main():
                     break
 
         elif opcao == "5":
-            executar_script("src/gold/analytics_statistics.py")
+            executar_script("src/gold/analytics_stat.py")
 
         elif opcao == "6":
-            executar_script("src/gold/analytics_statistics.py", ["--analise", "zscore"])
+            executar_script("src/gold/analytics_stat.py", ["--analise", "zscore"])
 
         elif opcao == "7":
             dataset = input("Dataset (ambiental, meteorologica ou ambos): ").strip()
