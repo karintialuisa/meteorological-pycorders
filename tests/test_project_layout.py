@@ -32,7 +32,7 @@ def test_root_and_expected_directories_match_repository_layout():
 
 
 def test_root_configuration_and_sql_artifacts_exist():
-    for filename in ("config/.env", ".gitignore", "requirements.txt", "README.md"):
+    for filename in ("config/.env", ".gitignore", "config/requirements.txt", "config/README.md"):
         assert (PROJECT_ROOT / filename).is_file(), filename
     for filename in (
         "sql/ddl_banco_relacional.sql",

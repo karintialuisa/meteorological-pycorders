@@ -535,7 +535,7 @@ def construir_modelo_estrela(
     dim_tempo["mes"] = dim_tempo["data"].dt.month
     dim_tempo["dia"] = dim_tempo["data"].dt.day
     dim_tempo["trimestre"] = dim_tempo["data"].dt.quarter
-    dim_tempo["dia_semana"] = dim_tempo["data"].dt.dayofweek
+    dim_tempo["dia_semana"] = dim_tempo["data"].dt.day_of_week
     dim_tempo["dia_util"] = dim_tempo["dia_semana"].lt(5)
 
     fatos = fatos.sort_values(
