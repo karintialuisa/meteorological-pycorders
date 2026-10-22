@@ -14,7 +14,7 @@ CONFIG_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = CONFIG_DIR.parent
 SQL_DRIVER = "ODBC Driver 17 for SQL Server"
 
-ENV_FILE = PROJECT_ROOT / "src" / "config" / ".env"
+ENV_FILE = PROJECT_ROOT / "config" / ".env"
 load_dotenv(dotenv_path=ENV_FILE)
 
 
