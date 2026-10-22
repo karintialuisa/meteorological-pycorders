@@ -12,6 +12,7 @@ from sqlalchemy.engine import Connection
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 from config.settings import configure_logging, create_db_engine
+from src.database.dialect import require_sqlserver
 from src.database.dml.Insert_Leituras import (
     ORIGENS_VALIDAS,
     chave_natural_leitura,
@@ -121,10 +122,10 @@ def inserir_leitura_itens(
         raise ValueError("connection exige transacao ativa")
     supplied_connection = connection
     target_engine = connection.engine if connection is not None else (engine or create_db_engine())
-    mssql = target_engine.dialect.name == "mssql"
-    item_table = "dbo.Leitura_Itens" if mssql else "leitura_itens"
-    leitura_table = "dbo.Leituras" if mssql else "leituras"
-    parametro_table = "dbo.parametros" if mssql else "parametros"
+    require_sqlserver(target_engine)
+    item_table = "dbo.leitura_itens"
+    leitura_table = "dbo.leituras"
+    parametro_table = "dbo.parametros"
     inseridos = 0
     retransmissoes = 0
     rejeitados = 0
@@ -178,8 +179,6 @@ def inserir_leitura_itens(
 
                 if existente is None:
                     valor_numerico = item["valor_numerico"]
-                    if not mssql and valor_numerico is not None:
-                        valor_numerico = float(valor_numerico)
                     connection.execute(
                         text(
                             f"INSERT INTO {item_table} "

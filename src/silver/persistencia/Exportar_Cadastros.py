@@ -9,6 +9,7 @@ from sqlalchemy import text
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 from config.settings import configure_logging, create_db_engine, get_silver_dir
+from src.database.dialect import require_sqlserver
 from src.silver.persistencia.Persistir_Silver import _gravar_parquet_atomico
 
 
@@ -33,6 +34,7 @@ def exportar_cadastros(engine=None) -> dict[str, Path]:
     engine_propria = engine is None
     if engine_propria:
         engine = create_db_engine()
+    require_sqlserver(engine)
     try:
         with engine.connect() as connection:
             tabelas = {

@@ -66,17 +66,23 @@ def fontes_historicas(tmp_path, monkeypatch):
 
 @pytest.fixture
 def historico(fontes_historicas, banco_teste):
-    """Prepara os relacionamentos em SQLite para os testes locais."""
+    """Prepara os relacionamentos no SQL Server descartavel."""
     with banco_teste.begin() as connection:
         connection.execute(text(
-            "INSERT INTO estado(id,codigo_ibge,sigla,nome) VALUES(1,35,'SP','Sao Paulo')"
+            "SET IDENTITY_INSERT dbo.estado ON; "
+            "INSERT INTO dbo.estado(id,codigo_ibge,sigla,nome) VALUES(1,35,'SP','Sao Paulo'); "
+            "SET IDENTITY_INSERT dbo.estado OFF"
         ))
         connection.execute(text(
-            "INSERT INTO cidade(id,id_estado,codigo_ibge,nome) VALUES(10,1,3550308,'Sao Paulo')"
+            "SET IDENTITY_INSERT dbo.cidade ON; "
+            "INSERT INTO dbo.cidade(id,id_estado,codigo_ibge,nome) VALUES(10,1,3550308,'Sao Paulo'); "
+            "SET IDENTITY_INSERT dbo.cidade OFF"
         ))
         connection.execute(text(
-            "INSERT INTO estacao(id,codigo_origem,nome,status,id_cidade,id_estado) "
-            "VALUES(20,'AMB-001','Estacao',1,10,1)"
+            "SET IDENTITY_INSERT dbo.estacao ON; "
+            "INSERT INTO dbo.estacao(id,codigo_origem,nome,status,id_cidade,id_estado) "
+            "VALUES(20,'AMB-001','Estacao',1,10,1); "
+            "SET IDENTITY_INSERT dbo.estacao OFF"
         ))
     inserir_parametros(engine=banco_teste)
     return fontes_historicas
@@ -131,7 +137,7 @@ def test_backfill_sqlserver_disposable(fontes_historicas, dataset, origem, monke
 
 
 def _verificar_backfill(historico, banco_teste, dataset, origem):
-    """Verifica o mesmo contrato de backfill em SQLite ou SQL Server."""
+    """Verifica replay e reconstrução usando SQL Server descartável."""
     backfill.reprocessar_periodo(dataset, "2026-05-19", "2026-05-20", engine=banco_teste)
     fora = historico / origem / "data_leitura=2026-05-19" / "part-00000.parquet"
     bytes_fora = fora.read_bytes()

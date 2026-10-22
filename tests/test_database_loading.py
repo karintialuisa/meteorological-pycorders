@@ -1,10 +1,12 @@
 """Regressoes de carga 3FN, atomicidade, replay e reparacao Silver."""
 
+from decimal import Decimal
+
 import pandas as pd
 import pytest
 from unittest.mock import MagicMock
 from sqlalchemy import text
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import DBAPIError, IntegrityError
 
 from src.database.dml import Insert_Leituras_ambiental as ambiental
 from src.database.dml import Insert_Leituras_Meteorologica as meteorologica
@@ -18,16 +20,22 @@ from src.silver.persistencia.Exportar_Cadastros import exportar_cadastros
 
 def seed_location(engine):
     with engine.begin() as connection:
+        connection.execute(text("SET IDENTITY_INSERT dbo.estado ON"))
         connection.execute(text(
-            "INSERT INTO estado(id,codigo_ibge,sigla,nome) VALUES(1,35,'SP','Sao Paulo')"
+            "INSERT INTO dbo.estado(id,codigo_ibge,sigla,nome) VALUES(1,35,'SP','Sao Paulo')"
         ))
+        connection.execute(text("SET IDENTITY_INSERT dbo.estado OFF"))
+        connection.execute(text("SET IDENTITY_INSERT dbo.cidade ON"))
         connection.execute(text(
-            "INSERT INTO cidade(id,id_estado,codigo_ibge,nome) VALUES(10,1,3550308,'Sao Paulo')"
+            "INSERT INTO dbo.cidade(id,id_estado,codigo_ibge,nome) VALUES(10,1,3550308,'Sao Paulo')"
         ))
+        connection.execute(text("SET IDENTITY_INSERT dbo.cidade OFF"))
+        connection.execute(text("SET IDENTITY_INSERT dbo.estacao ON"))
         connection.execute(text(
-            "INSERT INTO estacao(id,codigo_origem,nome,status,id_cidade,id_estado) "
+            "INSERT INTO dbo.estacao(id,codigo_origem,nome,status,id_cidade,id_estado) "
             "VALUES(20,'AMB-001','Nome alteravel',1,10,1)"
         ))
+        connection.execute(text("SET IDENTITY_INSERT dbo.estacao OFF"))
     inserir_parametros(engine=engine)
 
 
@@ -102,10 +110,12 @@ def test_empty_readings_skip_database_connection(monkeypatch, module, parser):
 def test_station_code_resolution_does_not_depend_on_name(banco_teste, caplog):
     seed_location(banco_teste)
     with banco_teste.begin() as connection:
+        connection.execute(text("SET IDENTITY_INSERT dbo.estacao ON"))
         connection.execute(text(
-            "INSERT INTO estacao(id,codigo_origem,nome,status,id_cidade,id_estado) "
+            "INSERT INTO dbo.estacao(id,codigo_origem,nome,status,id_cidade,id_estado) "
             "VALUES(21,'AMB-002','Nome alteravel',1,10,1)"
         ))
+        connection.execute(text("SET IDENTITY_INSERT dbo.estacao OFF"))
     with banco_teste.connect() as connection:
         result = ambiental.resolver_id_estacao(pd.DataFrame([
             water(), water(estacao_id="AMB-002"), water(estacao_id="AUSENTE"),
@@ -155,7 +165,7 @@ def test_conflicting_replay_keeps_first_whole_event(banco_teste, caplog, registr
             "SELECT valor_numerico FROM leitura_itens i JOIN parametros p ON p.id=i.id_parametro "
             "WHERE p.codigo=:codigo"
         ), {"codigo": "TURBIDEZ" if origem == "qualidade_agua" else "TEMP_AR"}).scalar_one()
-    assert value == (2.8 if origem == "qualidade_agua" else 24)
+    assert value == (Decimal("2.8") if origem == "qualidade_agua" else Decimal("24"))
 
 
 def test_meteorological_offsets_have_same_natural_key(banco_teste):
@@ -214,11 +224,13 @@ def test_sql_failure_propagates_and_rolls_back_event(banco_teste):
     seed_location(banco_teste)
     with banco_teste.begin() as connection:
         connection.execute(text(
-            "CREATE TRIGGER fail_second BEFORE INSERT ON leitura_itens "
-            "WHEN NEW.id_parametro=(SELECT id FROM parametros WHERE codigo='PH') "
-            "BEGIN SELECT RAISE(ABORT,'falha tecnica'); END"
+            "CREATE TRIGGER dbo.fail_second ON dbo.leitura_itens AFTER INSERT AS "
+            "BEGIN SET NOCOUNT ON; "
+            "IF EXISTS (SELECT 1 FROM inserted i JOIN dbo.parametros p "
+            "ON p.id=i.id_parametro WHERE p.codigo='PH') "
+            "BEGIN; THROW 51000, 'falha tecnica', 1; END; END"
         ))
-    with pytest.raises(IntegrityError, match="falha tecnica"):
+    with pytest.raises(DBAPIError, match="falha tecnica"):
         carregar_dataframe(pd.DataFrame([water()]), "qualidade_agua", banco_teste)
     assert counts(banco_teste) == (0, 0, 0, 0)
 
@@ -254,8 +266,6 @@ def test_database_rejects_duplicate_event_identity(banco_teste):
 def test_backfill_nulls_precision_and_idempotence(banco_teste):
     seed_location(banco_teste)
     with banco_teste.begin() as connection:
-        connection.execute(text("ALTER TABLE qualidade_agua ADD criado_em TEXT"))
-        connection.execute(text("ALTER TABLE leitura_meteorologica ADD criado_em TEXT"))
         connection.execute(text(
             "INSERT INTO qualidade_agua(id_leitura_origem,id_estacao,data_leitura,"
             "temperatura_agua,ph,turbidez,criado_em) VALUES"
@@ -286,8 +296,6 @@ def test_backfill_conflict_rolls_back_all_preceding_events(banco_teste):
     seed_location(banco_teste)
     carregar_dataframe(pd.DataFrame([water()]), "qualidade_agua", banco_teste)
     with banco_teste.begin() as connection:
-        connection.execute(text("ALTER TABLE qualidade_agua ADD criado_em TEXT"))
-        connection.execute(text("ALTER TABLE leitura_meteorologica ADD criado_em TEXT"))
         connection.execute(text(
             "INSERT INTO qualidade_agua(id_leitura_origem,id_estacao,data_leitura,ph,criado_em) VALUES"
             "('FIRST',20,'2026-05-20T12:00:00Z',7,'2026-05-21T12:00:00Z'),"
@@ -300,6 +308,8 @@ def test_backfill_conflict_rolls_back_all_preceding_events(banco_teste):
 
 def test_backfill_incompatible_schema_is_rejected_before_writes(banco_teste):
     seed_location(banco_teste)
+    with banco_teste.begin() as connection:
+        connection.execute(text("ALTER TABLE dbo.qualidade_agua DROP COLUMN temperatura_agua"))
     with pytest.raises(ValueError, match="schema incompativel"):
         migrar_legado(banco_teste)
     assert counts(banco_teste) == (0, 0, 0, 0)
@@ -315,13 +325,13 @@ def test_backfill_incompatible_schema_is_rejected_before_writes(banco_teste):
 def test_backfill_preflight_rejects_bad_historical_data(banco_teste, changes, duplicate, reason):
     seed_location(banco_teste)
     with banco_teste.begin() as connection:
-        connection.execute(text("DROP TABLE qualidade_agua"))
+        connection.execute(text("DROP TABLE dbo.qualidade_agua"))
         connection.execute(text(
-            "CREATE TABLE qualidade_agua (id INTEGER PRIMARY KEY, id_leitura_origem TEXT, "
-            "id_estacao INTEGER, data_leitura TEXT, temperatura_agua NUMERIC, ph NUMERIC, "
-            "oxigenio NUMERIC, condutividade NUMERIC, turbidez NUMERIC, criado_em TEXT)"
+            "CREATE TABLE dbo.qualidade_agua (id BIGINT IDENTITY(1,1) PRIMARY KEY, "
+            "id_leitura_origem VARCHAR(100), id_estacao BIGINT, data_leitura VARCHAR(40), "
+            "temperatura_agua NUMERIC(8,3), ph NUMERIC(5,3), oxigenio NUMERIC(10,3), "
+            "condutividade NUMERIC(12,3), turbidez NUMERIC(12,3), criado_em VARCHAR(40))"
         ))
-        connection.execute(text("ALTER TABLE leitura_meteorologica ADD criado_em TEXT"))
         insert = text(
             "INSERT INTO qualidade_agua(id_leitura_origem,id_estacao,data_leitura,ph,criado_em) "
             "VALUES(:key,:station,:date,:ph,'2026-05-21T12:00:00Z')"
@@ -376,7 +386,10 @@ def test_location_loading_is_idempotent_for_existing_records(banco_teste, monkey
                 for table in ("estado", "cidade", "estacao")] == [1, 1, 1]
 
 
-def test_limpar_localizacao_preserves_records_in_append_mode(connection):
-    connection.execute(text("INSERT INTO estado(id,codigo_ibge,sigla,nome) VALUES(1,35,'SP','Sao Paulo')"))
-    localizacao.limpar_localizacao(connection)
-    assert connection.execute(text("SELECT COUNT(*) FROM estado")).scalar_one() == 1
+def test_limpar_localizacao_preserves_records_in_append_mode(banco_teste):
+    with banco_teste.begin() as connection:
+        connection.execute(text(
+            "INSERT INTO dbo.estado(codigo_ibge,sigla,nome) VALUES(35,'SP','Sao Paulo')"
+        ))
+        localizacao.limpar_localizacao(connection)
+        assert connection.execute(text("SELECT COUNT(*) FROM dbo.estado")).scalar_one() == 1

@@ -41,19 +41,25 @@ def _authorized_test_decryption(ciphertext, key):
 
 def _seed_operator_stations(engine):
     with engine.begin() as connection:
+        connection.execute(text("SET IDENTITY_INSERT dbo.estado ON"))
         connection.execute(
-            text("INSERT INTO estado (id, codigo_ibge, sigla, nome) VALUES (1, 35, 'SP', 'Sao Paulo')")
+            text("INSERT INTO dbo.estado (id, codigo_ibge, sigla, nome) VALUES (1, 35, 'SP', 'Sao Paulo')")
         )
+        connection.execute(text("SET IDENTITY_INSERT dbo.estado OFF"))
+        connection.execute(text("SET IDENTITY_INSERT dbo.cidade ON"))
         connection.execute(
-            text("INSERT INTO cidade (id, id_estado, codigo_ibge, nome) VALUES (10, 1, 3550308, 'Sao Paulo')")
+            text("INSERT INTO dbo.cidade (id, id_estado, codigo_ibge, nome) VALUES (10, 1, 3550308, 'Sao Paulo')")
         )
+        connection.execute(text("SET IDENTITY_INSERT dbo.cidade OFF"))
+        connection.execute(text("SET IDENTITY_INSERT dbo.estacao ON"))
         connection.execute(
             text(
-                "INSERT INTO estacao (id, codigo_origem, nome, status, id_cidade, id_estado) "
+                "INSERT INTO dbo.estacao (id, codigo_origem, nome, status, id_cidade, id_estado) "
                 "VALUES (20, 'AMB-011', 'Estacao 011', 1, 10, 1), "
                 "(21, 'AMB-012', 'Estacao 012', 1, 10, 1)"
             )
         )
+        connection.execute(text("SET IDENTITY_INSERT dbo.estacao OFF"))
 
 
 def test_normalize_cpf_removes_punctuation_and_checks_digits():

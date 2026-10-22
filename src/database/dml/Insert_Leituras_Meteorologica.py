@@ -9,12 +9,14 @@ from sqlalchemy import text
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 from config.settings import configure_logging, create_db_engine
+from src.database.dialect import require_sqlserver
 from src.database.dml.Persistir_Medicoes import carregar_dataframe
 from src.silver.etl.Parse_LeituraMetereologica import tabela_metereologica
 from src.silver.persistencia.Persistir_Silver import persistir_silver
 
 
 def resolver_id_cidade(df_leituras: pd.DataFrame, connection) -> pd.DataFrame:
+    require_sqlserver(connection)
     estacoes = pd.read_sql(
         text("SELECT id AS id_estacao, id_cidade FROM estacao"), connection
     )

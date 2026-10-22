@@ -12,6 +12,7 @@ from sqlalchemy.engine import Connection
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 from config.settings import configure_logging, create_db_engine
+from src.database.dialect import require_sqlserver
 from src.database.dml.etl_lock import adquirir_lock_etl
 
 
@@ -129,10 +130,10 @@ def inserir_leituras(
         raise ValueError("connection exige transacao ativa")
     supplied_connection = connection
     target_engine = connection.engine if connection is not None else (engine or create_db_engine())
-    mssql = target_engine.dialect.name == "mssql"
-    leitura_table = "dbo.Leituras" if mssql else "leituras"
-    station_table = "dbo.estacao" if mssql else "estacao"
-    operator_table = "dbo.operadores" if mssql else "operadores"
+    require_sqlserver(target_engine)
+    leitura_table = "dbo.leituras"
+    station_table = "dbo.estacao"
+    operator_table = "dbo.operadores"
     inseridos = 0
     retransmissoes = 0
     enriquecidos = 0

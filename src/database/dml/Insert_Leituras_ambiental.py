@@ -9,6 +9,7 @@ from sqlalchemy import text
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 from config.settings import configure_logging, create_db_engine
+from src.database.dialect import require_sqlserver
 from src.database.dml.Persistir_Medicoes import carregar_dataframe
 from src.silver.etl.Parse_LeituraAmbiental import tabela_ambiental
 from src.silver.persistencia.Persistir_Silver import persistir_silver
@@ -16,6 +17,7 @@ from src.silver.persistencia.Persistir_Silver import persistir_silver
 
 def resolver_id_estacao(df_leituras: pd.DataFrame, connection) -> pd.DataFrame:
     """Resolve codigo_origem, nunca nome, sem alterar o cadastro."""
+    require_sqlserver(connection)
     if df_leituras.empty:
         return df_leituras.copy()
     estacoes = pd.read_sql(

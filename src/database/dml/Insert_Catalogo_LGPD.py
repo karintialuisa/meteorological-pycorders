@@ -7,6 +7,7 @@ from sqlalchemy import text
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 from config.settings import configure_logging, create_db_engine
+from src.database.dialect import require_sqlserver
 
 
 # Referencia: projeto_final.pdf, secao 3.2 (LGPD de operadores);
@@ -41,6 +42,7 @@ METADADOS_CATALOGO = (
 def inserir_catalogo_lgpd(engine=None) -> int:
     """Insere ou atualiza as definicoes do catalogo de forma idempotente."""
     target_engine = engine or create_db_engine()
+    require_sqlserver(target_engine)
     query = text(
         "SELECT id FROM catalogo_dados "
         "WHERE schema_name = :schema_name AND tabela = :tabela "

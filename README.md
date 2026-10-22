@@ -109,7 +109,7 @@ meteorological-pycorders/
 - `src/database/dml`: código Python que valida, resolve chaves e carrega localização, parâmetros, cabeçalhos/itens, operadores e catálogo LGPD; mantém locks, migração e backfill.
 - `src/pipeline_orchestrator.py`: lê os lotes JSONL da Bronze, valida e projeta a Silver sem depender do banco, publica os produtos Gold e, com `--carregar-sql`, replica as leituras no SQL 3FN.
 - `config/settings.py`: concentra leitura de `src/config/.env`, caminhos, conexão SQL Server e logging.
-- `tests`: testes SQLite por padrão; os módulos `test_sqlserver_*` são opt-in e só rodam contra uma instância SQL Server descartável (ver Testes).
+- `tests`: testes sem banco para regras puras; os testes de persistência usam SQL Server descartável e são opt-in (ver Testes).
 
 ### Equivalência com os diagramas e limites da reorganização
 
@@ -249,7 +249,7 @@ Reexecutar o mesmo intervalo no modo padrão não duplica eventos: replays prese
 
 Cada evento SQL é transacional, mas não existe transação única para todo o período nem transação distribuída SQL/Parquet. Em falha da Silver após commit SQL, o erro permanece explícito e a repetição do período pode reconstruir a projeção ausente. Partições fora do período permanecem preservadas. A migração de tabelas legadas em `Migrar_Leituras.py` continua sendo uma operação distinta.
 
-Os testes locais em `tests/silver/test_backfill.py` usam JSONs sintéticos, SQLite e Silver temporária para verificar fronteiras UTC, ambos os datasets, replay, conflitos, preservação dos dados fora do intervalo e recuperação da Silver. O ID 70 está concluído; a integração opt-in abaixo permite repetir a validação no SQL Server descartável.
+Os testes de backfill usam JSONs sintéticos, Silver temporária e SQL Server descartável para verificar fronteiras UTC, ambos os datasets, replay, conflitos, preservação dos dados fora do intervalo e recuperação da Silver. O ID 70 está concluído; a integração opt-in abaixo permite repetir essa validação.
 
 #### Testar o backfill no banco descartável
 
@@ -472,7 +472,7 @@ Os parsers rejeitam leituras sem identidade, estação, data ou medições obrig
 
 ## Testes
 
-Os testes SQLite exercitam parsers, loaders, constraints, configuração e writer Parquet com dados temporários. O fixture configura `SILVER_DIR` sob o diretório temporário do pytest para não produzir arquivos na raiz do repositório. Execute a suíte com o interpretador do ambiente virtual, onde `cryptography` está instalado:
+Os testes sem banco exercitam parsers, configuração e writer Parquet com dados temporários. Os testes de persistência exigem SQL Server Express descartável e `RUN_SQLSERVER_LGPD_TESTS=1`. O fixture configura `SILVER_DIR` sob o diretório temporário do pytest. Execute a suíte com o interpretador do ambiente virtual, onde `cryptography` está instalado:
 
 ```bash
 .venv\Scripts\python -m pytest tests -v

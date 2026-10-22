@@ -7,6 +7,7 @@ import pandas as pd
 from sqlalchemy import inspect, text
 from sqlalchemy.engine import Connection, Engine
 
+from src.database.dialect import require_sqlserver
 from src.database.dml.Insert_Leituras import _normalizar_registro, inserir_leituras
 from src.database.dml.Insert_Leitura_Itens import _normalizar_item, inserir_leitura_itens
 from src.database.dml.etl_lock import adquirir_lock_etl
@@ -26,8 +27,8 @@ MAPEAMENTO = {
 
 def _validar_legado_inativo(connection: Connection) -> None:
     """Impede tratar um modelo legado ativo como referencia 3FN vazia."""
-    schema = "dbo" if connection.dialect.name == "mssql" else None
-    existentes = set(inspect(connection).get_table_names(schema=schema))
+    require_sqlserver(connection)
+    existentes = set(inspect(connection).get_table_names(schema="dbo"))
     for tabela in MAPEAMENTO:
         if tabela in existentes and connection.execute(
             text(f"SELECT COUNT(*) FROM {tabela}")
@@ -45,6 +46,7 @@ def consultar_medicoes_periodo(
     """
     if origem not in MAPEAMENTO:
         raise ValueError("origem de medicao desconhecida")
+    require_sqlserver(engine)
     medidas = []
     for coluna, codigo in MAPEAMENTO[origem].items():
         valor = "valor_texto" if codigo == "CONDICAO_METEO" else "valor_numerico"
@@ -128,10 +130,11 @@ def persistir_evento(connection: Connection, cabecalho, itens) -> None:
     """Usa a transacao do chamador; rejeicao deve causar rollback."""
     if not connection.in_transaction():
         raise ValueError("persistencia de evento exige transacao ativa")
+    require_sqlserver(connection)
     adquirir_lock_etl(connection, "etl:leituras")
     adquirir_lock_etl(connection, "etl:leitura_itens")
     inserir_leituras([cabecalho], connection=connection, strict=True)
-    tabela = "dbo.leitura_itens" if connection.dialect.name == "mssql" else "leitura_itens"
+    tabela = "dbo.leitura_itens"
     existente = connection.execute(
         text(
             f"SELECT p.codigo FROM {tabela} i JOIN parametros p ON p.id=i.id_parametro "
@@ -150,6 +153,7 @@ def carregar_dataframe(df: pd.DataFrame, origem: str, engine) -> pd.DataFrame:
     """Aceita/rejeita cada evento; falhas SQL tecnicas nao sao suprimidas."""
     if origem not in MAPEAMENTO:
         raise ValueError("origem de medicao desconhecida")
+    require_sqlserver(engine)
     with engine.connect() as connection:
         _validar_legado_inativo(connection)
     aprovados = []

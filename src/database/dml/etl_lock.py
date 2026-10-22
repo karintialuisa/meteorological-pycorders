@@ -1,6 +1,7 @@
 """Locks cooperativos para serializar cargas ETL no SQL Server."""
 
 from sqlalchemy import text
+from src.database.dialect import require_sqlserver
 
 
 def adquirir_lock_etl(connection, recurso: str, timeout_ms: int = 60000) -> None:
@@ -10,8 +11,7 @@ def adquirir_lock_etl(connection, recurso: str, timeout_ms: int = 60000) -> None
     mas não oferecem a proteção contra concorrência do SQL Server. No SQL
     Server, o lock coordena somente escritores que usem o mesmo recurso.
     """
-    if connection.dialect.name != "mssql":
-        return
+    require_sqlserver(connection)
     if not connection.in_transaction():
         raise RuntimeError("O lock ETL exige uma transação ativa")
 
