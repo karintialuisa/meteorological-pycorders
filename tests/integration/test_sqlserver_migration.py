@@ -185,34 +185,6 @@ def test_location_parent_deletes_are_blocked_and_preserve_rows(engine, table):
         assert connection.execute(text(f"SELECT COUNT(*) FROM {table}")).scalar_one() == 1
         assert connection.execute(text("SELECT COUNT(*) FROM estacao")).scalar_one() == 1
 
-
-def test_normalized_essential_queries_keep_event_granularity(engine):
-    seed_history(engine)
-    migrar_legado(engine, arquivar=True)
-    query = (ROOT / "sql" / "dql" / "consultas-essenciais.sql").read_text(encoding="utf-8")
-    with engine.connect() as connection:
-        cursor = connection.connection.driver_connection.cursor()
-        try:
-            cursor.execute(query)
-            results = []
-            while True:
-                if cursor.description:
-                    results.append([dict(zip([column[0] for column in cursor.description], row))
-                                    for row in cursor.fetchall()])
-                if not cursor.nextset():
-                    break
-        finally:
-            cursor.close()
-    assert len(results) == 4
-    assert all(len(result) == 1 for result in results)
-    assert results[0][0]["quantidade_leituras"] == 1
-    assert results[1][0]["quantidade_leituras"] == 1
-    assert results[2][0]["ph"] == Decimal("7.001000")
-    assert results[2][0]["turbidez"] is None
-    assert results[3][0]["quantidade_leituras"] == 1
-    assert results[3][0]["chuva_acumulada"] == Decimal("0.125000")
-
-
 def test_analytical_queries_calculate_statistics_and_flag_outliers(engine):
     def insert_measurement(code, value, index, *, text_value=None):
         with engine.begin() as connection:

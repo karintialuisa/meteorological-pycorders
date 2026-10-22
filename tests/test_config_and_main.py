@@ -20,7 +20,7 @@ def test_get_env_requires_a_configured_value(monkeypatch):
 def test_project_root_and_environment_file_match_repository():
     root = Path(__file__).resolve().parents[1]
     assert settings.PROJECT_ROOT == root
-    assert settings.ENV_FILE == root / "src" / "config" / ".env"
+    assert settings.ENV_FILE == root / "config" / ".env"
 
 
 def test_get_path_resolves_relative_and_absolute_paths(monkeypatch, tmp_path):
