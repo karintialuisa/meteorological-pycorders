@@ -9,6 +9,7 @@ import logging
 from pathlib import Path
 import subprocess
 import sys
+import tempfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from config.settings import PROJECT_ROOT, configure_logging, get_env
@@ -49,18 +50,24 @@ def executar_script(caminho_relativo: str, argumentos: list[str] | None = None) 
 
     logging.info("=" * 20 + f" Iniciando: {caminho_script.name} " + "=" * 20)
 
-    resultado = subprocess.run(
-        [sys.executable, str(caminho_script), *(argumentos or [])],
-        capture_output=True, text=True
-    )
+    # stderr fica em arquivo para nao bloquear a leitura continua de stdout.
+    with tempfile.TemporaryFile(mode="w+t") as stderr:
+        with subprocess.Popen(
+            [sys.executable, str(caminho_script), *(argumentos or [])],
+            stdout=subprocess.PIPE, stderr=stderr, text=True,
+        ) as processo:
+            if processo.stdout is not None:
+                for linha in processo.stdout:
+                    sys.stdout.write(linha)
+                    sys.stdout.flush()
+            returncode = processo.wait()
+        stderr.seek(0)
+        erro = stderr.read()
 
-    if resultado.stdout.strip():
-        sys.stdout.write(resultado.stdout)
-
-    if resultado.returncode != 0:
+    if returncode != 0:
         erro_msg = (
-            resultado.stderr.strip()
-            if resultado.stderr
+            erro.strip()
+            if erro
             else "Erro desconhecido."
         )
         logging.error(f"Falha em {caminho_script.name}:\n{erro_msg}")

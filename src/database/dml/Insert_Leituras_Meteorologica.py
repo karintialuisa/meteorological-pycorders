@@ -27,6 +27,11 @@ def resolver_id_cidade(df_leituras: pd.DataFrame, connection) -> pd.DataFrame:
     return result.drop(columns=["cidade", "estado"], errors="ignore")
 
 
+def exibir_progresso(processadas: int, total: int) -> None:
+    if processadas % 100 == 0 or processadas == total:
+        print(f"Meteorologia: {processadas}/{total} leituras processadas", flush=True)
+
+
 def inserir_dados():
     inicio = monotonic()
     logging.info("Carga meteorologica iniciada: lendo e tratando JSON Bronze")
@@ -35,7 +40,10 @@ def inserir_dados():
     if dados.empty:
         logging.info("Nenhum dado encontrado para inserir.")
         return
-    aprovados = carregar_dataframe(dados, "leitura_meteorologica", create_db_engine())
+    aprovados = carregar_dataframe(
+        dados, "leitura_meteorologica", create_db_engine(),
+        progresso=exibir_progresso,
+    )
     if not aprovados.empty:
         inicio_silver = monotonic()
         logging.info("Persistencia Silver iniciada: leituras=%s", len(aprovados))

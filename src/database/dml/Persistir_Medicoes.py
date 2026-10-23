@@ -1,8 +1,12 @@
 """Persistencia atomica e mapeamento comum de eventos 3FN."""
 
 import logging
+<<<<<<< HEAD
+from collections.abc import Callable, Mapping
+=======
 from collections.abc import Mapping
 from time import monotonic
+>>>>>>> origin/feature/wagner2
 
 import pandas as pd
 from sqlalchemy import inspect, text
@@ -150,7 +154,10 @@ def persistir_evento(connection: Connection, cabecalho, itens) -> None:
     inserir_leitura_itens(itens, connection=connection, strict=True)
 
 
-def carregar_dataframe(df: pd.DataFrame, origem: str, engine) -> pd.DataFrame:
+def carregar_dataframe(
+    df: pd.DataFrame, origem: str, engine, *,
+    progresso: Callable[[int, int], None] | None = None,
+) -> pd.DataFrame:
     """Aceita/rejeita cada evento; falhas SQL tecnicas nao sao suprimidas."""
     if origem not in MAPEAMENTO:
         raise ValueError("origem de medicao desconhecida")
@@ -162,7 +169,13 @@ def carregar_dataframe(df: pd.DataFrame, origem: str, engine) -> pd.DataFrame:
         _validar_legado_inativo(connection)
     logging.info("Validacao concluida: origem=%s; iniciando transacoes por leitura", origem)
     aprovados = []
+<<<<<<< HEAD
+    total = len(df)
+    if progresso is not None:
+        progresso(0, total)
+=======
     ultimo_progresso = monotonic()
+>>>>>>> origin/feature/wagner2
     for indice, registro in enumerate(df.to_dict("records")):
         try:
             cabecalho, itens = preparar_evento(registro, origem)
@@ -193,6 +206,10 @@ def carregar_dataframe(df: pd.DataFrame, origem: str, engine) -> pd.DataFrame:
             logging.warning(
                 "Evento rejeitado: origem=%s indice=%s motivo=%s", origem, indice, error
             )
+<<<<<<< HEAD
+        if progresso is not None:
+            progresso(indice + 1, total)
+=======
         processados = indice + 1
         agora = monotonic()
         if processados == 1 or processados % 100 == 0 or processados == total or agora - ultimo_progresso >= 5:
@@ -208,4 +225,5 @@ def carregar_dataframe(df: pd.DataFrame, origem: str, engine) -> pd.DataFrame:
             ultimo_progresso = agora
     logging.info("Carga SQL concluida: origem=%s aceitos=%s rejeitados=%s tempo=%.1fs",
                  origem, len(aprovados), total - len(aprovados), monotonic() - inicio)
+>>>>>>> origin/feature/wagner2
     return pd.DataFrame(aprovados)

@@ -1,10 +1,10 @@
-# PyCordersMeteorological
+# PyCodersMeteorological
 
 Pipeline de Monitoramento e Análise de Dados Ambientais
 
 Para preparar o ambiente, entender o fluxograma, executar as rotinas e localizar cada arquivo Python/configuração, consulte o [RunBook operacional](../RUNBOOK.md) e o [fluxo da solução](../FLUXO_SOLUCAO.md). Execute os comandos deste documento a partir da raiz do repositório, não da pasta `config/`.
 
-Projeto Prático Integrador desenvolvido pela equipe PyCorders para capturar, tratar e persistir dados de estações meteorológicas e de qualidade da água, com consultas por API REST.
+Projeto Prático Integrador desenvolvido pela equipe PyCoders para capturar, tratar e persistir dados de estações meteorológicas e de qualidade da água, com consultas por API REST.
 
 ## Sobre o projeto
 
@@ -63,11 +63,23 @@ semântico final do Power BI. A Gold publica `Dim_Estacao`, `Dim_Tempo`,
 ## Arquitetura do projeto
 
 ```text
+<<<<<<< HEAD:README.md
+meteorological-PyCoders/
+├── Get_dados.py                      # Entrada compatível da coleta Agritempo
+├── requirements.txt                 # Dependências, sem alteração de versões
+├── .env.example                     # Modelo sem segredos
+=======
 meteorological-pycorders/
 ├── .gitignore
+<<<<<<< HEAD
 ├── main.py
 ├── RUNBOOK.md
 ├── FLUXO_SOLUCAO.md
+=======
+├── requirements.txt
+>>>>>>> origin/feature/wagner2:config/README.md
+├── README.md
+>>>>>>> 8235c7555fad24b81de0675053fd98def82882ea
 ├── data_lakehouse/
 │   ├── bronze/                      # JSONs fonte, cadastros e lotes REST
 │   ├── silver/                      # Parquet Snappy, cadastros e auditoria
@@ -155,7 +167,7 @@ Os testes de estrutura verificam os diretórios, imports e caminhos definidos no
 
    ```bash
    git clone <URL_DO_REPOSITORIO>
-   cd meteorological-pycorders
+   cd meteorological-PyCoders
    ```
 
 2. Crie e ative um ambiente virtual:

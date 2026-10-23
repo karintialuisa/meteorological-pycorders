@@ -240,6 +240,41 @@ def test_meteorological_offsets_have_same_natural_key(banco_teste):
     assert counts(banco_teste) == (1, 5, 0, 0)
 
 
+def test_progress_counts_insertion_replay_and_rejection(banco_teste):
+    seed_location(banco_teste)
+    chamadas = []
+    output = carregar_dataframe(
+        pd.DataFrame([meteo(), meteo(), meteo(vento=-1)]),
+        "leitura_meteorologica", banco_teste,
+        progresso=lambda atual, total: chamadas.append((atual, total)),
+    )
+    assert chamadas == [(0, 3), (1, 3), (2, 3), (3, 3)]
+    assert len(output) == 2
+    assert counts(banco_teste) == (1, 5, 0, 0)
+
+
+def test_meteorological_progress_initial_interval_and_final(capsys):
+    for atual in range(251):
+        meteorologica.exibir_progresso(atual, 250)
+    assert capsys.readouterr().out.splitlines() == [
+        f"Meteorologia: {atual}/250 leituras processadas"
+        for atual in (0, 100, 200, 250)
+    ]
+
+
+def test_meteorological_loader_wires_progress(
+    banco_teste, monkeypatch, capsys
+):
+    seed_location(banco_teste)
+    monkeypatch.setattr(meteorologica, "tabela_metereologica", lambda: pd.DataFrame([meteo()]))
+    monkeypatch.setattr(meteorologica, "create_db_engine", lambda: banco_teste)
+    meteorologica.inserir_dados()
+    assert capsys.readouterr().out.splitlines() == [
+        "Meteorologia: 0/1 leituras processadas",
+        "Meteorologia: 1/1 leituras processadas",
+    ]
+
+
 def test_silver_output_uses_only_approved_columns_and_normalized_values(banco_teste):
     seed_location(banco_teste)
     output = carregar_dataframe(pd.DataFrame([
@@ -295,8 +330,18 @@ def test_sql_failure_propagates_and_rolls_back_event(banco_teste):
             "ON p.id=i.id_parametro WHERE p.codigo='PH') "
             "BEGIN; THROW 51000, 'falha tecnica', 1; END; END"
         ))
+<<<<<<< HEAD
+    chamadas = []
+    with pytest.raises(IntegrityError, match="falha tecnica"):
+        carregar_dataframe(
+            pd.DataFrame([water()]), "qualidade_agua", banco_teste,
+            progresso=lambda atual, total: chamadas.append((atual, total)),
+        )
+    assert chamadas == [(0, 1)]
+=======
     with pytest.raises(DBAPIError, match="falha tecnica"):
         carregar_dataframe(pd.DataFrame([water()]), "qualidade_agua", banco_teste)
+>>>>>>> origin/feature/wagner2
     assert counts(banco_teste) == (0, 0, 0, 0)
 
 
