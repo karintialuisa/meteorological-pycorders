@@ -2,7 +2,7 @@
 
 Pipeline de Monitoramento e Análise de Dados Ambientais
 
-Para preparar o ambiente, entender o fluxograma, executar as rotinas e localizar cada arquivo Python/configuração, consulte o [RunBook operacional](RUNBOOK.md).
+Para preparar o ambiente, entender o fluxograma, executar as rotinas e localizar cada arquivo Python/configuração, consulte o [RunBook operacional](../RUNBOOK.md) e o [fluxo da solução](../FLUXO_SOLUCAO.md). Execute os comandos deste documento a partir da raiz do repositório, não da pasta `config/`.
 
 Projeto Prático Integrador desenvolvido pela equipe PyCorders para capturar, tratar e persistir dados de estações meteorológicas e de qualidade da água, com consultas por API REST.
 
@@ -21,7 +21,7 @@ O pipeline contempla:
 - Modelo relacional de leituras com `parametros`, `leituras` e `leitura_itens`, cujas cargas na camada DML validam campos, resolvem chaves por código e são idempotentes.
 - Proteção de dados pessoais de operadores: CPF em HMAC-SHA-256 e nome completo cifrado com Fernet, com catálogo LGPD. A descriptografia exige autorização explícita do chamador e registra auditoria sem conteúdo pessoal ou chaves.
 - API FastAPI para listar cidades e consultar leituras carregadas dos JSONs.
-- Logs estruturados por execução, tratamento e inserção no banco.
+- Logs por execução, tratamento e inserção no banco, com etapas cronometradas e progresso da carga meteorológica no terminal.
 - Estatísticas por estação/parâmetro, flags de anomalia IQR/Z-Score e modelo estrela Gold.
 
 ## Snapshots de cadastros
@@ -33,7 +33,7 @@ atualizar somente os arquivos, sem inserir ou modificar registros no banco:
 python -m src.silver.persistencia.Exportar_Cadastros
 ```
 
-O comando usa a conexao SQL configurada em `src/config/.env` e grava em
+O comando usa a conexao SQL configurada em `config/.env` e grava em
 `SILVER_DIR/cadastros` (por padrao, `data_lakehouse/silver/cadastros`):
 
 | Arquivo | Chave | Informacoes |
@@ -55,7 +55,6 @@ semântico final do Power BI. A Gold publica `Dim_Estacao`, `Dim_Tempo`,
 ## Tecnologias
 
 - Python 3.10 ou superior
-- SQL Server
 - SQL Server e Microsoft ODBC Driver 17 for SQL Server
 - pandas, PyArrow, SQLAlchemy, pyodbc, python-dotenv e cryptography
 - FastAPI e Uvicorn (API)
@@ -65,10 +64,10 @@ semântico final do Power BI. A Gold publica `Dim_Estacao`, `Dim_Tempo`,
 
 ```text
 meteorological-pycorders/
-├── .env.example
 ├── .gitignore
-├── requirements.txt
-├── README.md
+├── main.py
+├── RUNBOOK.md
+├── FLUXO_SOLUCAO.md
 ├── data_lakehouse/
 │   ├── bronze/                      # JSONs fonte, cadastros e lotes REST
 │   ├── silver/                      # Parquet Snappy, cadastros e auditoria
@@ -89,7 +88,13 @@ meteorological-pycorders/
 │   ├── silver/                      # ETL, persistencia e LGPD
 │   ├── database/dml/                # Cargas relacionais Python
 │   └── gold/                        # Estatisticas e esquema estrela
-├── config/                          # settings.py e inventario do projeto
+├── config/                          # Configuracao e documentacao
+│   ├── .env.example
+│   ├── requirements.txt
+│   ├── README.md
+│   ├── Readme_explain.md
+│   ├── settings.py
+│   └── features.csv
 ├── power_bi/                        # Tema e recursos de apoio
 └── tests/
    ├── bronze/                      # Contratos REST e coleta
@@ -108,7 +113,7 @@ meteorological-pycorders/
 - `sql`: DDL relacional, população do catálogo e consultas analíticas.
 - `src/database/dml`: código Python que valida, resolve chaves e carrega localização, parâmetros, cabeçalhos/itens, operadores e catálogo LGPD; mantém locks, migração e backfill.
 - `src/pipeline_orchestrator.py`: lê os lotes JSONL da Bronze, valida e projeta a Silver sem depender do banco, publica os produtos Gold e, com `--carregar-sql`, replica as leituras no SQL 3FN.
-- `config/settings.py`: concentra leitura de `src/config/.env`, caminhos, conexão SQL Server e logging.
+- `config/settings.py`: concentra leitura de `config/.env`, caminhos, conexão SQL Server e logging.
 - `tests`: testes sem banco para regras puras; os testes de persistência usam SQL Server descartável e são opt-in (ver Testes).
 
 ### Equivalência com os diagramas e limites da reorganização
@@ -121,10 +126,10 @@ meteorological-pycorders/
 | Gold: estatística, alertas e modelo dimensional | `src/gold` e `data_lakehouse/gold` |
 | Gerência do banco e scripts SQL | `src/database` e `sql` |
 | Orquestração | `src/pipeline_orchestrator.py` |
-| Configuração e testes | `config`, `.env.example`, `requirements.txt` e `tests` por camada |
+| Configuração e testes | `config/settings.py`, `config/.env.example`, `config/requirements.txt` e `tests` por camada |
 | Power BI | Consumidor externo; nenhum dashboard foi criado nesta reorganização |
 
-Os módulos no nível superior de `src/` são fachadas para as implementações por pacote e correspondem aos nomes do diagrama. A API FastAPI da raiz continua independente; o conector REST mantém lotes raw próprios e não é consumido automaticamente pelo pipeline local.
+Os módulos de ingestão, governança, banco e estatísticas no nível superior de `src/` são fachadas para as implementações por pacote e correspondem aos nomes do diagrama. A API FastAPI em `src/api/` continua independente. O conector REST mantém lotes raw próprios, consumidos pelo orquestrador; a coleta não é disparada automaticamente pelo pipeline local.
 
 O fluxo segue Bronze → Silver → Gold. Os data contracts da Bronze são modelos Pydantic em `src/bronze/contracts.py`; registros fora do contrato são rejeitados e auditados em log. O modelo SQL 3FN é uma carga paralela e opcional, não uma etapa anterior à Silver. O coletor Agritempo continua uma coleta Bronze isolada, sem conversão para a Silver.
 
@@ -165,12 +170,12 @@ Os testes de estrutura verificam os diretórios, imports e caminhos definidos no
 3. Instale as dependências:
 
    ```bash
-   pip install -r requirements.txt
+   python -m pip install -r config/requirements.txt
    ```
 
 ## Configuração
 
-Configure `src/config/.env` com as variáveis abaixo. Não compartilhe nem versione credenciais. O `.gitignore` impede novas inclusões, mas não remove arquivos que já estejam rastreados: a configuração real e os cadastros de operadores existentes exigem cuidado antes de qualquer commit.
+Configure `config/.env` com as variáveis abaixo. Não compartilhe nem versione credenciais. O `.gitignore` impede novas inclusões, mas não remove arquivos que já estejam rastreados: a configuração real e os cadastros de operadores existentes exigem cuidado antes de qualquer commit.
 
    ```env
    LOGS_DIR=logs
@@ -195,9 +200,9 @@ Configure `src/config/.env` com as variáveis abaixo. Não compartilhe nem versi
    ENCRYPTION_KEY=gere_uma_chave_fernet
    ```
 
-`.env.example`, na raiz, é um modelo sem segredos. Copie-o para `src/config/.env` somente em uma instalação nova; não sobrescreva a configuração real já existente. Substitua os marcadores antes de executar cargas que protegem operadores; as chaves HMAC e Fernet devem ser reais. O loader recusa valores que começam com `replace-with`.
+`config/.env.example` é o modelo de configuração. Copie-o para `config/.env` somente em uma instalação nova; não sobrescreva a configuração real já existente. Substitua os marcadores antes de executar cargas que protegem operadores; as chaves HMAC e Fernet devem ser reais. O loader recusa valores que começam com `replace-with`.
 
-`src/bronze/Get_dados.py` usa a API Agritempo da Embrapa. O bearer deve ficar somente em `src/config/.env`; não o coloque no código nem o versione. O escopo atual dessa fonte é meteorológico, com os dados de temperatura do ar disponíveis no retorno climático. O contrato em `src/bronze/ingestion.py` valida o envelope, os dados da estação e cada observação diária, exigindo data, ID e temperaturas mínima/máxima numéricas, finitas e coerentes entre si. Estações sem série climática são aceitas.
+`src/bronze/Get_dados.py` usa a API Agritempo da Embrapa. O bearer deve ficar somente em `config/.env`; não o coloque no código nem o versione. O escopo atual dessa fonte é meteorológico, com os dados de temperatura do ar disponíveis no retorno climático. O contrato em `src/bronze/ingestion.py` valida o envelope, os dados da estação e cada observação diária, exigindo data, ID e temperaturas mínima/máxima numéricas, finitas e coerentes entre si. Estações sem série climática são aceitas.
 
 Para consumo analítico, a projeção usa somente `temperatura_minima` e `temperatura_maxima` (incluindo os indicadores de estimativa). `temperatura_media` e as demais variáveis que venham da API permanecem no JSON bruto como resposta original, mas não entram nessa projeção; a média não é calculada pelo pipeline atual.
 
@@ -205,7 +210,7 @@ Bronze, Silver e Gold ficam em `data_lakehouse/`. A coleta Agritempo mantém o c
 
 ### Ingestão REST genérica e Bronze (IDs 21–25)
 
-O conector `src/bronze/ingestion.py` é um fluxo REST genérico, independente do coletor Agritempo. Ele processa os datasets `ambiental` e `meteorologica` quando seus endpoints estão configurados no `src/config/.env`. As variáveis `API_URL_AMBIENTAL` e `API_URL_METEOROLOGICA` habilitam cada endpoint; `API_SOURCE_NAME_AMBIENTAL` e `API_SOURCE_NAME_METEOROLOGICA` definem rótulos de origem opcionais, `API_TIMEOUT_SECONDS` controla o timeout e `API_REQUESTS_PER_MINUTE` limita as requisições. `API_RAW_DIR` define onde gravar os arquivos.
+O conector `src/bronze/ingestion.py` é um fluxo REST genérico, independente do coletor Agritempo. Ele processa os datasets `ambiental` e `meteorologica` quando seus endpoints estão configurados no `config/.env`. As variáveis `API_URL_AMBIENTAL` e `API_URL_METEOROLOGICA` habilitam cada endpoint; `API_SOURCE_NAME_AMBIENTAL` e `API_SOURCE_NAME_METEOROLOGICA` definem rótulos de origem opcionais, `API_TIMEOUT_SECONDS` controla o timeout e `API_REQUESTS_PER_MINUTE` limita as requisições. `API_RAW_DIR` define onde gravar os arquivos.
 
 Cada registro aprovado é gravado como uma linha JSONL com o conteúdo original em `record` e os metadados `dataset`, `source` e `ingested_at`. O timestamp de ingestão é gerado em UTC para cada registro; `source` usa o nome configurado ou, na ausência dele, host e caminho da URL, sem parâmetros de consulta. Cada lote recebe um arquivo exclusivo, publicado após a gravação completa; uma execução seguinte não sobrescreve arquivos históricos. Registros rejeitados não entram na Bronze: geram um evento de auditoria no log de tratamento com dataset, índice, identificador/estação, motivo e instante UTC, sem despejar o payload completo.
 
@@ -239,7 +244,7 @@ O backfill reprocessa `ambiental`, `meteorologica` ou `ambos` com data inicial i
 .\.venv\Scripts\python.exe .\src\database\dml\Backfill_Leituras.py --dataset ambos --data-inicio 2026-09-15 --data-fim 2026-09-18
 ```
 
-Esse exemplo seleciona os dias 15, 16 e 17 de setembro em UTC. As fontes são os JSONs definidos por `INGESTION_LEITURA_AMBIENTAL` e `INGESTION_LEITURA_METEOROLOGICA` no `src/config/.env`. Os arquivos precisam conter os registros históricos desejados: o backfill não busca dados em APIs, não lê os envelopes JSONL da Bronze e não consome o JSON cumulativo Agritempo. Preservar esses arquivos é necessário para futuras reexecuções.
+Esse exemplo seleciona os dias 15, 16 e 17 de setembro em UTC. As fontes são os JSONs definidos por `INGESTION_LEITURA_AMBIENTAL` e `INGESTION_LEITURA_METEOROLOGICA` no `config/.env`. Os arquivos precisam conter os registros históricos desejados: o backfill não busca dados em APIs, não lê os envelopes JSONL da Bronze e não consome o JSON cumulativo Agritempo. Preservar esses arquivos é necessário para futuras reexecuções.
 
 Os parsers existentes continuam responsáveis pela qualidade e deduplicação; o filtro por período é aplicado ao resultado validado. As contagens de selecionados/aprovados/rejeitados do backfill referem-se a essa etapa; rejeições anteriores dos parsers mantêm seus próprios logs. Estações e parâmetros devem estar cadastrados no destino 3FN; não execute com medições ativas nas tabelas legadas sem a migração descrita neste documento.
 
@@ -253,7 +258,7 @@ Os testes de backfill usam JSONs sintéticos, Silver temporária e SQL Server de
 
 #### Testar o backfill no banco descartável
 
-Use `monitoramento_lgpd_test`, já configurado em `SQLSERVER_LGPD_TEST_URL` no `src/config/.env`, com `RUN_SQLSERVER_LGPD_TESTS=1`. A configuração de testes é separada de `DB_*`: **não é necessário alterar o destino normal da aplicação**.
+Use um banco descartável vazio, por exemplo `monitoramento_lgpd_test`, configurado em `SQLSERVER_LGPD_TEST_URL` no `config/.env`, com `RUN_SQLSERVER_LGPD_TESTS=1`. A configuração de testes é separada de `DB_*`: **não é necessário alterar o destino normal da aplicação**.
 
 Na raiz do repositório, execute somente os dois cenários de integração do backfill:
 
@@ -306,7 +311,25 @@ uvicorn src.api.main:app --reload
 
 A documentação interativa da API ficará disponível em `http://127.0.0.1:8000/docs`. Os endpoints incluem `/cidades`, `/leituras/ambientais` e `/leituras/meteorologicas`.
 
-`LOGS_DIR` define o diretório dos logs; caminhos relativos são resolvidos a partir da raiz do projeto. Os arquivos são separados por tipo de saída:
+### Carga meteorológica e acompanhamento
+
+Para ler o JSON configurado em `INGESTION_LEITURA_METEOROLOGICA`, carregar o SQL 3FN e publicar as leituras aprovadas na Silver:
+
+```powershell
+python -m src.database.dml.Insert_Leituras_Meteorologica
+```
+
+O comando exige banco, parâmetros e estações cadastrados e escreve nos destinos normais de `config/.env`. Não executa coleta REST/Agritempo nem gera a Gold.
+
+O terminal e o log de inserção mostram início/duração do tratamento Bronze, conexão e validação do legado, progresso SQL, persistência Silver e tempo total. O progresso informa processados/total, percentual, aceitos/rejeitados, tempo decorrido, velocidade e tempo restante estimado da etapa SQL.
+
+As atualizações ocorrem na primeira leitura, a cada 100 leituras, na última e quando passam pelo menos cinco segundos desde a anterior, sempre entre leituras concluídas. Não há heartbeat durante uma operação SQL bloqueada. A estimativa varia conforme o ritmo e não inclui a escrita Silver. Aceitos incluem retransmissões compatíveis; o total SQL é posterior às rejeições/deduplicações do parser.
+
+Cada leitura usa uma transação com várias consultas, gravações e solicitações de locks para o cabeçalho e as cinco medições. Esse custo repetido e eventuais esperas por concorrência podem tornar a carga lenta. Os logs acrescentam visibilidade, sem mudar a estratégia de inserção, as regras de rollback ou a idempotência. Veja diagnóstico e testes no [runbook](../RUNBOOK.md#carga-meteorológica-direta).
+
+### Arquivos de log
+
+`LOGS_DIR` define o diretório dos logs; caminhos relativos são resolvidos a partir da raiz do projeto. As rotinas CLI configuram saída no terminal e nos arquivos separados por categoria:
 
 - `logs/tratamento_dados.log`: ingestão REST e execução isolada dos parsers/tratamentos.
 - `logs/insercao_dados.log`: cargas e inserções no banco, incluindo eventos de validação ocorridos durante a carga.
@@ -484,7 +507,7 @@ O `pytest.ini` configura `--basetemp=.pytest_tmp`: ao executar os comandos a par
 
 Essa pasta é exclusiva dos testes: o pytest apaga seu conteúdo no início de cada execução. Não armazene arquivos importantes nela e não execute duas sessões simultâneas com o mesmo `--basetemp`. Para execuções paralelas independentes, informe caminhos locais distintos, por exemplo `--basetemp=.pytest_tmp\sessao-a` e `--basetemp=.pytest_tmp\sessao-b`. O ajuste elimina o problema de limpeza temporária; eventuais erros de autenticação ou de asserção dos testes continuam sendo exibidos normalmente.
 
-As integrações LGPD, integridade, unicidade e migração com SQL Server exigem um banco descartável vazio, separado de `monitoramento`. Todas compartilham a configuração carregada automaticamente de `src/config/.env`, independentemente do diretório de execução. Configure nesse arquivo local, não versionado, `RUN_SQLSERVER_LGPD_TESTS=1` e `SQLSERVER_LGPD_TEST_URL` para uma instância SQL Server e um banco descartável que já exista. O banco deve ter nome terminado em `_test`, `_tests`, `_disposable` ou `_scratch`.
+As integrações LGPD, integridade, unicidade e migração com SQL Server exigem um banco descartável vazio, separado de `monitoramento`. Todas compartilham a configuração carregada automaticamente de `config/.env`, independentemente do diretório de execução. Configure nesse arquivo local, não versionado, `RUN_SQLSERVER_LGPD_TESTS=1` e `SQLSERVER_LGPD_TEST_URL` para uma instância SQL Server e um banco descartável que já exista. O banco deve ter nome terminado em `_test`, `_tests`, `_disposable` ou `_scratch`.
 
 ```powershell
 & '.\.venv\Scripts\python.exe' -m pytest '.\tests\integration\test_sqlserver_lgpd.py' -v
@@ -492,11 +515,11 @@ As integrações LGPD, integridade, unicidade e migração com SQL Server exigem
 
 Não é necessário exportar variáveis a cada execução. `RUN_SQLSERVER_LGPD_TESTS=1` habilita a integração e `SQLSERVER_LGPD_TEST_URL` define a URL SQLAlchemy. Variáveis já definidas no processo têm prioridade; use `RUN_SQLSERVER_LGPD_TESTS=0` para desabilitar. Sem ativação, apenas a integração é ignorada; os testes da configuração continuam executando. Ativação sem URL gera erro explícito, não `SKIPPED`.
 
-Nunca aponte essa configuração para `monitoramento`. O lifecycle exige um nome com sufixo `_test`, `_tests`, `_disposable` ou `_scratch`, recusa tabelas preexistentes em `dbo`, aplica o DDL oficial (sem o `USE monitoramento`) e remove suas tabelas ao final. O banco permanece disponível e vazio para a próxima execução. Um application lock exclusivo serializa as suítes que compartilham a base, com erro explícito em caso de timeout. A configuração normal da aplicação em `src/config/.env` não é usada como fallback.
+Nunca aponte essa configuração para `monitoramento`. O lifecycle exige um nome com sufixo `_test`, `_tests`, `_disposable` ou `_scratch`, recusa tabelas preexistentes em `dbo`, aplica o DDL oficial (sem o `USE monitoramento`) e remove suas tabelas ao final. O banco permanece disponível e vazio para a próxima execução. Um application lock exclusivo serializa as suítes que compartilham a base, com erro explícito em caso de timeout. A configuração normal da aplicação em `config/.env` não é usada como fallback.
 
 ### Integridade relacional no SQL Server
 
-As suítes SQL de integridade e unicidade validam PKs, FKs, nulabilidade, CHECKs, cascatas, cargas e replay contra o DDL real. Use somente uma instância e uma base descartáveis, configuradas em `src/config/.env`; as suítes carregam esse arquivo automaticamente, e variáveis do processo podem sobrescrevê-lo. Não aponte testes ou migrações para dados reais.
+As suítes SQL de integridade e unicidade validam PKs, FKs, nulabilidade, CHECKs, cascatas, cargas e replay contra o DDL real. Use somente uma instância e uma base descartáveis, configuradas em `config/.env`; as suítes carregam esse arquivo automaticamente, e variáveis do processo podem sobrescrevê-lo. Não aponte testes ou migrações para dados reais.
 
 ```powershell
 & '.\.venv\Scripts\python.exe' -m pytest `
@@ -549,7 +572,7 @@ Não inicie novas cargas enquanto houver medições ativas nas tabelas legadas. 
 
 1. Faça e valide um backup recuperável, abra janela de manutenção e congele os writers legados. Não permita cargas concorrentes durante a migração.
 2. Revise o catálogo da base, aplique o esquema canônico e cadastre os parâmetros. O comando de migração não cria nem atualiza schema ou parâmetros por conta própria.
-3. Em base descartável, exercite os testes SQL com `src/config/.env`; a configuração local é carregada automaticamente pelas suítes SQL, com variáveis do processo podendo sobrescrevê-la. Preserve constraints/FKs durante os testes; não as desabilite nem as remova para limpar os dados.
+3. Em base descartável, exercite os testes SQL com `config/.env`; a configuração local é carregada automaticamente pelas suítes SQL, com variáveis do processo podendo sobrescrevê-la. Preserve constraints/FKs durante os testes; não as desabilite nem as remova para limpar os dados.
 4. Após revisar o destino e autorizar operacionalmente a execução, rode a migração explicitamente:
 
    ```powershell
@@ -574,13 +597,13 @@ Este runbook documenta o procedimento; nenhuma migração foi executada em `moni
 
 ## Segurança e governança
 
-- `src/config/.env` contém configurações locais e não deve ser versionado.
+- `config/.env` contém configurações locais e não deve ser versionado.
 - As tabelas `operadores` e `catalogo_dados` são criadas por `sql/ddl_banco_relacional.sql`, junto ao esquema relacional. O script usa `IF OBJECT_ID` para preservar tabelas existentes; execute depois `python -m src.database.dml.Insert_Catalogo_LGPD` para registrar os metadados. Ele cria tabelas ausentes, mas não apaga, recria nem migra tabelas existentes.
 - A tabela `operadores` guarda apenas `cpf_hash` (HMAC-SHA-256) e `nome_completo_cifrado` (Fernet). O módulo `src/silver/security/pii.py` oferece as funções de proteção; `inserir_operadores()` recebe registros de uma fonte aprovada com os campos `cpf` e `nome_completo`. Nenhum cadastro fictício ou arquivo com valores pessoais é fornecido.
-- Defina `HMAC_SECRET_KEY` e `ENCRYPTION_KEY` no ambiente do processo autorizado. Gere uma chave Fernet com `python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"` e um segredo HMAC forte com `python -c "import secrets; print(secrets.token_urlsafe(32))"`. Não grave chaves no banco, no código, em logs ou no controle de versão. Use `.env.example`, na raiz, como modelo sem sobrescrever uma configuração local existente.
+- Defina `HMAC_SECRET_KEY` e `ENCRYPTION_KEY` no ambiente do processo autorizado. Gere uma chave Fernet com `python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"` e um segredo HMAC forte com `python -c "import secrets; print(secrets.token_urlsafe(32))"`. Não grave chaves no banco, no código, em logs ou no controle de versão. Use `config/.env.example` como modelo sem sobrescrever uma configuração local existente.
 - HMAC permite comparar CPFs normalizados sem armazená-los, mas não é anonimização jurídica. A troca da chave HMAC muda todos os identificadores; como o CPF original não é persistido, planeje a rotação e a reidentificação com a fonte autorizada antes de trocar a chave. A rotação da chave Fernet também requer recriptografia ou uma estratégia de chaves versionadas.
 - A descriptografia exige principal técnico e callback de autorização e audita sucesso/negação sem nome, ciphertext ou chave. Não há provedor de identidade de usuário final; a aplicação chamadora deve vincular a autorização a uma identidade autenticada. Restrinja a chave e o processo/conta que a lê.
-- Atenção: `src/config/.env` já está versionado neste repositório. A regra no `.gitignore` não remove arquivos já rastreados. Antes de armazenar chaves reais, remova esse arquivo do índice do Git e revise/rotacione quaisquer segredos que tenham sido publicados.
+- A regra no `.gitignore` não remove arquivos já rastreados. Antes de armazenar chaves reais em `config/.env`, verifique se ele está no índice do Git, remova-o do índice se necessário e revise/rotacione quaisquer segredos que tenham sido publicados.
 - O arquivo `logs/execucao_relatorio.log` é local e está coberto pelo `.gitignore`.
 - Configure e proteja `SILVER_DIR` conforme a política de retenção do Data Lake; os arquivos Parquet contêm dados ambientais e não devem receber campos pessoais de operadores.
 - Revise mensagens e dados registrados antes de incluir logs em chamados ou compartilhá-los.
