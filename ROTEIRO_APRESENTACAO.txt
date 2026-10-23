@@ -1,0 +1,112 @@
+ROTEIRO DE APRESENTAÇÃO — POWER BI E MENU DO SISTEMA
+Duração estimada da fala: 3 a 4 minutos
+Com perguntas e respostas: até 5 minutos
+
+
+ABERTURA — 0:00 a 0:20
+
+"Olá! Vou apresentar rapidamente o dashboard do Power BI e o menu principal
+do nosso sistema. A solução coleta e processa dados meteorológicos e de
+qualidade da água, organiza esses dados em etapas e oferece opções para
+consultar, analisar e reprocessar as informações."
+
+
+POWER BI — 0:20 a 1:35
+
+"No Power BI, a proposta é separar a visualização em duas páginas:
+Meteorologia e Qualidade da Água. As páginas usam um canvas personalizado
+de 1600 por 900 pixels, um tema visual do projeto e imagens de fundo
+próprias. Os fundos servem como moldura do dashboard; os indicadores,
+gráficos, filtros e tabelas são visuais nativos do Power BI.
+
+"Na página de Meteorologia, os filtros permitem selecionar estado, cidade,
+estação e período. Os cartões resumem o número de estações, a temperatura
+média, a umidade média e a chuva média. Os gráficos mostram a evolução de
+temperatura e umidade ao longo do tempo, e uma tabela permite consultar as
+leituras em detalhe."
+
+"Na página de Qualidade da Água, a estrutura é semelhante. Os cartões
+apresentam o número de estações e médias de temperatura da água, pH e
+oxigênio. Os gráficos mostram pH e oxigênio ao longo do tempo, e a tabela
+reúne os registros e outras medições, como condutividade e turbidez."
+
+"Os indicadores são medidas de agregação, e os filtros ajudam a explorar
+os dados por local e período. Há botões de navegação entre as duas páginas.
+O tema e as instruções de posicionamento dos visuais estão documentados
+na pasta do Power BI."
+
+
+MAIN.PY E OPÇÕES DO MENU — 1:35 a 3:25
+
+"O arquivo main.py é o ponto de entrada interativo. Ele configura os logs,
+mostra as opções e chama o script correspondente a cada escolha. As tarefas
+são executadas em sequência quando há mais de uma etapa; se uma etapa falha,
+o sistema registra o erro e interrompe aquela sequência."
+
+"A opção 1, ETL JSON para banco de dados, executa as etapas configuradas
+para carregar localizações, parâmetros e leituras ambientais e
+meteorológicas. Se uma carga falhar, as próximas etapas dessa sequência
+não são executadas."
+
+"A opção 2 coleta dados meteorológicos da Agritempo e os grava em JSON."
+
+"A opção 3 cadastra parâmetros, o catálogo relacionado à LGPD e os
+operadores."
+
+"A opção 4 encerra a aplicação."
+
+"A opção 5 gera estatísticas descritivas da camada Silver e as publica em
+CSV."
+
+"A opção 6 valida possíveis anomalias com Z-Score e gera o resultado em
+CSV. É um sinal estatístico para investigação, não uma confirmação
+automática de erro na medição."
+
+"Por fim, a opção 7 reprocessa leituras históricas. O usuário informa o tipo
+de dados — ambiental, meteorológico ou ambos — e um intervalo de datas.
+A data inicial é inclusiva e a data final é exclusiva. Também é possível
+solicitar a reconstrução das partições Silver a partir dos dados SQL."
+
+
+ENCERRAMENTO — 3:25 a 3:45
+
+"Em resumo, o main.py organiza as operações do pipeline, enquanto o Power BI
+é a camada de análise visual. O fluxo de dados prepara e transforma as
+leituras antes de elas serem usadas nos relatórios, permitindo consultar
+indicadores gerais e também investigar registros individuais."
+
+
+RESPOSTAS PARA POSSÍVEIS PERGUNTAS
+
+Pergunta: "De onde vêm os dados do dashboard?"
+Resposta: "O projeto organiza os dados em camadas Bronze, Silver e Gold.
+Bronze guarda dados coletados, Silver contém os dados tratados e Gold
+concentra produtos analíticos. O Power BI é a camada de consumo. A origem
+exata configurada no modelo semântico deve ser confirmada no arquivo PBIX."
+
+Pergunta: "Os filtros de uma página também filtram a outra?"
+Resposta: "A navegação entre páginas, sozinha, não sincroniza filtros. Para
+manter seleções ao trocar de página, é preciso configurar a sincronização
+das segmentações no Power BI."
+
+Pergunta: "Chuva média significa o total de chuva acumulada?"
+Resposta: "Não. A medida documentada calcula a média dos valores de chuva
+das leituras selecionadas. Para apresentar um total acumulado, é necessário
+conhecer o intervalo de acumulação e a regra apropriada para os dados."
+
+Pergunta: "O Z-Score prova que uma leitura está errada?"
+Resposta: "Não. Ele aponta valores estatisticamente atípicos para análise.
+Uma anomalia precisa ser avaliada considerando o contexto, a estação e a
+qualidade da medição."
+
+Pergunta: "O Power BI já está conectado e atualizado automaticamente?"
+Resposta: "O projeto inclui o arquivo PBIX e materiais de tema e layout,
+mas a documentação ainda indica que a conexão do modelo semântico e a
+montagem ou validação do dashboard devem ser conferidas. A atualização dos
+dados também depende de atualizar as fontes no Power BI após a geração dos
+arquivos."
+
+Pergunta: "Por que a data final do reprocessamento é exclusiva?"
+Resposta: "Esse padrão evita ambiguidade nos limites do intervalo. Por
+exemplo, para incluir os dias 1, 2 e 3, informa-se o dia 1 como início e o
+dia 4 como fim exclusivo."

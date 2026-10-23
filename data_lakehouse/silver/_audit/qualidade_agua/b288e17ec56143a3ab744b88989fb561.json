@@ -1,0 +1,45 @@
+{
+  "execucao_id": "b288e17ec56143a3ab744b88989fb561",
+  "dataset": "qualidade_agua",
+  "modo": "reconstrucao_sql",
+  "executado_em_utc": "2026-10-23T00:18:27.543503+00:00",
+  "inicio_utc": "2026-10-01T00:00:00+00:00",
+  "fim_exclusivo_utc": "2026-10-15T00:00:00+00:00",
+  "formato": "parquet",
+  "compressao": "snappy",
+  "linhas_recebidas": 0,
+  "linhas_gravadas": 0,
+  "particoes": [],
+  "dimensoes_qualidade": {
+    "completeness": {
+      "linhas_avaliadas": 0,
+      "linhas_aprovadas": 0,
+      "linhas_rejeitadas": 0
+    },
+    "uniqueness": {
+      "linhas_avaliadas": 0,
+      "linhas_aprovadas": 0,
+      "linhas_rejeitadas": 0
+    },
+    "accuracy": {
+      "linhas_avaliadas": 0,
+      "linhas_aprovadas": 0,
+      "linhas_rejeitadas": 0
+    },
+    "validity": {
+      "linhas_avaliadas": 0,
+      "linhas_aprovadas": 0,
+      "linhas_rejeitadas": 0
+    },
+    "timeliness": {
+      "linhas_avaliadas": 0,
+      "linhas_aprovadas": 0,
+      "linhas_rejeitadas": 0
+    },
+    "consistency": {
+      "linhas_avaliadas": 0,
+      "linhas_aprovadas": 0,
+      "linhas_rejeitadas": 0
+    }
+  }
+}

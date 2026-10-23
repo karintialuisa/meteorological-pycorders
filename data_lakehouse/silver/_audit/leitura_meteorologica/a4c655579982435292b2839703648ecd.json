@@ -1,0 +1,116 @@
+{
+  "execucao_id": "a4c655579982435292b2839703648ecd",
+  "dataset": "leitura_meteorologica",
+  "modo": "reconstrucao_sql",
+  "executado_em_utc": "2026-10-23T00:19:26.515650+00:00",
+  "inicio_utc": "2026-10-01T00:00:00+00:00",
+  "fim_exclusivo_utc": "2026-10-15T00:00:00+00:00",
+  "formato": "parquet",
+  "compressao": "snappy",
+  "linhas_recebidas": 1271,
+  "linhas_gravadas": 1271,
+  "particoes": [
+    {
+      "caminho": "leitura_meteorologica/data_leitura=2026-10-01/part-00000.parquet",
+      "linhas_anteriores": 93,
+      "linhas_finais": 93
+    },
+    {
+      "caminho": "leitura_meteorologica/data_leitura=2026-10-02/part-00000.parquet",
+      "linhas_anteriores": 93,
+      "linhas_finais": 93
+    },
+    {
+      "caminho": "leitura_meteorologica/data_leitura=2026-10-03/part-00000.parquet",
+      "linhas_anteriores": 93,
+      "linhas_finais": 93
+    },
+    {
+      "caminho": "leitura_meteorologica/data_leitura=2026-10-04/part-00000.parquet",
+      "linhas_anteriores": 93,
+      "linhas_finais": 93
+    },
+    {
+      "caminho": "leitura_meteorologica/data_leitura=2026-10-05/part-00000.parquet",
+      "linhas_anteriores": 93,
+      "linhas_finais": 93
+    },
+    {
+      "caminho": "leitura_meteorologica/data_leitura=2026-10-06/part-00000.parquet",
+      "linhas_anteriores": 93,
+      "linhas_finais": 93
+    },
+    {
+      "caminho": "leitura_meteorologica/data_leitura=2026-10-07/part-00000.parquet",
+      "linhas_anteriores": 93,
+      "linhas_finais": 93
+    },
+    {
+      "caminho": "leitura_meteorologica/data_leitura=2026-10-08/part-00000.parquet",
+      "linhas_anteriores": 62,
+      "linhas_finais": 62
+    },
+    {
+      "caminho": "leitura_meteorologica/data_leitura=2026-10-09/part-00000.parquet",
+      "linhas_anteriores": 93,
+      "linhas_finais": 93
+    },
+    {
+      "caminho": "leitura_meteorologica/data_leitura=2026-10-10/part-00000.parquet",
+      "linhas_anteriores": 93,
+      "linhas_finais": 93
+    },
+    {
+      "caminho": "leitura_meteorologica/data_leitura=2026-10-11/part-00000.parquet",
+      "linhas_anteriores": 93,
+      "linhas_finais": 93
+    },
+    {
+      "caminho": "leitura_meteorologica/data_leitura=2026-10-12/part-00000.parquet",
+      "linhas_anteriores": 93,
+      "linhas_finais": 93
+    },
+    {
+      "caminho": "leitura_meteorologica/data_leitura=2026-10-13/part-00000.parquet",
+      "linhas_anteriores": 93,
+      "linhas_finais": 93
+    },
+    {
+      "caminho": "leitura_meteorologica/data_leitura=2026-10-14/part-00000.parquet",
+      "linhas_anteriores": 93,
+      "linhas_finais": 93
+    }
+  ],
+  "dimensoes_qualidade": {
+    "completeness": {
+      "linhas_avaliadas": 1271,
+      "linhas_aprovadas": 1271,
+      "linhas_rejeitadas": 0
+    },
+    "uniqueness": {
+      "linhas_avaliadas": 1271,
+      "linhas_aprovadas": 1271,
+      "linhas_rejeitadas": 0
+    },
+    "accuracy": {
+      "linhas_avaliadas": 1271,
+      "linhas_aprovadas": 1271,
+      "linhas_rejeitadas": 0
+    },
+    "validity": {
+      "linhas_avaliadas": 1271,
+      "linhas_aprovadas": 1271,
+      "linhas_rejeitadas": 0
+    },
+    "timeliness": {
+      "linhas_avaliadas": 1271,
+      "linhas_aprovadas": 1271,
+      "linhas_rejeitadas": 0
+    },
+    "consistency": {
+      "linhas_avaliadas": 1271,
+      "linhas_aprovadas": 1271,
+      "linhas_rejeitadas": 0
+    }
+  }
+}

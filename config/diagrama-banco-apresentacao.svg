@@ -48,6 +48,7 @@
     <path d="M880 438 H1000"/>
     <path d="M880 715 H940 V585 H1000"/>
     <path d="M1625 420 V520"/>
+    <path d="M1370 600 H1448"/>
   </g>
 
   <g class="relationship">
@@ -58,6 +59,7 @@
     <text x="925" y="426">1 : N</text>
     <text x="919" y="700">1 : N</text>
     <text x="1642" y="477">1 : N</text>
+    <text x="1385" y="590">1 : N</text>
   </g>
 
   <!-- Localização -->
@@ -113,7 +115,7 @@
     <path d="M1014 360 H1356 Q1370 360 1370 374 V408 H1000 V374 Q1000 360 1014 360Z" fill="#dc7b31"/>
     <text x="1025" y="393" class="entity">LEITURAS</text>
     <text x="1025" y="444" class="field"><tspan class="key">PK</tspan><tspan>  id</tspan></text>
-    <text x="1025" y="474" class="field"><tspan class="key">FK</tspan><tspan>  id_estacao · id_operador*</tspan></text>
+    <text x="1025" y="474" class="field"><tspan class="key">FK</tspan><tspan>  id_estacao · id_operador</tspan></text>
     <text x="1025" y="504" class="field">origem · chave_origem</text>
     <text x="1025" y="534" class="field">data_leitura · criado_em</text>
     <text x="1025" y="578" class="note">Cabeçalho: origem + instante</text>
@@ -143,6 +145,5 @@
   <rect x="80" y="875" width="800" height="105" rx="14" fill="#fff" stroke="#d5e1eb" stroke-width="1.5"/>
   <text x="110" y="914" class="section">LEGENDA</text>
   <text x="110" y="950" class="field"><tspan class="key">PK</tspan><tspan> chave primária   </tspan><tspan class="key">FK</tspan><tspan> chave estrangeira   </tspan><tspan class="key">UQ</tspan><tspan> valor único</tspan></text>
-  <text x="925" y="986" class="note">* id_operador é opcional. CATALOGO_DADOS registra metadados LGPD e não possui FK neste esquema.</text>
-  <text x="80" y="1030" class="note">Fonte: sql/ddl/create-tables.sql · Relacionamentos e campos apresentados de forma resumida para leitura em slides.</text>
+
 </svg>
