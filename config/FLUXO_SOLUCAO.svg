@@ -1,0 +1,143 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1050" viewBox="0 0 1600 1050" role="img" aria-labelledby="title description">
+  <title id="title">Fluxo do pipeline meteorológico e ambiental PyCorders</title>
+  <desc id="description">Diagrama da aplicação com as camadas Bronze, Silver e Gold, a persistência SQL opcional, o coletor Agritempo independente e o Power BI como integração pendente.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M1 1 L11 6 L1 11 Z" fill="#414957"/>
+    </marker>
+    <marker id="arrow-dashed" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M1 1 L11 6 L1 11 Z" fill="#77728f"/>
+    </marker>
+    <style>
+      text { font-family: "Segoe UI", Arial, sans-serif; fill: #293241; }
+      .title { font-size: 30px; font-weight: 700; }
+      .subtitle { font-size: 16px; fill: #657080; }
+      .layer-title { font-size: 21px; font-weight: 700; }
+      .layer-subtitle { font-size: 14px; fill: #616b78; }
+      .box-title { font-size: 17px; font-weight: 600; }
+      .box-text { font-size: 14px; fill: #505b69; }
+      .small { font-size: 13px; fill: #596474; }
+      .tag { font-size: 12px; font-weight: 700; letter-spacing: 1px; }
+      .panel { fill: #fffde8; stroke: #b9bd61; stroke-width: 2; }
+      .card { fill: #efebff; stroke: #a998d2; stroke-width: 2; }
+      .card-muted { fill: #f4f1ff; stroke: #b4a8d6; stroke-width: 2; }
+      .arrow { fill: none; stroke: #414957; stroke-width: 2.5; marker-end: url(#arrow); }
+      .arrow-dashed { fill: none; stroke: #77728f; stroke-width: 2; stroke-dasharray: 8 7; marker-end: url(#arrow-dashed); }
+      .connector { fill: none; stroke: #414957; stroke-width: 2.5; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="1050" fill="#f4f6f8"/>
+  <text x="800" y="48" text-anchor="middle" class="title">Pipeline meteorológico e ambiental</text>
+  <text x="800" y="76" text-anchor="middle" class="subtitle">Arquitetura implementada no projeto PyCorders</text>
+
+  <!-- BRONZE -->
+  <rect x="55" y="105" width="1490" height="225" rx="12" class="panel"/>
+  <circle cx="90" cy="140" r="18" fill="#c88939"/>
+  <text x="90" y="146" text-anchor="middle" font-size="17" font-weight="700" fill="#fff">1</text>
+  <text x="120" y="146" class="layer-title">BRONZE — dados brutos</text>
+  <text x="1520" y="143" text-anchor="end" class="layer-subtitle">data_lakehouse/bronze</text>
+
+  <rect x="105" y="175" width="285" height="95" rx="8" class="card"/>
+  <text x="247" y="211" text-anchor="middle" class="box-title">Fontes REST</text>
+  <text x="247" y="237" text-anchor="middle" class="box-text">leituras ambientais e meteorológicas</text>
+  <text x="247" y="257" text-anchor="middle" class="small">coleta executada separadamente</text>
+
+
+  <path d="M390 222 H465" class="arrow"/>
+
+  <rect x="470" y="175" width="315" height="95" rx="8" class="card"/>
+  <text x="627" y="211" text-anchor="middle" class="box-title">Contrato</text>
+  <text x="627" y="237" text-anchor="middle" class="box-text">valida estrutura, tipos e timestamp</text>
+  <text x="627" y="257" text-anchor="middle" class="small">registros inválidos são rejeitados</text>
+
+  <path d="M785 222 H860" class="arrow"/>
+
+  <rect x="865" y="175" width="335" height="95" rx="8" class="card"/>
+  <text x="1032" y="211" text-anchor="middle" class="box-title">Lotes JSONL append-only</text>
+  <text x="1032" y="237" text-anchor="middle" class="box-text">entrada do orquestrador</text>
+  <text x="1032" y="257" text-anchor="middle" class="small">API_RAW_DIR</text>
+
+  <rect x="1230" y="166" width="280" height="112" rx="8" class="card-muted"/>
+  <text x="1370" y="222" text-anchor="middle" class="box-title">API Agritempo</text>
+  <text x="1370" y="247" text-anchor="middle" class="box-text">JSON cumulativo </text>
+
+  <!-- BRONZE -> SILVER -->
+  <path d="M1032 270 V377" class="arrow"/>
+  <text x="1060" y="355" class="small">src/pipeline_orchestrator.py lê os lotes Bronze</text>
+
+  <!-- SILVER -->
+  <rect x="55" y="380" width="1490" height="295" rx="12" class="panel"/>
+  <circle cx="90" cy="417" r="18" fill="#7e75c8"/>
+  <text x="90" y="422" text-anchor="middle" font-size="17" font-weight="700" fill="#fff">2</text>
+  <text x="120" y="422" class="layer-title">SILVER — dados tratados e confiáveis</text>
+  <text x="1520" y="417" text-anchor="end" class="layer-subtitle">data_lakehouse/silver</text>
+
+  <rect x="100" y="460" width="290" height="112" rx="8" class="card"/>
+  <text x="245" y="495" text-anchor="middle" class="box-title">Normalização e validação</text>
+  <text x="245" y="522" text-anchor="middle" class="box-text">campos, tipos, datas </text>
+  <text x="245" y="547" text-anchor="middle" class="small">regras de domínio por dataset</text>
+
+  <path d="M390 516 H450" class="arrow"/>
+
+  <rect x="455" y="460" width="290" height="112" rx="8" class="card"/>
+  <text x="600" y="495" text-anchor="middle" class="box-title">Qualidade e deduplicação</text>
+  <text x="600" y="522" text-anchor="middle" class="box-text">rejeita dados inválidos</text>
+  <text x="600" y="547" text-anchor="middle" class="small">mantém uma leitura por chave</text>
+
+  <path d="M745 516 H805" class="arrow"/>
+
+  <rect x="810" y="460" width="290" height="112" rx="8" class="card"/>
+  <text x="955" y="495" text-anchor="middle" class="box-title">Resolve referências</text>
+  <text x="955" y="522" text-anchor="middle" class="box-text">estação e cidade pelos cadastros</text>
+  <text x="955" y="547" text-anchor="middle" class="small">cadastros Silver derivados de JSON</text>
+
+  <path d="M1100 516 H1160" class="arrow"/>
+
+  <rect x="1165" y="460" width="315" height="112" rx="8" class="card"/>
+  <text x="1322" y="495" text-anchor="middle" class="box-title">Parquet Snappy</text>
+  <text x="1322" y="522" text-anchor="middle" class="box-text">particionado por data</text>
+  <text x="1322" y="547" text-anchor="middle" class="small">persistência + auditoria</text>
+
+  <rect x="100" y="600" width="420" height="42" rx="7" class="card-muted"/>
+  <text x="310" y="627" text-anchor="middle" class="small">Proteção LGPD disponível nos fluxos relacionais de operadores</text>
+  <rect x="860" y="592" width="400" height="54" rx="8" fill="#f7f4ff" stroke="#a998d2" stroke-width="1.5" stroke-dasharray="7 5"/>
+  <text x="1060" y="622" text-anchor="middle" class="small">SQL Server • modelo relacional 3FN </text>
+  <path d="M745 516 V619 H855" class="arrow-dashed"/>
+
+  <!-- SILVER -> GOLD -->
+  <path d="M1322 572 V766 H260" class="connector"/>
+  <path d="M260 766 V784" class="arrow"/>
+  <path d="M610 766 V784" class="arrow"/>
+  <path d="M960 766 V784" class="arrow"/>
+  <rect x="1010" y="749" width="480" height="31" rx="15" fill="#fffde8"/>
+  <text x="1250" y="770" text-anchor="middle" class="small">Silver existente ou recém-processada</text>
+
+  <!-- GOLD -->
+  <rect x="55" y="725" width="1490" height="295" rx="12" class="panel"/>
+  <circle cx="90" cy="759" r="18" fill="#d99b32"/>
+  <text x="90" y="765" text-anchor="middle" font-size="17" font-weight="700" fill="#fff">3</text>
+  <text x="120" y="765" class="layer-title">GOLD — produtos prontos para análise</text>
+  <text x="1520" y="763" text-anchor="end" class="layer-subtitle">data_lakehouse/gold</text>
+
+  <rect x="105" y="790" width="310" height="115" rx="8" class="card"/>
+  <text x="260" y="827" text-anchor="middle" class="box-title">Estatísticas</text>
+  <text x="260" y="854" text-anchor="middle" class="box-text">por estação e parâmetro</text>
+  <text x="260" y="879" text-anchor="middle" class="small">estatisticas_descritivas.csv</text>
+
+  <rect x="455" y="790" width="310" height="115" rx="8" class="card"/>
+  <text x="610" y="827" text-anchor="middle" class="box-title">Detecção de outliers</text>
+  <text x="610" y="854" text-anchor="middle" class="box-text">IQR e Z-Score</text>
+  <text x="610" y="879" text-anchor="middle" class="small">alertas_qualidade.csv • z_scores.csv</text>
+
+  <rect x="805" y="790" width="310" height="115" rx="8" class="card"/>
+  <text x="960" y="827" text-anchor="middle" class="box-title">Esquema estrela</text>
+  <text x="960" y="854" text-anchor="middle" class="box-text">Dim_Estacao • Dim_Tempo</text>
+  <text x="960" y="879" text-anchor="middle" class="small">Dim_Parametro • Fato_Medicoes</text>
+
+  <path d="M1115 850 H1170" class="arrow-dashed"/>
+  <rect x="1175" y="790" width="315" height="115" rx="8" class="card-muted"/>
+  <text x="1332" y="850" text-anchor="middle" class="box-title">Power BI</text>
+
+  <text x="800" y="967" text-anchor="middle" class="subtitle">O orquestrador processa a Bronze existente; a coleta REST e o coletor Agritempo são executados separadamente.</text>
+</svg>

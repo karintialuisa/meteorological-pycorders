@@ -1,0 +1,164 @@
+[
+  {
+    "id": "01",
+    "ibge": "11",
+    "sigla": "RO",
+    "nome": "Rondônia"
+  },
+  {
+    "id": "02",
+    "ibge": "12",
+    "sigla": "AC",
+    "nome": "Acre"
+  },
+  {
+    "id": "03",
+    "ibge": "13",
+    "sigla": "AM",
+    "nome": "Amazonas"
+  },
+  {
+    "id": "04",
+    "ibge": "14",
+    "sigla": "RR",
+    "nome": "Roraima"
+  },
+  {
+    "id": "05",
+    "ibge": "15",
+    "sigla": "PA",
+    "nome": "Pará"
+  },
+  {
+    "id": "06",
+    "ibge": "16",
+    "sigla": "AP",
+    "nome": "Amapá"
+  },
+  {
+    "id": "07",
+    "ibge": "17",
+    "sigla": "TO",
+    "nome": "Tocantins"
+  },
+  {
+    "id": "08",
+    "ibge": "21",
+    "sigla": "MA",
+    "nome": "Maranhão"
+  },
+  {
+    "id": "09",
+    "ibge": "22",
+    "sigla": "PI",
+    "nome": "Piauí"
+  },
+  {
+    "id": "10",
+    "ibge": "23",
+    "sigla": "CE",
+    "nome": "Ceará"
+  },
+  {
+    "id": "11",
+    "ibge": "24",
+    "sigla": "RN",
+    "nome": "Rio Grande do Norte"
+  },
+  {
+    "id": "12",
+    "ibge": "25",
+    "sigla": "PB",
+    "nome": "Paraíba"
+  },
+  {
+    "id": "13",
+    "ibge": "26",
+    "sigla": "PE",
+    "nome": "Pernambuco"
+  },
+  {
+    "id": "14",
+    "ibge": "27",
+    "sigla": "AL",
+    "nome": "Alagoas"
+  },
+  {
+    "id": "15",
+    "ibge": "28",
+    "sigla": "SE",
+    "nome": "Sergipe"
+  },
+  {
+    "id": "16",
+    "ibge": "29",
+    "sigla": "BA",
+    "nome": "Bahia"
+  },
+  {
+    "id": "17",
+    "ibge": "31",
+    "sigla": "MG",
+    "nome": "Minas Gerais"
+  },
+  {
+    "id": "18",
+    "ibge": "32",
+    "sigla": "ES",
+    "nome": "Espírito Santo"
+  },
+  {
+    "id": "19",
+    "ibge": "33",
+    "sigla": "RJ",
+    "nome": "Rio de Janeiro"
+  },
+  {
+    "id": "20",
+    "ibge": "35",
+    "sigla": "SP",
+    "nome": "São Paulo"
+  },
+  {
+    "id": "21",
+    "ibge": "41",
+    "sigla": "PR",
+    "nome": "Paraná"
+  },
+  {
+    "id": "22",
+    "ibge": "42",
+    "sigla": "SC",
+    "nome": "Santa Catarina"
+  },
+  {
+    "id": "23",
+    "ibge": "43",
+    "sigla": "RS",
+    "nome": "Rio Grande do Sul"
+  },
+  {
+    "id": "24",
+    "ibge": "50",
+    "sigla": "MS",
+    "nome": "Mato Grosso do Sul"
+  },
+  {
+    "id": "25",
+    "ibge": "51",
+    "sigla": "MT",
+    "nome": "Mato Grosso"
+  },
+  {
+    "id": "26",
+    "ibge": "52",
+    "sigla": "GO",
+    "nome": "Goiás"
+  },
+  {
+    "id": "27",
+    "ibge": "53",
+    "sigla": "DF",
+    "nome": "Distrito Federal"
+  }
+]

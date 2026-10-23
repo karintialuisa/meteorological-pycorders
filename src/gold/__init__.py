@@ -1,0 +1,1 @@
+"""Curadoria e analytics Gold."""
