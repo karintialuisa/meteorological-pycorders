@@ -1,0 +1,86 @@
+{
+  "execucao_id": "095560f2a58647c19942906b15535c9b",
+  "dataset": "leitura_meteorologica",
+  "executado_em_utc": "2026-10-15T13:13:03.420119+00:00",
+  "formato": "parquet",
+  "compressao": "snappy",
+  "linhas_recebidas": 2817,
+  "linhas_gravadas": 2817,
+  "particoes_gravadas": [
+    "leitura_meteorologica/data_leitura=2026-09-15/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-09-16/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-09-17/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-09-18/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-09-19/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-09-20/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-09-21/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-09-22/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-09-23/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-09-24/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-09-25/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-09-26/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-10-01/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-10-02/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-10-03/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-10-04/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-10-05/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-10-06/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-10-07/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-10-08/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-10-09/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-10-10/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-10-11/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-10-12/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-10-13/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-10-14/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-10-15/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-10-16/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-10-17/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-10-18/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-10-19/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-10-20/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-10-21/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-10-22/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-10-23/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-10-24/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-10-25/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-10-26/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-10-27/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-10-28/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-10-29/part-00000.parquet",
+    "leitura_meteorologica/data_leitura=2026-10-30/part-00000.parquet"
+  ],
+  "dimensoes_qualidade": {
+    "completeness": {
+      "linhas_avaliadas": 2817,
+      "linhas_aprovadas": 2817,
+      "linhas_rejeitadas": 0
+    },
+    "uniqueness": {
+      "linhas_avaliadas": 2817,
+      "linhas_aprovadas": 2817,
+      "linhas_rejeitadas": 0
+    },
+    "accuracy": {
+      "linhas_avaliadas": 2817,
+      "linhas_aprovadas": 2817,
+      "linhas_rejeitadas": 0
+    },
+    "validity": {
+      "linhas_avaliadas": 2817,
+      "linhas_aprovadas": 2817,
+      "linhas_rejeitadas": 0
+    },
+    "timeliness": {
+      "linhas_avaliadas": 2817,
+      "linhas_aprovadas": 2817,
+      "linhas_rejeitadas": 0,
+      "ordenacao_gravada": "data_leitura_utc_ascendente"
+    },
+    "consistency": {
+      "linhas_avaliadas": 2817,
+      "linhas_aprovadas": 2817,
+      "linhas_rejeitadas": 0
+    }
+  }
+}

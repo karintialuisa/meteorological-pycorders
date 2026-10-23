@@ -2,6 +2,12 @@
 __pycache__/
 *.pyc
 .pytest_cache/
-reports/*.tmp
+.pytest_tmp/
+data_lakehouse/gold/*.tmp
 logs/*.log
-# src/config/.env
+data_lakehouse/silver/**/.silver.lock
+config/.env
+config/.env.test
+data_lakehouse\silver\cadstros\part*.parquet
+data_lakehouse\silver\_audit\leitura_meteorologica\*.json
+data_lakehouse\silver\_audit\leitura_ambiental\*.json    

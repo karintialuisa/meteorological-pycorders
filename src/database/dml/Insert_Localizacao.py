@@ -16,9 +16,11 @@ from sqlalchemy import text
 import sys
 from pathlib import Path
 # setamos o caminho para o sys.path, para ao executar o script possamos importar módulos do projeto corretamente.
-sys.path.append(str(Path(__file__).resolve().parents[2]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 from config.settings import PROJECT_ROOT, configure_logging, create_db_engine
-from ingestion.localizacao.Parse_localizacao_JSON import (
+from src.database.dialect import require_sqlserver
+from src.silver.persistencia.Exportar_Cadastros import exportar_cadastros
+from src.silver.etl.Parse_localizacao_JSON import (
     tabela_cidade,
     tabela_estacao,
     tabela_estado,
@@ -35,6 +37,7 @@ def limpar_localizacao(connection):
     Args:
         connection: Conexão ativa com o banco de dados SQL Server.
     """
+    require_sqlserver(connection)
     if modo_carga == "replace":
         connection.execute(text("DELETE FROM estacao"))
         connection.execute(text("DELETE FROM cidade"))
@@ -54,6 +57,7 @@ def inserir_localizacao(connection):
     Returns:
         pandas.DataFrame: Tabela com os IDs de estado e seus códigos IBGE.
     """
+    require_sqlserver(connection)
     df_estado = tabela_estado()
     df_estado["codigo_ibge_estado"] = pd.to_numeric(
         df_estado["codigo_ibge_estado"], errors="raise"
@@ -134,6 +138,7 @@ def inserir_estacoes(connection, estado_ids):
         estado_ids (pandas.DataFrame): DataFrame com os IDs de estado e os códigos
             IBGE relacionados.
     """
+    require_sqlserver(connection)
     df_estacao = tabela_estacao(tabela_cidade(), tabela_estado())
 
     cidade_ids = pd.read_sql(
@@ -168,23 +173,19 @@ def inserir_estacoes(connection, estado_ids):
             "Estação com cidade ou estado não encontrado no banco"
         )
 
-    df_estacao = df_estacao.rename(columns={"status_estacao": "status"})[
-        ["nome", "status", "id_estado", "id_cidade"]
+    df_estacao = df_estacao.rename(
+        columns={"status_estacao": "status", "id": "codigo_origem"}
+    )[
+        ["codigo_origem", "nome", "status", "id_estado", "id_cidade"]
     ]
 
     if modo_carga == "append":
         estacoes_existentes = pd.read_sql(
-            text("SELECT nome, id_estado, id_cidade FROM estacao"), connection
+            text("SELECT codigo_origem FROM estacao"), connection
         )
-        df_estacao = df_estacao.merge(
-            estacoes_existentes,
-            on=["nome", "id_estado", "id_cidade"],
-            how="left",
-            indicator=True,
-        )
-        df_estacao = df_estacao[df_estacao["_merge"] == "left_only"].drop(
-            columns=["_merge"]
-        )
+        df_estacao = df_estacao[
+            ~df_estacao["codigo_origem"].isin(estacoes_existentes["codigo_origem"])
+        ]
 
     if not df_estacao.empty:
         df_estacao.to_sql(
@@ -193,10 +194,15 @@ def inserir_estacoes(connection, estado_ids):
 
 
 if __name__ == "__main__":
-    configure_logging(BASE_DIR)
-    with create_db_engine().begin() as connection:
-        limpar_localizacao(connection)
-        estado_ids = inserir_localizacao(connection)
-        inserir_estacoes(connection, estado_ids)
+    configure_logging(BASE_DIR, categoria="insercao")
+    engine = create_db_engine()
+    try:
+        with engine.begin() as connection:
+            limpar_localizacao(connection)
+            estado_ids = inserir_localizacao(connection)
+            inserir_estacoes(connection, estado_ids)
+        exportar_cadastros(engine)
+    finally:
+        engine.dispose()
 
-    logging.info("Dados de localização inseridos com sucesso!")
+    logging.info("Dados de localização inseridos e cadastros Silver exportados com sucesso!")
