@@ -9,7 +9,8 @@ from pathlib import Path
 from sqlalchemy import inspect, text
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
-from src.config.settings import configure_logging, create_db_engine
+from config.settings import configure_logging, create_db_engine
+from src.database.dialect import require_sqlserver
 from src.database.dml.Insert_Leituras import _normalizar_instante
 from src.database.dml.Persistir_Medicoes import MAPEAMENTO, preparar_evento, persistir_evento
 from src.database.dml.etl_lock import adquirir_lock_etl
@@ -17,27 +18,27 @@ from src.database.dml.etl_lock import adquirir_lock_etl
 
 def migrar_legado(engine, *, arquivar: bool = False) -> dict[str, int]:
     """Nao cria schema nem parametros. Toda a migracao usa uma transacao."""
+    require_sqlserver(engine)
     contagens = {origem: 0 for origem in MAPEAMENTO}
     with engine.begin() as connection:
         adquirir_lock_etl(connection, "etl:leituras")
         adquirir_lock_etl(connection, "etl:leitura_itens")
-        mssql = connection.dialect.name == "mssql"
         schema = inspect(connection)
-        nomes = set(schema.get_table_names(schema="dbo" if mssql else None))
+        nomes = set(schema.get_table_names(schema="dbo"))
         for tabela, colunas in {
             "leituras": {"id", "origem", "chave_origem", "id_estacao", "id_operador", "data_leitura", "criado_em"},
             "leitura_itens": {"id_leitura", "id_parametro", "valor_numerico", "valor_texto"},
             "parametros": {"id", "codigo", "nome", "unidade_medida"},
         }.items():
             if tabela not in nomes or not colunas <= {
-                coluna["name"] for coluna in schema.get_columns(tabela, schema="dbo" if mssql else None)
+                coluna["name"] for coluna in schema.get_columns(tabela, schema="dbo")
             }:
                 raise ValueError(f"preflight: destino 3FN incompativel: {tabela}")
         for tabela, relacoes in {
             "leituras": {("id_estacao", "estacao", "id"), ("id_operador", "operadores", "id")},
             "leitura_itens": {("id_leitura", "leituras", "id"), ("id_parametro", "parametros", "id")},
         }.items():
-            fks = schema.get_foreign_keys(tabela, schema="dbo" if mssql else None)
+            fks = schema.get_foreign_keys(tabela, schema="dbo")
             encontradas = {
                 (fk["constrained_columns"][0], fk["referred_table"].lower(), fk["referred_columns"][0])
                 for fk in fks
@@ -50,20 +51,16 @@ def migrar_legado(engine, *, arquivar: bool = False) -> dict[str, int]:
                 acao = (fk.get("options", {}).get("ondelete") or "NO ACTION").upper().replace("_", " ")
                 if acao != esperado:
                     raise ValueError(f"preflight: politica de exclusao incompativel: {tabela}")
-        if set(schema.get_pk_constraint("leitura_itens", schema="dbo" if mssql else None)["constrained_columns"]) != {"id_leitura", "id_parametro"}:
+        if set(schema.get_pk_constraint("leitura_itens", schema="dbo")["constrained_columns"]) != {"id_leitura", "id_parametro"}:
             raise ValueError("preflight: PK composta de itens ausente")
-        unicas = (
-            [index for index in schema.get_indexes("leituras", schema="dbo") if index["unique"]]
-            if mssql else schema.get_unique_constraints("leituras")
-        )
+        unicas = [index for index in schema.get_indexes("leituras", schema="dbo") if index["unique"]]
         if not any(set(constraint["column_names"]) == {"origem", "chave_origem"} for constraint in unicas):
             raise ValueError("preflight: unicidade de leitura ausente")
-        if mssql:
-            invalidas = connection.execute(text(
-                "SELECT name FROM sys.foreign_keys WHERE is_disabled=1 OR is_not_trusted=1"
-            )).scalars().all()
-            if invalidas:
-                raise ValueError("preflight: FKs desabilitadas ou nao confiaveis")
+        invalidas = connection.execute(text(
+            "SELECT name FROM sys.foreign_keys WHERE is_disabled=1 OR is_not_trusted=1"
+        )).scalars().all()
+        if invalidas:
+            raise ValueError("preflight: FKs desabilitadas ou nao confiaveis")
         eventos = []
         chaves = set()
         for origem in MAPEAMENTO:
@@ -74,11 +71,11 @@ def migrar_legado(engine, *, arquivar: bool = False) -> dict[str, int]:
                 raise ValueError(f"preflight: arquivo legado ja existe: {origem}")
             obrigatorias = {"id", "id_estacao", "data_leitura", "criado_em", *MAPEAMENTO[origem]}
             obrigatorias.add("id_leitura_origem" if origem == "qualidade_agua" else "id_cidade")
-            colunas = {coluna["name"] for coluna in schema.get_columns(fonte, schema="dbo" if mssql else None)}
+            colunas = {coluna["name"] for coluna in schema.get_columns(fonte, schema="dbo")}
             if not obrigatorias <= colunas:
                 raise ValueError(f"preflight: schema incompativel: {fonte}")
             # Bloqueia alteracao da fonte durante preflight, backfill e cutover.
-            lock = " WITH (TABLOCKX, HOLDLOCK)" if mssql else ""
+            lock = " WITH (TABLOCKX, HOLDLOCK)"
             registros = connection.execute(text(
                 f"SELECT f.*, e.codigo_origem AS estacao_id, e.id_cidade AS cidade_estacao "
                 f"FROM {fonte} f{lock} LEFT JOIN estacao e ON e.id=f.id_estacao"
@@ -146,8 +143,6 @@ def migrar_legado(engine, *, arquivar: bool = False) -> dict[str, int]:
                 raise ValueError("reconciliacao: registros orfaos no destino")
 
         if arquivar:
-            if not mssql:
-                raise ValueError("arquivamento exige SQL Server")
             for origem in MAPEAMENTO:
                 arquivo = f"legado_{origem}"
                 if origem in nomes:

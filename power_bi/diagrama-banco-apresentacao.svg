@@ -1,0 +1,148 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" role="img" aria-labelledby="title description">
+  <title id="title">Modelo relacional do banco meteorológico e ambiental</title>
+  <desc id="description">Visão para apresentação das tabelas de localização, operadores, leituras, parâmetros e catálogo LGPD, com seus relacionamentos.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f4f8fc"/>
+      <stop offset="1" stop-color="#eaf1f8"/>
+    </linearGradient>
+    <linearGradient id="header" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#102a43"/>
+      <stop offset="1" stop-color="#184e77"/>
+    </linearGradient>
+    <filter id="shadow" x="-15%" y="-15%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="#183b56" flood-opacity=".12"/>
+    </filter>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 Z" fill="#6b8298"/>
+    </marker>
+    <style>
+      text { font-family: "Segoe UI", Arial, sans-serif; fill: #243b53; }
+      .title { font-size: 44px; font-weight: 700; fill: #fff; }
+      .subtitle { font-size: 20px; fill: #d9eaf7; }
+      .section { font-size: 15px; font-weight: 700; letter-spacing: 1.8px; fill: #526d82; }
+      .entity { font-size: 22px; font-weight: 700; fill: #fff; }
+      .field { font-size: 17px; }
+      .key { font-weight: 700; fill: #176b87; }
+      .relationship { font-size: 15px; font-weight: 700; fill: #526d82; }
+      .note { font-size: 16px; fill: #526d82; }
+      .card { fill: #fff; stroke: #d5e1eb; stroke-width: 1.5; }
+      .relation { fill: none; stroke: #6b8298; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+  </defs>
+
+  <rect width="1920" height="1080" fill="url(#background)"/>
+  <rect width="1920" height="150" fill="url(#header)"/>
+  <text x="80" y="72" class="title">Modelo relacional | Monitoramento ambiental</text>
+  <text x="82" y="112" class="subtitle">SQL Server · esquema 3FN · cadastros, operadores protegidos e leituras parametrizadas</text>
+
+  <text x="80" y="195" class="section">LOCALIZAÇÃO E ESTAÇÕES</text>
+  <text x="985" y="195" class="section">REGISTRO DAS MEDIÇÕES</text>
+
+  <!-- As setas partem da tabela referenciada e indicam relações 1:N. -->
+  <g class="relation" marker-end="url(#arrow)">
+    <path d="M255 405 V455"/>
+    <path d="M430 328 H475 V385 H520"/>
+    <path d="M430 548 H520"/>
+    <path d="M700 555 V625"/>
+    <path d="M880 438 H1000"/>
+    <path d="M880 715 H940 V585 H1000"/>
+    <path d="M1625 420 V520"/>
+  </g>
+
+  <g class="relationship">
+    <text x="273" y="437">1 : N</text>
+    <text x="463" y="317">1 : N</text>
+    <text x="460" y="537">1 : N</text>
+    <text x="713" y="605">1 : N</text>
+    <text x="925" y="426">1 : N</text>
+    <text x="919" y="700">1 : N</text>
+    <text x="1642" y="477">1 : N</text>
+  </g>
+
+  <!-- Localização -->
+  <g filter="url(#shadow)">
+    <rect x="80" y="230" width="350" height="175" rx="14" class="card"/>
+    <path d="M94 230 H416 Q430 230 430 244 V278 H80 V244 Q80 230 94 230Z" fill="#2878a5"/>
+    <text x="105" y="263" class="entity">ESTADO</text>
+    <text x="105" y="314" class="field"><tspan class="key">PK</tspan><tspan>  id</tspan></text>
+    <text x="105" y="344" class="field">codigo_ibge · sigla · nome</text>
+    <text x="105" y="374" class="field">criado_em</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="80" y="455" width="350" height="185" rx="14" class="card"/>
+    <path d="M94 455 H416 Q430 455 430 469 V503 H80 V469 Q80 455 94 455Z" fill="#2878a5"/>
+    <text x="105" y="488" class="entity">CIDADE</text>
+    <text x="105" y="539" class="field"><tspan class="key">PK</tspan><tspan>  id</tspan><tspan class="key">     FK</tspan><tspan>  id_estado</tspan></text>
+    <text x="105" y="569" class="field">codigo_ibge · nome</text>
+    <text x="105" y="599" class="field">criado_em</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="520" y="335" width="360" height="220" rx="14" class="card"/>
+    <path d="M534 335 H866 Q880 335 880 349 V383 H520 V349 Q520 335 534 335Z" fill="#2878a5"/>
+    <text x="545" y="368" class="entity">ESTACAO</text>
+    <text x="545" y="419" class="field"><tspan class="key">PK</tspan><tspan>  id</tspan><tspan class="key">     UQ</tspan><tspan>  codigo_origem</tspan></text>
+    <text x="545" y="449" class="field"><tspan class="key">FK</tspan><tspan>  id_cidade · id_estado</tspan></text>
+    <text x="545" y="479" class="field">nome · status</text>
+    <text x="545" y="509" class="field">criado_em</text>
+  </g>
+
+  <!-- Cadastro protegido e parâmetros -->
+  <g filter="url(#shadow)">
+    <rect x="520" y="625" width="360" height="195" rx="14" class="card"/>
+    <path d="M534 625 H866 Q880 625 880 639 V673 H520 V639 Q520 625 534 625Z" fill="#7664a8"/>
+    <text x="545" y="658" class="entity">OPERADORES</text>
+    <text x="545" y="709" class="field"><tspan class="key">PK</tspan><tspan>  id</tspan><tspan class="key">     FK</tspan><tspan>  id_estacao</tspan></text>
+    <text x="545" y="739" class="field">cpf_hash · status</text>
+    <text x="545" y="769" class="field">nome_completo_cifrado</text>
+    <text x="545" y="799" class="field">criado_em</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="1450" y="210" width="350" height="210" rx="14" class="card"/>
+    <path d="M1464 210 H1786 Q1800 210 1800 224 V258 H1450 V224 Q1450 210 1464 210Z" fill="#25877c"/>
+    <text x="1475" y="243" class="entity">PARAMETROS</text>
+    <text x="1475" y="294" class="field"><tspan class="key">PK</tspan><tspan>  id</tspan><tspan class="key">     UQ</tspan><tspan>  codigo</tspan></text>
+    <text x="1475" y="324" class="field">nome · unidade_medida</text>
+    <text x="1475" y="354" class="field">criado_em</text>
+    <text x="1475" y="389" class="note">Domínio de variáveis medidas</text>
+  </g>
+
+  <!-- Fato e associação N:M -->
+  <g filter="url(#shadow)">
+    <rect x="1000" y="360" width="370" height="280" rx="14" class="card"/>
+    <path d="M1014 360 H1356 Q1370 360 1370 374 V408 H1000 V374 Q1000 360 1014 360Z" fill="#dc7b31"/>
+    <text x="1025" y="393" class="entity">LEITURAS</text>
+    <text x="1025" y="444" class="field"><tspan class="key">PK</tspan><tspan>  id</tspan></text>
+    <text x="1025" y="474" class="field"><tspan class="key">FK</tspan><tspan>  id_estacao · id_operador*</tspan></text>
+    <text x="1025" y="504" class="field">origem · chave_origem</text>
+    <text x="1025" y="534" class="field">data_leitura · criado_em</text>
+    <text x="1025" y="578" class="note">Cabeçalho: origem + instante</text>
+    <text x="1025" y="606" class="note">Identidade única por origem</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="1450" y="520" width="350" height="235" rx="14" class="card"/>
+    <path d="M1464 520 H1786 Q1800 520 1800 534 V568 H1450 V534 Q1450 520 1464 520Z" fill="#dc7b31"/>
+    <text x="1475" y="553" class="entity">LEITURA_ITENS</text>
+    <text x="1475" y="604" class="field"><tspan class="key">PK, FK</tspan><tspan>  id_leitura</tspan></text>
+    <text x="1475" y="634" class="field"><tspan class="key">PK, FK</tspan><tspan>  id_parametro</tspan></text>
+    <text x="1475" y="664" class="field">valor_numerico OU valor_texto</text>
+    <text x="1475" y="694" class="field">criado_em</text>
+    <text x="1475" y="730" class="note">Associação N:M com valor medido</text>
+  </g>
+
+  <!-- Metadados de privacidade, sem FK no esquema atual -->
+  <g filter="url(#shadow)">
+    <rect x="1000" y="770" width="370" height="160" rx="14" class="card"/>
+    <path d="M1014 770 H1356 Q1370 770 1370 784 V818 H1000 V784 Q1000 770 1014 770Z" fill="#526d82"/>
+    <text x="1025" y="803" class="entity">CATALOGO_DADOS</text>
+    <text x="1025" y="854" class="field"><tspan class="key">PK</tspan><tspan>  id</tspan></text>
+    <text x="1025" y="884" class="field">tabela · campo · classificação</text>
+    <text x="1025" y="914" class="field">finalidade · proteção · acesso</text>
+  </g>
+
+  <rect x="80" y="875" width="800" height="105" rx="14" fill="#fff" stroke="#d5e1eb" stroke-width="1.5"/>
+  <text x="110" y="914" class="section">LEGENDA</text>
+  <text x="110" y="950" class="field"><tspan class="key">PK</tspan><tspan> chave primária   </tspan><tspan class="key">FK</tspan><tspan> chave estrangeira   </tspan><tspan class="key">UQ</tspan><tspan> valor único</tspan></text>
+  <text x="925" y="986" class="note">* id_operador é opcional. CATALOGO_DADOS registra metadados LGPD e não possui FK neste esquema.</text>
+  <text x="80" y="1030" class="note">Fonte: sql/ddl/create-tables.sql · Relacionamentos e campos apresentados de forma resumida para leitura em slides.</text>
+</svg>

@@ -1,1 +1,1 @@
-"""Consumo HTTP, contratos e persistencia bruta das fontes."""
+"""Ingestao e persistencia bruta de fontes."""

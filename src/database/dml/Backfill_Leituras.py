@@ -10,11 +10,12 @@ import pandas as pd
 from sqlalchemy.engine import Engine
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
-from src.config.settings import configure_logging, create_db_engine, get_path
+from config.settings import configure_logging, create_db_engine, get_path
+from src.database.dialect import require_sqlserver
 from src.database.dml.Persistir_Medicoes import carregar_dataframe, consultar_medicoes_periodo
-from src.silver.leituras.Parse_LeituraAmbiental import tabela_ambiental
-from src.silver.leituras.Parse_LeituraMetereologica import tabela_metereologica
-from src.silver.leituras.Persistir_Silver import persistir_silver, reconstruir_particoes_silver
+from src.silver.etl.Parse_LeituraAmbiental import tabela_ambiental
+from src.silver.etl.Parse_LeituraMetereologica import tabela_metereologica
+from src.silver.persistencia.Persistir_Silver import persistir_silver, reconstruir_particoes_silver
 
 
 DATASETS = {
@@ -55,6 +56,8 @@ def reprocessar_periodo(
     """
     if dataset not in (*DATASETS, "ambos"):
         raise ValueError(f"Dataset de backfill desconhecido: {dataset}")
+    if engine is not None:
+        require_sqlserver(engine)
     inicio, fim = validar_periodo(data_inicio, data_fim)
     datasets = tuple(DATASETS) if dataset == "ambos" else (dataset,)
     resultado = {}
@@ -75,6 +78,7 @@ def reprocessar_periodo(
             if not selecionados.empty:
                 if target_engine is None:
                     target_engine = create_db_engine()
+                require_sqlserver(target_engine)
                 aprovados = carregar_dataframe(selecionados, origem, target_engine)
                 if not aprovados.empty and not reconstruir_silver:
                     silver = persistir_silver(aprovados, origem)
@@ -83,6 +87,7 @@ def reprocessar_periodo(
             if reconstruir_silver and not rejeitados:
                 if target_engine is None:
                     target_engine = create_db_engine()
+                require_sqlserver(target_engine)
                 silver = reconstruir_particoes_silver(
                     lambda: consultar_medicoes_periodo(target_engine, origem, inicio, fim),
                     origem, inicio, fim,

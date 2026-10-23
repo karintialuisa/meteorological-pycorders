@@ -1,1 +1,1 @@
-"""Aplicação de ingestão e análise meteorológica."""
+"""Codigo-fonte da plataforma de dados ambientais."""

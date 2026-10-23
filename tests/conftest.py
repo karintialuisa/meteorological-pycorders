@@ -1,13 +1,13 @@
-"""Fornece fixtures de banco SQLite para testes isolados das cargas."""
+"""Fornece fixtures comuns e SQL Server descartavel para testes de persistencia."""
 
 import pytest
-from sqlalchemy import create_engine, text
-from sqlalchemy.pool import StaticPool
 import sys
 from pathlib import Path
 path = Path(__file__).resolve().parents[1] 
 sys.path.append(str(path))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from sqlserver_support import RUN_TESTS, disposable_engine
 
 
 @pytest.fixture(autouse=True)
@@ -34,118 +34,7 @@ def catalogo_lgpd_esperado():
 
 @pytest.fixture
 def banco_teste():
-    engine = create_engine(
-        "sqlite+pysqlite:///:memory:",
-        connect_args={"check_same_thread": False},
-        poolclass=StaticPool,
-    )
-
-    with engine.connect() as connection:
-        connection.execute(text("PRAGMA foreign_keys = ON"))
-
-    with engine.begin() as connection:
-        connection.execute(
-            text(
-                "CREATE TABLE estado ("
-                "id INTEGER PRIMARY KEY, codigo_ibge INTEGER UNIQUE, "
-                "sigla TEXT UNIQUE, nome TEXT UNIQUE)"
-            )
-        )
-        connection.execute(
-            text(
-                "CREATE TABLE cidade ("
-                "id INTEGER PRIMARY KEY, id_estado INTEGER NOT NULL, "
-                "codigo_ibge INTEGER UNIQUE, nome TEXT NOT NULL, "
-                "FOREIGN KEY (id_estado) REFERENCES estado(id))"
-            )
-        )
-        connection.execute(
-            text(
-                "CREATE TABLE estacao ("
-                "id INTEGER PRIMARY KEY, codigo_origem TEXT UNIQUE, "
-                "nome TEXT NOT NULL, status INTEGER, "
-                "id_cidade INTEGER NOT NULL, id_estado INTEGER NOT NULL, "
-                "FOREIGN KEY (id_cidade) REFERENCES cidade(id), "
-                "FOREIGN KEY (id_estado) REFERENCES estado(id))"
-            )
-        )
-        connection.execute(
-            text(
-                "CREATE TABLE qualidade_agua ("
-                "id INTEGER PRIMARY KEY, id_leitura_origem TEXT NOT NULL UNIQUE, "
-                "id_estacao INTEGER NOT NULL, "
-                "data_leitura TEXT NOT NULL, temperatura_agua REAL, "
-                "ph REAL CHECK (ph IS NULL OR ph BETWEEN 0 AND 14), "
-                "oxigenio REAL CHECK (oxigenio IS NULL OR oxigenio >= 0), "
-                "condutividade REAL CHECK (condutividade IS NULL OR condutividade >= 0), "
-                "turbidez REAL CHECK (turbidez IS NULL OR turbidez >= 0), "
-                "FOREIGN KEY (id_estacao) REFERENCES estacao(id))"
-            )
-        )
-        connection.execute(
-            text(
-                "CREATE TABLE leitura_meteorologica ("
-                "id INTEGER PRIMARY KEY, id_cidade INTEGER NOT NULL, "
-                "id_estacao INTEGER NOT NULL, "
-                "temperatura_ar REAL NOT NULL, "
-                "umidade REAL NOT NULL CHECK (umidade BETWEEN 0 AND 100), "
-                "chuva REAL NOT NULL CHECK (chuva >= 0), "
-                "vento REAL NOT NULL CHECK (vento >= 0), "
-                "condicao TEXT NOT NULL, data_leitura TEXT NOT NULL, "
-                "UNIQUE (id_estacao, data_leitura), "
-                "FOREIGN KEY (id_cidade) REFERENCES cidade(id), "
-                "FOREIGN KEY (id_estacao) REFERENCES estacao(id))"
-            )
-        )
-        connection.execute(
-            text(
-                "CREATE TABLE operadores ("
-                "id INTEGER PRIMARY KEY, cpf_hash TEXT NOT NULL UNIQUE, "
-                "nome_completo_cifrado TEXT NOT NULL, "
-                "status INTEGER, id_estacao INTEGER NOT NULL, "
-                "criado_em TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-                "FOREIGN KEY (id_estacao) REFERENCES estacao(id))"
-            )
-        )
-        connection.execute(
-            text(
-                "CREATE TABLE catalogo_dados ("
-                "id INTEGER PRIMARY KEY, schema_name TEXT NOT NULL, "
-                "tabela TEXT NOT NULL, campo_logico TEXT NOT NULL, "
-                "coluna_armazenada TEXT NOT NULL, classificacao TEXT NOT NULL, "
-                "finalidade TEXT NOT NULL, protecao TEXT NOT NULL, "
-                "politica_acesso TEXT NOT NULL, "
-                "criado_em TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-                "UNIQUE (schema_name, tabela, campo_logico))"
-            )
-        )
-
-    with engine.begin() as connection:
-        connection.execute(text(
-            "CREATE TABLE parametros (id INTEGER PRIMARY KEY, codigo TEXT NOT NULL UNIQUE, "
-            "nome TEXT NOT NULL, unidade_medida TEXT NOT NULL)"
-        ))
-        connection.execute(text(
-            "CREATE TABLE leituras (id INTEGER PRIMARY KEY, origem TEXT NOT NULL, "
-            "chave_origem TEXT NOT NULL, id_estacao INTEGER NOT NULL, id_operador INTEGER, "
-            "data_leitura TEXT NOT NULL, criado_em TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-            "UNIQUE(origem, chave_origem), FOREIGN KEY(id_estacao) REFERENCES estacao(id), "
-            "FOREIGN KEY(id_operador) REFERENCES operadores(id))"
-        ))
-        connection.execute(text(
-            "CREATE TABLE leitura_itens (id_leitura INTEGER NOT NULL, id_parametro INTEGER NOT NULL, "
-            "valor_numerico NUMERIC, valor_texto TEXT, "
-            "PRIMARY KEY(id_leitura,id_parametro), "
-            "CHECK ((valor_numerico IS NOT NULL AND valor_texto IS NULL) OR "
-            "(valor_numerico IS NULL AND valor_texto IS NOT NULL)), "
-            "FOREIGN KEY(id_leitura) REFERENCES leituras(id) ON DELETE CASCADE, "
-            "FOREIGN KEY(id_parametro) REFERENCES parametros(id))"
-        ))
-    yield engine
-    engine.dispose()
-
-
-@pytest.fixture
-def connection(banco_teste):
-    with banco_teste.begin() as active_connection:
-        yield active_connection
+    if not RUN_TESTS:
+        pytest.skip("Habilite o SQL Server descartavel em config/.env.")
+    with disposable_engine(legacy=True) as engine:
+        yield engine

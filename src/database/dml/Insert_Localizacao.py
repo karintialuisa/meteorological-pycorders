@@ -17,9 +17,10 @@ import sys
 from pathlib import Path
 # setamos o caminho para o sys.path, para ao executar o script possamos importar módulos do projeto corretamente.
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
-from src.config.settings import PROJECT_ROOT, configure_logging, create_db_engine
-from src.silver.localizacao.Exportar_Cadastros import exportar_cadastros
-from src.silver.localizacao.Parse_localizacao_JSON import (
+from config.settings import PROJECT_ROOT, configure_logging, create_db_engine
+from src.database.dialect import require_sqlserver
+from src.silver.persistencia.Exportar_Cadastros import exportar_cadastros
+from src.silver.etl.Parse_localizacao_JSON import (
     tabela_cidade,
     tabela_estacao,
     tabela_estado,
@@ -36,6 +37,7 @@ def limpar_localizacao(connection):
     Args:
         connection: Conexão ativa com o banco de dados SQL Server.
     """
+    require_sqlserver(connection)
     if modo_carga == "replace":
         connection.execute(text("DELETE FROM estacao"))
         connection.execute(text("DELETE FROM cidade"))
@@ -55,6 +57,7 @@ def inserir_localizacao(connection):
     Returns:
         pandas.DataFrame: Tabela com os IDs de estado e seus códigos IBGE.
     """
+    require_sqlserver(connection)
     df_estado = tabela_estado()
     df_estado["codigo_ibge_estado"] = pd.to_numeric(
         df_estado["codigo_ibge_estado"], errors="raise"
@@ -135,6 +138,7 @@ def inserir_estacoes(connection, estado_ids):
         estado_ids (pandas.DataFrame): DataFrame com os IDs de estado e os códigos
             IBGE relacionados.
     """
+    require_sqlserver(connection)
     df_estacao = tabela_estacao(tabela_cidade(), tabela_estado())
 
     cidade_ids = pd.read_sql(

@@ -12,8 +12,8 @@ from src.database.dml.Insert_Operadores import (
     _converter_status_operador,
     inserir_operadores,
 )
-from src.silver.localizacao import Parse_localizacao_JSON as localizacao
-from src.security.pii import decrypt_name, encrypt_name, hash_cpf, normalize_cpf
+from src.silver.etl import Parse_localizacao_JSON as localizacao
+from src.silver.security.pii import decrypt_name, encrypt_name, hash_cpf, normalize_cpf
 
 
 def _synthetic_cpf(prefix: str = "123456789") -> str:
@@ -41,19 +41,25 @@ def _authorized_test_decryption(ciphertext, key):
 
 def _seed_operator_stations(engine):
     with engine.begin() as connection:
+        connection.execute(text("SET IDENTITY_INSERT dbo.estado ON"))
         connection.execute(
-            text("INSERT INTO estado (id, codigo_ibge, sigla, nome) VALUES (1, 35, 'SP', 'Sao Paulo')")
+            text("INSERT INTO dbo.estado (id, codigo_ibge, sigla, nome) VALUES (1, 35, 'SP', 'Sao Paulo')")
         )
+        connection.execute(text("SET IDENTITY_INSERT dbo.estado OFF"))
+        connection.execute(text("SET IDENTITY_INSERT dbo.cidade ON"))
         connection.execute(
-            text("INSERT INTO cidade (id, id_estado, codigo_ibge, nome) VALUES (10, 1, 3550308, 'Sao Paulo')")
+            text("INSERT INTO dbo.cidade (id, id_estado, codigo_ibge, nome) VALUES (10, 1, 3550308, 'Sao Paulo')")
         )
+        connection.execute(text("SET IDENTITY_INSERT dbo.cidade OFF"))
+        connection.execute(text("SET IDENTITY_INSERT dbo.estacao ON"))
         connection.execute(
             text(
-                "INSERT INTO estacao (id, codigo_origem, nome, status, id_cidade, id_estado) "
+                "INSERT INTO dbo.estacao (id, codigo_origem, nome, status, id_cidade, id_estado) "
                 "VALUES (20, 'AMB-011', 'Estacao 011', 1, 10, 1), "
                 "(21, 'AMB-012', 'Estacao 012', 1, 10, 1)"
             )
         )
+        connection.execute(text("SET IDENTITY_INSERT dbo.estacao OFF"))
 
 
 def test_normalize_cpf_removes_punctuation_and_checks_digits():
@@ -378,7 +384,7 @@ def test_json_loader_rejects_invalid_operator_fixtures(
     _seed_operator_stations(banco_teste)
     source_path = (
         Path(__file__).resolve().parents[2]
-        / "data_lake"
+        / "data_lakehouse"
         / "bronze"
         / "cadastros"
         / "operadores.json"

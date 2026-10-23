@@ -1,1 +1,1 @@
-"""Calculos estatisticos e publicacao dos resultados analiticos."""
+"""Curadoria e analytics Gold."""

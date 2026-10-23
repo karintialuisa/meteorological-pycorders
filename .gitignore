@@ -7,5 +7,8 @@ data_lake/gold/*.tmp
 logs/*.log
 data_lake/bronze/api/api_*.jsonl
 data_lake/silver/**/.silver.lock
-src/config/.env
-src/config/.env.test
+config/.env
+config/.env.test
+data_lake\silver\cadstros\part*.parquet
+data_lake\silver\_audit\leitura_meteorologica\*.json
+data_lake\silver\_audit\leitura_ambiental\*.json    

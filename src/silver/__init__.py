@@ -1,1 +1,1 @@
-"""Limpeza, qualidade e persistencia das projecoes Silver."""
+"""Tratamento, governanca e persistencia Silver."""

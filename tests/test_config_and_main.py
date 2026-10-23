@@ -1,21 +1,30 @@
-"""Testa configurações, logging, menu e execução dos scripts principais."""
+"""Testa caminhos, logging e a entrada real do pipeline."""
 
-import importlib
-import urllib.parse
+import subprocess
 import sys
 from pathlib import Path
+<<<<<<< HEAD
 from unittest.mock import MagicMock
+=======
+import urllib.parse
+
+>>>>>>> origin/feature/wagner2
 import pytest
-path = Path(__file__).resolve().parents[1] 
-sys.path.append(str(path))  
-sys.path.append(str(path / "src"))
-from src.config import settings
+
+from config import settings
+
 
 def test_get_env_requires_a_configured_value(monkeypatch):
     monkeypatch.delenv("REQUIRED_TEST_SETTING", raising=False)
 
     with pytest.raises(KeyError, match="REQUIRED_TEST_SETTING"):
         settings.get_env("REQUIRED_TEST_SETTING")
+
+
+def test_project_root_and_environment_file_match_repository():
+    root = Path(__file__).resolve().parents[1]
+    assert settings.PROJECT_ROOT == root
+    assert settings.ENV_FILE == root / "config" / ".env"
 
 
 def test_get_path_resolves_relative_and_absolute_paths(monkeypatch, tmp_path):
@@ -30,7 +39,7 @@ def test_get_path_resolves_relative_and_absolute_paths(monkeypatch, tmp_path):
 
 def test_get_silver_dir_resolves_default_relative_and_absolute(monkeypatch, tmp_path):
     monkeypatch.delenv("SILVER_DIR", raising=False)
-    assert settings.get_silver_dir() == settings.PROJECT_ROOT / "data_lake" / "silver"
+    assert settings.get_silver_dir() == settings.PROJECT_ROOT / "data_lakehouse" / "silver"
 
     monkeypatch.setenv("SILVER_DIR", "lake/custom-silver")
     assert settings.get_silver_dir() == settings.PROJECT_ROOT / "lake" / "custom-silver"
@@ -42,7 +51,7 @@ def test_get_silver_dir_resolves_default_relative_and_absolute(monkeypatch, tmp_
 
 def test_get_api_raw_dir_uses_bronze_path(monkeypatch, tmp_path):
     monkeypatch.delenv("API_RAW_DIR", raising=False)
-    assert settings.get_api_raw_dir() == settings.PROJECT_ROOT / "data_lake" / "bronze" / "api"
+    assert settings.get_api_raw_dir() == settings.PROJECT_ROOT / "data_lakehouse" / "bronze" / "api"
 
     monkeypatch.setenv("API_RAW_DIR", "data/raw-api")
     assert settings.get_api_raw_dir() == settings.PROJECT_ROOT / "data" / "raw-api"
@@ -55,9 +64,11 @@ def test_get_api_raw_dir_uses_bronze_path(monkeypatch, tmp_path):
 def test_get_agritempo_dir_is_independent_of_rest_batches(monkeypatch, tmp_path):
     monkeypatch.delenv("AGRITEMPO_RAW_DIR", raising=False)
     monkeypatch.setenv("API_RAW_DIR", str(tmp_path / "api"))
-    assert settings.get_agritempo_raw_dir() == settings.PROJECT_ROOT / "data_lake" / "bronze" / "agritempo"
+    assert settings.get_agritempo_raw_dir() == settings.PROJECT_ROOT / "data_lakehouse" / "bronze" / "agritempo"
+
     monkeypatch.setenv("AGRITEMPO_RAW_DIR", "lake/agritempo")
     assert settings.get_agritempo_raw_dir() == settings.PROJECT_ROOT / "lake" / "agritempo"
+
     monkeypatch.setenv("AGRITEMPO_RAW_DIR", str(tmp_path / "agritempo"))
     assert settings.get_agritempo_raw_dir() == tmp_path / "agritempo"
 
@@ -88,9 +99,7 @@ def test_configure_logging_creates_log_directory(monkeypatch, tmp_path):
     captured = {}
     monkeypatch.setattr(settings, "get_env", lambda key: "logs")
     monkeypatch.setattr(
-        settings.logging,
-        "basicConfig",
-        lambda **kwargs: captured.update(kwargs),
+        settings.logging, "basicConfig", lambda **kwargs: captured.update(kwargs)
     )
 
     settings.configure_logging(tmp_path)
@@ -118,9 +127,7 @@ def test_configure_logging_selects_file_by_category(
     captured = {}
     monkeypatch.setattr(settings, "get_env", lambda key: "logs")
     monkeypatch.setattr(
-        settings.logging,
-        "basicConfig",
-        lambda **kwargs: captured.update(kwargs),
+        settings.logging, "basicConfig", lambda **kwargs: captured.update(kwargs)
     )
 
     settings.configure_logging(tmp_path, categoria=categoria)
@@ -130,6 +137,7 @@ def test_configure_logging_selects_file_by_category(
         handler.close()
 
 
+<<<<<<< HEAD
 @pytest.fixture
 def main_module(monkeypatch, tmp_path):
     monkeypatch.setenv("LOGS_DIR", str(tmp_path / "logs"))
@@ -418,3 +426,16 @@ def test_main_dispatches_zscore_and_returns_to_menu(main_module, monkeypatch, su
 
 if __name__ == "__main__":
     raise SystemExit(pytest.main([__file__, "-v"]))
+=======
+def test_pipeline_cli_help_runs_without_database_access():
+    root = Path(__file__).resolve().parents[1]
+    result = subprocess.run(
+        [sys.executable, "-m", "src.pipeline_orchestrator", "--help"],
+        cwd=root,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "--apenas-gold" in result.stdout
+>>>>>>> origin/feature/wagner2

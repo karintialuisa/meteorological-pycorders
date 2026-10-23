@@ -6,8 +6,11 @@ from pathlib import Path
 import requests
 from uuid import uuid4
 
-from src.config.settings import PROJECT_ROOT, configure_logging, get_agritempo_raw_dir
-from src.bronze.api_ingestion import (
+import sys
+path = Path(__file__).parents[2]
+sys.path.append(str(path))
+from config.settings import PROJECT_ROOT, configure_logging, get_agritempo_raw_dir
+from src.bronze.ingestion import (
     LimiteRequisicoes,
     extrair_temperaturas_ar,
     validar_documento_agritempo,

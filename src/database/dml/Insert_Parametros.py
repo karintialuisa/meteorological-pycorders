@@ -8,7 +8,8 @@ from pathlib import Path
 from sqlalchemy import text
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
-from src.config.settings import configure_logging, create_db_engine
+from config.settings import configure_logging, create_db_engine
+from src.database.dialect import require_sqlserver
 from src.database.dml.etl_lock import adquirir_lock_etl
 
 
@@ -73,7 +74,8 @@ def inserir_parametros(
     """Insere ou atualiza parametros por codigo; retorna (inseridos, atualizados)."""
     registros = _validar_parametros(parametros)
     target_engine = engine or create_db_engine()
-    table_name = "dbo.parametros" if target_engine.dialect.name == "mssql" else "parametros"
+    require_sqlserver(target_engine)
+    table_name = "dbo.parametros"
     inseridos = 0
     atualizados = 0
 

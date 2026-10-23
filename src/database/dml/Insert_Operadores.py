@@ -10,8 +10,9 @@ import pandas as pd
 from sqlalchemy import text
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
-from src.config.settings import PROJECT_ROOT, configure_logging, create_db_engine, get_env
-from src.security.pii import decrypt_name, encrypt_name, hash_cpf
+from config.settings import PROJECT_ROOT, configure_logging, create_db_engine, get_env
+from src.database.dialect import require_sqlserver
+from src.silver.security.pii import decrypt_name, encrypt_name, hash_cpf
 
 # Referencia: projeto_final.pdf, secao 1 (Operadores - origem dos dados), features.csv ID 10.
 # Referencia: projeto_final.pdf, secao 3.3 (Operadores - tabela cadastral), ID 38.
@@ -40,8 +41,9 @@ def inserir_operadores(
     encryption_key = encryption_key or get_env("ENCRYPTION_KEY")
     _validar_chaves_operador(hmac_secret, encryption_key)
     target_engine = engine or create_db_engine()
-    table_name = "dbo.operadores" if target_engine.dialect.name == "mssql" else "operadores"
-    station_table = "dbo.estacao" if target_engine.dialect.name == "mssql" else "estacao"
+    require_sqlserver(target_engine)
+    table_name = "dbo.operadores"
+    station_table = "dbo.estacao"
 
     def station_id_for(operator):
         if not isinstance(operator, Mapping):
@@ -197,7 +199,7 @@ def _autorizar_descriptografia_loader(principal: str, action: str) -> bool:
 
 
 OPERADORES_JSON = (
-    PROJECT_ROOT / "data_lake" / "bronze" / "cadastros" / "operadores.json"
+    PROJECT_ROOT / "data_lakehouse" / "bronze" / "cadastros" / "operadores.json"
 )
 _STATUS_ATIVO = {"1", "ativo", "ativa", "active", "true"}
 _STATUS_INATIVO = {"0", "inativo", "inativa", "inactive", "false", "desativado"}

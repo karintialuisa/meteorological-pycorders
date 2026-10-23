@@ -1,12 +1,18 @@
 """Persistencia atomica e mapeamento comum de eventos 3FN."""
 
 import logging
+<<<<<<< HEAD
 from collections.abc import Callable, Mapping
+=======
+from collections.abc import Mapping
+from time import monotonic
+>>>>>>> origin/feature/wagner2
 
 import pandas as pd
 from sqlalchemy import inspect, text
 from sqlalchemy.engine import Connection, Engine
 
+from src.database.dialect import require_sqlserver
 from src.database.dml.Insert_Leituras import _normalizar_registro, inserir_leituras
 from src.database.dml.Insert_Leitura_Itens import _normalizar_item, inserir_leitura_itens
 from src.database.dml.etl_lock import adquirir_lock_etl
@@ -26,8 +32,8 @@ MAPEAMENTO = {
 
 def _validar_legado_inativo(connection: Connection) -> None:
     """Impede tratar um modelo legado ativo como referencia 3FN vazia."""
-    schema = "dbo" if connection.dialect.name == "mssql" else None
-    existentes = set(inspect(connection).get_table_names(schema=schema))
+    require_sqlserver(connection)
+    existentes = set(inspect(connection).get_table_names(schema="dbo"))
     for tabela in MAPEAMENTO:
         if tabela in existentes and connection.execute(
             text(f"SELECT COUNT(*) FROM {tabela}")
@@ -45,6 +51,7 @@ def consultar_medicoes_periodo(
     """
     if origem not in MAPEAMENTO:
         raise ValueError("origem de medicao desconhecida")
+    require_sqlserver(engine)
     medidas = []
     for coluna, codigo in MAPEAMENTO[origem].items():
         valor = "valor_texto" if codigo == "CONDICAO_METEO" else "valor_numerico"
@@ -128,10 +135,11 @@ def persistir_evento(connection: Connection, cabecalho, itens) -> None:
     """Usa a transacao do chamador; rejeicao deve causar rollback."""
     if not connection.in_transaction():
         raise ValueError("persistencia de evento exige transacao ativa")
+    require_sqlserver(connection)
     adquirir_lock_etl(connection, "etl:leituras")
     adquirir_lock_etl(connection, "etl:leitura_itens")
     inserir_leituras([cabecalho], connection=connection, strict=True)
-    tabela = "dbo.leitura_itens" if connection.dialect.name == "mssql" else "leitura_itens"
+    tabela = "dbo.leitura_itens"
     existente = connection.execute(
         text(
             f"SELECT p.codigo FROM {tabela} i JOIN parametros p ON p.id=i.id_parametro "
@@ -153,12 +161,21 @@ def carregar_dataframe(
     """Aceita/rejeita cada evento; falhas SQL tecnicas nao sao suprimidas."""
     if origem not in MAPEAMENTO:
         raise ValueError("origem de medicao desconhecida")
+    require_sqlserver(engine)
+    inicio = monotonic()
+    total = len(df)
+    logging.info("Carga SQL iniciada: origem=%s total=%s; conectando e validando legado", origem, total)
     with engine.connect() as connection:
         _validar_legado_inativo(connection)
+    logging.info("Validacao concluida: origem=%s; iniciando transacoes por leitura", origem)
     aprovados = []
+<<<<<<< HEAD
     total = len(df)
     if progresso is not None:
         progresso(0, total)
+=======
+    ultimo_progresso = monotonic()
+>>>>>>> origin/feature/wagner2
     for indice, registro in enumerate(df.to_dict("records")):
         try:
             cabecalho, itens = preparar_evento(registro, origem)
@@ -189,6 +206,24 @@ def carregar_dataframe(
             logging.warning(
                 "Evento rejeitado: origem=%s indice=%s motivo=%s", origem, indice, error
             )
+<<<<<<< HEAD
         if progresso is not None:
             progresso(indice + 1, total)
+=======
+        processados = indice + 1
+        agora = monotonic()
+        if processados == 1 or processados % 100 == 0 or processados == total or agora - ultimo_progresso >= 5:
+            decorrido = agora - inicio
+            velocidade = processados / decorrido if decorrido > 0 else 0
+            restante = (total - processados) / velocidade if velocidade > 0 else 0
+            logging.info(
+                "Progresso SQL: origem=%s processados=%s/%s (%.1f%%) "
+                "aceitos=%s rejeitados=%s decorrido=%.1fs taxa=%.1f leituras/s restante_estimado=%.1fs",
+                origem, processados, total, 100 * processados / total,
+                len(aprovados), processados - len(aprovados), decorrido, velocidade, restante,
+            )
+            ultimo_progresso = agora
+    logging.info("Carga SQL concluida: origem=%s aceitos=%s rejeitados=%s tempo=%.1fs",
+                 origem, len(aprovados), total - len(aprovados), monotonic() - inicio)
+>>>>>>> origin/feature/wagner2
     return pd.DataFrame(aprovados)
