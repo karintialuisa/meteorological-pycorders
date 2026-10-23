@@ -4,6 +4,7 @@ import importlib
 import urllib.parse
 import sys
 from pathlib import Path
+from unittest.mock import MagicMock
 import pytest
 path = Path(__file__).resolve().parents[1] 
 sys.path.append(str(path))  
@@ -152,28 +153,26 @@ def test_executar_script_handles_missing_script(main_module, tmp_path, monkeypat
 
 
 @pytest.mark.parametrize("return_code, expected", [(0, True), (1, False)])
-def test_executar_script_captures_output(
+def test_executar_script_streams_output_before_waiting(
     main_module, tmp_path, monkeypatch, capsys, caplog, return_code, expected
 ):
     script = tmp_path / "job.py"
     script.touch()
     monkeypatch.setattr(main_module, "BASE_DIR", tmp_path)
-    monkeypatch.setattr(
-        main_module.subprocess,
-        "run",
-        lambda *args, **kwargs: type(
-            "Result",
-            (),
-            {
-                "returncode": return_code,
-                "stdout": "job output\n",
-                "stderr": "failure",
-            },
-        )(),
-    )
+    def executar(*args, **kwargs):
+        kwargs["stderr"].write("failure")
+        processo = MagicMock()
+        processo.__enter__.return_value = processo
+        processo.stdout = iter(["job output\n"])
+        def aguardar():
+            assert capsys.readouterr().out == "job output\n"
+            return return_code
+        processo.wait.side_effect = aguardar
+        return processo
+
+    monkeypatch.setattr(main_module.subprocess, "Popen", executar)
 
     assert main_module.executar_script("job.py") is expected
-    assert capsys.readouterr().out == "job output\n"
     mensagem = "Sucesso em job.py" if expected else "Falha em job.py:\nfailure"
     assert mensagem in caplog.messages
     assert mensagem.isascii()
@@ -190,13 +189,36 @@ def test_executar_script_passes_optional_arguments_without_shell(
 
     def executar(comando, **opcoes):
         capturado.update(comando=comando, opcoes=opcoes)
-        return type("Result", (), {"returncode": 0, "stdout": "", "stderr": ""})()
+        processo = MagicMock()
+        processo.__enter__.return_value = processo
+        processo.stdout = iter([])
+        processo.wait.return_value = 0
+        return processo
 
-    monkeypatch.setattr(main_module.subprocess, "run", executar)
+    monkeypatch.setattr(main_module.subprocess, "Popen", executar)
 
     assert main_module.executar_script(script.name, argumentos)
     assert capturado["comando"] == [main_module.sys.executable, str(script)] + (argumentos or [])
     assert not capturado["opcoes"].get("shell", False)
+
+
+@pytest.mark.parametrize("return_code", [0, 1])
+def test_executar_script_real_child_output_and_errors(
+    main_module, tmp_path, monkeypatch, capsys, caplog, return_code
+):
+    script = tmp_path / "progress.py"
+    script.write_text(
+        "import sys\n"
+        "print('Meteorologia: 1/1 leituras processadas', flush=True)\n"
+        "print('erro do processo', file=sys.stderr)\n"
+        f"sys.exit({return_code})\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(main_module, "BASE_DIR", tmp_path)
+    assert main_module.executar_script(script.name) is (return_code == 0)
+    assert "Meteorologia: 1/1 leituras processadas" in capsys.readouterr().out
+    if return_code:
+        assert "Falha em progress.py:\nerro do processo" in caplog.messages
 
 
 def test_main_dispatches_menu_actions_and_exits(main_module, monkeypatch):

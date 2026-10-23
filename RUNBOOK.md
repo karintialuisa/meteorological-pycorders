@@ -218,6 +218,14 @@ Para uma rotina diaria com novos JSONs, preserve as entradas anteriores para rep
 
 ### 5.4 Como reconhecer o sucesso
 
+A carga meteorologica mostra `Meteorologia: 0/2910 leituras processadas`,
+atualiza a cada 100 leituras e mostra o total final (o denominador depende do
+lote aprovado pelo parser). A saida aparece durante a execucao, tanto pelo menu
+quanto pela chamada direta ao script. Processadas inclui insercoes, retransmissoes
+identicas e rejeicoes registradas; nao significa quantidade inserida. Uma falha
+tecnica interrompe a contagem. O total final indica fim da etapa SQL, nao sucesso
+da Silver: aguarde o resumo `Carga meteorologica 3FN` para confirmar o termino.
+
 | Etapa | Evidencia esperada |
 | --- | --- |
 | Localizacao | Cadastros SQL presentes e snapshots `estados.parquet`, `cidades.parquet`, `estacoes.parquet` atualizados na Silver |

@@ -1,7 +1,7 @@
 """Persistencia atomica e mapeamento comum de eventos 3FN."""
 
 import logging
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 
 import pandas as pd
 from sqlalchemy import inspect, text
@@ -146,13 +146,19 @@ def persistir_evento(connection: Connection, cabecalho, itens) -> None:
     inserir_leitura_itens(itens, connection=connection, strict=True)
 
 
-def carregar_dataframe(df: pd.DataFrame, origem: str, engine) -> pd.DataFrame:
+def carregar_dataframe(
+    df: pd.DataFrame, origem: str, engine, *,
+    progresso: Callable[[int, int], None] | None = None,
+) -> pd.DataFrame:
     """Aceita/rejeita cada evento; falhas SQL tecnicas nao sao suprimidas."""
     if origem not in MAPEAMENTO:
         raise ValueError("origem de medicao desconhecida")
     with engine.connect() as connection:
         _validar_legado_inativo(connection)
     aprovados = []
+    total = len(df)
+    if progresso is not None:
+        progresso(0, total)
     for indice, registro in enumerate(df.to_dict("records")):
         try:
             cabecalho, itens = preparar_evento(registro, origem)
@@ -183,4 +189,6 @@ def carregar_dataframe(df: pd.DataFrame, origem: str, engine) -> pd.DataFrame:
             logging.warning(
                 "Evento rejeitado: origem=%s indice=%s motivo=%s", origem, indice, error
             )
+        if progresso is not None:
+            progresso(indice + 1, total)
     return pd.DataFrame(aprovados)

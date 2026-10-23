@@ -1,10 +1,10 @@
-# PyCordersMeteorological
+# PyCodersMeteorological
 
 Pipeline de Monitoramento e Análise de Dados Ambientais
 
 Para preparar o ambiente, entender o fluxograma, executar as rotinas e localizar cada arquivo Python/configuração, consulte o [RunBook operacional](RUNBOOK.md).
 
-Projeto Prático Integrador desenvolvido pela equipe PyCorders para capturar, tratar e persistir dados de estações meteorológicas e de qualidade da água, com consultas por API REST.
+Projeto Prático Integrador desenvolvido pela equipe PyCoders para capturar, tratar e persistir dados de estações meteorológicas e de qualidade da água, com consultas por API REST.
 
 ## Sobre o projeto
 
@@ -76,7 +76,7 @@ nao combine seus tres arquivos como se tivessem o mesmo esquema.
 ## Arquitetura do projeto
 
 ```text
-meteorological-pycorders/
+meteorological-PyCoders/
 ├── Get_dados.py                      # Entrada compatível da coleta Agritempo
 ├── requirements.txt                 # Dependências, sem alteração de versões
 ├── .env.example                     # Modelo sem segredos
@@ -174,7 +174,7 @@ Na validação da reorganização, os hashes SHA-256 confirmaram conteúdo inalt
 
    ```bash
    git clone <URL_DO_REPOSITORIO>
-   cd meteorological-pycorders
+   cd meteorological-PyCoders
    ```
 
 2. Crie e ative um ambiente virtual:

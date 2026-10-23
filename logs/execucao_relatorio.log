@@ -7819,3 +7819,95 @@ Menu de opções:
 20-10-2026 10:01 - INFO - Silver lida: dataset=qualidade_agua leituras=120
 20-10-2026 10:01 - INFO - Silver lida: dataset=leitura_meteorologica leituras=1918
 20-10-2026 10:01 - INFO - Relatorio estatistico publicado: grupos=422 n_validos=8272 n_invalidos=0 inicio=2026-09-15T00:00:00+00:00 fim_exclusivo=2026-10-21T00:00:00+00:00 saida=C:\Users\jorge.caldas.cardoso\Documents\GitHub\meteorological-pycorders\data_lake\gold\estatisticas_descritivas.csv
+22-10-2026 19:49 - INFO - 
+========================================
+Menu de opções:
+ 1. ETL JSON -> BD
+ 2. Coletar meteorologia Agritempo -> JSON
+ 3. Cadastrar parâmetros, catálogo LGPD e operadores
+ 4. Cancelar Operação
+ 5. Gerar estatísticas descritivas da Silver -> CSV
+ 6. Validar anomalias por Z-Score -> CSV
+ 7. Reprocessar leituras historicas por periodo (backfill)
+========================================
+22-10-2026 19:49 - INFO - ==================== Iniciando: Insert_Localizacao.py ====================
+22-10-2026 19:49 - INFO - Sucesso em Insert_Localizacao.py
+22-10-2026 19:49 - INFO - ==================== Iniciando: Insert_Parametros.py ====================
+22-10-2026 19:49 - INFO - Sucesso em Insert_Parametros.py
+22-10-2026 19:49 - INFO - ==================== Iniciando: Insert_Leituras_ambiental.py ====================
+22-10-2026 19:49 - ERROR - Falha em Insert_Leituras_ambiental.py:
+Traceback (most recent call last):
+  File "C:\Users\jorge.caldas.cardoso\Documents\GitHub\meteorological-pycorders\src\database\dml\Insert_Leituras_ambiental.py", line 51, in <module>
+    inserir_dados()
+    ~~~~~~~~~~~~~^^
+  File "C:\Users\jorge.caldas.cardoso\Documents\GitHub\meteorological-pycorders\src\database\dml\Insert_Leituras_ambiental.py", line 42, in inserir_dados
+    aprovados = carregar_dataframe(dados, "qualidade_agua", create_db_engine())
+  File "C:\Users\jorge.caldas.cardoso\Documents\GitHub\meteorological-pycorders\src\database\dml\Persistir_Medicoes.py", line 154, in carregar_dataframe
+    _validar_legado_inativo(connection)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\jorge.caldas.cardoso\Documents\GitHub\meteorological-pycorders\src\database\dml\Persistir_Medicoes.py", line 35, in _validar_legado_inativo
+    raise ValueError("legado ativo com dados: realizar migracao e arquivamento antes da carga")
+ValueError: legado ativo com dados: realizar migracao e arquivamento antes da carga
+22-10-2026 19:49 - ERROR - Carga ETL interrompida após falha em Insert_Leituras_ambiental.py.
+22-10-2026 19:49 - INFO - 
+========================================
+Menu de opções:
+ 1. ETL JSON -> BD
+ 2. Coletar meteorologia Agritempo -> JSON
+ 3. Cadastrar parâmetros, catálogo LGPD e operadores
+ 4. Cancelar Operação
+ 5. Gerar estatísticas descritivas da Silver -> CSV
+ 6. Validar anomalias por Z-Score -> CSV
+ 7. Reprocessar leituras historicas por periodo (backfill)
+========================================
+22-10-2026 19:55 - INFO - Aplicação encerrada pelo usuário ao selecionar a opção '4'.
+22-10-2026 19:56 - INFO - 
+========================================
+Menu de opções:
+ 1. ETL JSON -> BD
+ 2. Coletar meteorologia Agritempo -> JSON
+ 3. Cadastrar parâmetros, catálogo LGPD e operadores
+ 4. Cancelar Operação
+ 5. Gerar estatísticas descritivas da Silver -> CSV
+ 6. Validar anomalias por Z-Score -> CSV
+ 7. Reprocessar leituras historicas por periodo (backfill)
+========================================
+22-10-2026 19:56 - INFO - ==================== Iniciando: Insert_Localizacao.py ====================
+22-10-2026 19:56 - INFO - Sucesso em Insert_Localizacao.py
+22-10-2026 19:56 - INFO - ==================== Iniciando: Insert_Parametros.py ====================
+22-10-2026 19:56 - INFO - Sucesso em Insert_Parametros.py
+22-10-2026 19:56 - INFO - ==================== Iniciando: Insert_Leituras_ambiental.py ====================
+22-10-2026 19:56 - INFO - Sucesso em Insert_Leituras_ambiental.py
+22-10-2026 19:56 - INFO - ==================== Iniciando: Insert_Leituras_Meteorologica.py ====================
+22-10-2026 19:59 - INFO - Sucesso em Insert_Leituras_Meteorologica.py
+22-10-2026 19:59 - INFO - 
+========================================
+Menu de opções:
+ 1. ETL JSON -> BD
+ 2. Coletar meteorologia Agritempo -> JSON
+ 3. Cadastrar parâmetros, catálogo LGPD e operadores
+ 4. Cancelar Operação
+ 5. Gerar estatísticas descritivas da Silver -> CSV
+ 6. Validar anomalias por Z-Score -> CSV
+ 7. Reprocessar leituras historicas por periodo (backfill)
+========================================
+22-10-2026 20:09 - INFO - ==================== Iniciando: Insert_Localizacao.py ====================
+22-10-2026 20:09 - INFO - Sucesso em Insert_Localizacao.py
+22-10-2026 20:09 - INFO - ==================== Iniciando: Insert_Parametros.py ====================
+22-10-2026 20:09 - INFO - Sucesso em Insert_Parametros.py
+22-10-2026 20:09 - INFO - ==================== Iniciando: Insert_Leituras_ambiental.py ====================
+22-10-2026 20:09 - INFO - Sucesso em Insert_Leituras_ambiental.py
+22-10-2026 20:09 - INFO - ==================== Iniciando: Insert_Leituras_Meteorologica.py ====================
+22-10-2026 20:11 - INFO - Sucesso em Insert_Leituras_Meteorologica.py
+22-10-2026 20:11 - INFO - 
+========================================
+Menu de opções:
+ 1. ETL JSON -> BD
+ 2. Coletar meteorologia Agritempo -> JSON
+ 3. Cadastrar parâmetros, catálogo LGPD e operadores
+ 4. Cancelar Operação
+ 5. Gerar estatísticas descritivas da Silver -> CSV
+ 6. Validar anomalias por Z-Score -> CSV
+ 7. Reprocessar leituras historicas por periodo (backfill)
+========================================
+22-10-2026 20:14 - INFO - Aplicação encerrada pelo usuário ao selecionar a opção '4'.
